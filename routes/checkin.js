@@ -48,7 +48,7 @@ router.post('/', (req, res) => {
     if (results.rows[0].dine_in === true) {
       res.render('checkin', {
         layout: 'layouts/main-layout',
-        title: 'Dine-in Status',
+        title: 'Check-In Status',
         alert: 'Card is already check-in',
         data: results.rows[0],
       });
@@ -60,7 +60,6 @@ router.post('/', (req, res) => {
           layout: 'layouts/main-layout',
           title: 'Check-in',
           message: 'Card has been checked in successfully.',
-          data: results.rows[0],
         });
       });
     }
