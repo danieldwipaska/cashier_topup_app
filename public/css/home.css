@@ -1,0 +1,115 @@
+body {
+  background: rgb(238, 174, 202);
+  background: radial-gradient(circle, rgba(238, 174, 202, 1) 0%, rgba(148, 187, 233, 1) 100%);
+  /* height: 100vh; */
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  background: linear-gradient(90deg, #e3ffe7 0%, #d9e7ff 100%);
+}
+
+header h1 {
+  font-size: 35px;
+  font-weight: 600;
+  background-image: linear-gradient(to right, #553c9a 10%, #ee4b2b);
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.button {
+  font-size: 3.8vh;
+  padding: 0.4em 1em;
+  background: #fff;
+  color: #4a5568;
+  border: 0px solid #a0aec0;
+  margin: 0.2em;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 0 0 #bee3f8;
+  transform: translateY(0);
+  border-radius: 0.5em 0.5em 0.5em 0.5em;
+}
+
+.multi-button:hover .button {
+  color: #a0aec0;
+}
+
+.multi-button:hover .button:hover {
+  background: #d53f8c;
+  color: #fff;
+  box-shadow: 0 0 0.8em 0 rgba(213, 63, 140, 0.8);
+  transform: translateY(-0.2em);
+}
+.multi-button:hover .button i {
+  color: #cbd5e0;
+}
+.multi-button:hover .button:hover i {
+  color: #fed7e2;
+  transform: rotate(-10deg);
+}
+
+a {
+  text-decoration: none;
+}
+
+.menu-button-checkin {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.1s;
+  animation-fill-mode: both;
+}
+
+.menu-button-checkout {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.2s;
+  animation-fill-mode: both;
+}
+
+.menu-button-topup {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.3s;
+  animation-fill-mode: both;
+}
+
+.menu-button-payment {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.4s;
+  animation-fill-mode: both;
+}
+
+.menu-button-activation {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.5s;
+  animation-fill-mode: both;
+}
+
+.menu-button-create {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.6s;
+  animation-fill-mode: both;
+}
+
+@keyframes menu {
+  from {
+    opacity: 0;
+    top: -25px;
+  }
+  to {
+    opacity: 100;
+    top: 0px;
+  }
+}
+
+form {
+  display: inline;
+}

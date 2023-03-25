@@ -1,0 +1,9 @@
+.btn-search {
+  color: white;
+  background-color: rgb(125, 161, 201);
+}
+
+.btn-search:hover {
+  color: white;
+  background-color: rgb(75, 96, 121);
+}

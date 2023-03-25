@@ -1,0 +1,40 @@
+<div class="container-md mt-1 mb-3">
+  <div class="row my-1">
+    <div class="col-md-9 mx-auto my-1 px-4">
+      <form action="/create" method="post">
+        <div class="row">
+          <div class="mb-1">
+            <label for="barcode" class="form-label text-secondary">Card</label>
+            <input type="text" class="form-control" id="barcode" name="barcode" readonly value="<%= data %>" />
+          </div>
+
+          <div class="mb-1">
+            <label for="name" class="form-label text-secondary">Name</label>
+            <input type="text" class="form-control" id="name" name="name" value="Not Available" disabled />
+          </div>
+
+          <div class="mb-1">
+            <label for="balance" class="form-label text-secondary">Balance</label>
+            <input type="text" class="form-control" id="balance" name="balance" value="Not Available" disabled />
+          </div>
+
+          <div class="mb-1 col-auto">
+            <label for="isMember" class="form-label text-secondary">Member Status</label>
+            <input type="text" class="form-control" id="isMember" name="isMember" value="Not Available" disabled />
+          </div>
+
+          <div class="mb-1 col-auto">
+            <label for="isActive" class="form-label text-secondary">Activation</label>
+            <input type="text" class="form-control" id="isActive" name="isActive" value="Not Available" disabled />
+          </div>
+        </div>
+        <div class="row my-5 multi-button">
+          <div class="col-md-8 mx-auto text-center">
+            <a class="button shadow" href="/create/search" role="button">Back</a>
+            <button class="button shadow" type="submit">Create</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

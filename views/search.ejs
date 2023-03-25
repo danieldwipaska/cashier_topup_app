@@ -1,0 +1,43 @@
+<% if (alert) { %>
+<div class="container-md my-1">
+  <div class="row">
+    <div class="col-8 mx-auto">
+      <div class="alert alert-dismissible alert-warning fade show mb-3">
+        <button type="button" class="btn-close" data-mdb-toggle="animation" data-mdb-animation="slide-right" data-mdb-animation-start="onLoad" data-bs-dismiss="alert"></button>
+        <strong>Oh no!</strong> <%= alert %>
+      </div>
+    </div>
+  </div>
+</div>
+<% } %>
+<div class="container-md my-1">
+  <div class="row">
+    <div class="col-8 mx-auto">
+      <h4 class="text-secondary"><%= subtitle %></h4>
+    </div>
+  </div>
+</div>
+<div class="container-md my-3">
+  <div class="row">
+    <div class="col-8 mx-auto">
+      <div class="row my-1">
+        <div class="col-12 mx-auto">
+          <h4 class="text-secondary">Enter Barcode</h4>
+        </div>
+      </div>
+      <div class="row my-1">
+        <div class="col-12 mx-auto p-3 shadow bg-light rounded-4">
+          <form class="d-flex" role="search">
+            <input class="form-control me-2" type="search" name="card" placeholder="Search" aria-label="Search" autofocus="autofocus" />
+            <button class="btn btn-search" type="submit">Search</button>
+          </form>
+        </div>
+      </div>
+      <div class="row my-3">
+        <div class="col-12 mx-auto">
+          <a href="/" type="button" class="btn btn-search">Back to Menu</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
