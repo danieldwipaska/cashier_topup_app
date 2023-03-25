@@ -52,6 +52,7 @@ router.post('/', (req, res) => {
       layout: 'layouts/main-layout',
       title: 'Notification',
       messsage: 'Card has been added successfully',
+      data: results.rows[0],
     });
   });
 });

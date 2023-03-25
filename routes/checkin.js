@@ -60,6 +60,7 @@ router.post('/', (req, res) => {
           layout: 'layouts/main-layout',
           title: 'Check-in',
           message: 'Card has been checked in successfully.',
+          data: results.rows[0],
         });
       });
     }

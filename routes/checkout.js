@@ -61,6 +61,7 @@ router.post('/', (req, res) => {
           layout: 'layouts/main-layout',
           title: 'Check-Out',
           message: 'Card has been checked out successfully.',
+          data: results.rows[0],
         });
       });
     }

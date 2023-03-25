@@ -55,6 +55,7 @@ router.post('/activate', (req, res) => {
           layout: 'layouts/main-layout',
           title: 'Activation',
           message: 'Card has been activated successfully.',
+          data: results.rows[0],
         });
       });
     }
@@ -80,6 +81,7 @@ router.post('/deactivate', (req, res) => {
           layout: 'layouts/main-layout',
           title: 'Activation',
           message: 'Card has been deactivated successfully.',
+          data: results.rows[0],
         });
       });
     }
