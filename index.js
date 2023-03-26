@@ -9,6 +9,7 @@ const createRoute = require('./routes/create');
 const activationRoute = require('./routes/activation');
 const checkinRoute = require('./routes/checkin');
 const checkoutRoute = require('./routes/checkout');
+const topupRoute = require('./routes/topup');
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use('/create', createRoute);
 app.use('/activation', activationRoute);
 app.use('/checkin', checkinRoute);
 app.use('/checkout', checkoutRoute);
+app.use('/topup', topupRoute);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
