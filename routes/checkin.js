@@ -53,7 +53,7 @@ router.post('/', (req, res) => {
         data: results.rows[0],
       });
     } else {
-      // IF CARD NOT CHECK-IN YET
+      // UPDATE DINE-IN STATUS
       pool.query(queries.cardStatus, [true, customer_name, barcode], (error, results) => {
         if (error) return console.log(error);
         res.render('notificationSuccess', {
