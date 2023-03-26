@@ -51,7 +51,7 @@ router.post('/', (req, res) => {
     res.render('notificationSuccess', {
       layout: 'layouts/main-layout',
       title: 'Notification',
-      messsage: 'Card has been added successfully',
+      message: 'Card has been added successfully',
       data: results.rows[0],
     });
   });
