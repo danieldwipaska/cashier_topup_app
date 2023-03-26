@@ -42,11 +42,17 @@
             <input type="text" class="form-control" id="isMember" name="isMember" value="<%= data.is_member %>" readonly />
           </div>
 
+          <% if (data.is_active) { %>
           <div class="mb-1 col-auto">
             <label for="isActive" class="form-label text-secondary">Activation</label>
-            <input type="text" class="form-control" id="isActive" name="isActive" value="<%= data.is_active %>" readonly />
+            <input type="text" class="form-control bg-success text-light" id="isActive" name="isActive" value="<%= data.is_active %>" readonly />
           </div>
-          <% if (data.dine_in === true) { %>
+          <% } else { %>
+          <div class="mb-1 col-auto">
+            <label for="isActive" class="form-label text-secondary">Activation</label>
+            <input type="text" class="form-control bg-danger text-light" id="isActive" name="isActive" value="<%= data.is_active %>" readonly />
+          </div>
+          <% } %> <% if (data.dine_in) { %>
           <div class="mb-1 col-auto">
             <label for="dineIn" class="form-label text-secondary">Dine In</label>
             <input type="text" class="form-control bg-success text-light" id="dineIn" name="dineIn" value="<%= data.dine_in %>" readonly />
