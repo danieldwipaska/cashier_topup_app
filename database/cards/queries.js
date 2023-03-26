@@ -5,6 +5,7 @@ const getCardById = 'SELECT * FROM cards WHERE barcode = $1';
 // const removeStudent = 'DELETE FROM students WHERE id = $1';
 const cardActivation = 'UPDATE cards SET is_active = $1 WHERE barcode = $2';
 const cardStatus = 'UPDATE cards SET dine_in = $1, customer_name = $2 WHERE barcode = $3';
+const updateBalance = 'UPDATE cards SET balance = $1 WHERE barcode = $2';
 
 module.exports = {
   addCard,
@@ -12,6 +13,7 @@ module.exports = {
   getCardById,
   cardActivation,
   cardStatus,
+  updateBalance,
   //   checkEmailExists,
 
   //   removeStudent,
