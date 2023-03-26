@@ -44,8 +44,17 @@ router.post('/', (req, res) => {
   // SEARCH FOR CARD
   pool.query(queries.getCardById, [barcode], (error, results) => {
     if (error) return console.log(error);
-    // IF CARD IS ALREADY CHECK-IN
-    if (results.rows[0].dine_in === true) {
+
+    if (results.rows[0].is_active === false) {
+      // IF CARD IS NOT ACTIVE
+      res.render('checkin', {
+        layout: 'layouts/main-layout',
+        title: 'Check-In Status',
+        alert: 'Card is NOT ACTIVE.\nPlease activate the card first',
+        data: results.rows[0],
+      });
+    } else if (results.rows[0].dine_in === true) {
+      // IF CARD IS ALREADY CHECK-IN
       res.render('checkin', {
         layout: 'layouts/main-layout',
         title: 'Check-In Status',
