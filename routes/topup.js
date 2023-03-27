@@ -66,13 +66,15 @@ router.post('/', (req, res) => {
     } else {
       // ADD NEW BALANCE
       balanceInt += results.rows[0].balance;
-      pool.query(queries.updateBalance, [balanceInt, barcode], (error, results) => {
+      pool.query(queries.updateBalance, [balanceInt, barcode], (error, updateResults) => {
         if (error) console.log(error);
 
-        res.render('notificationSuccess', {
+        res.render('notificationSuccessWithBalance', {
           layout: 'layouts/main-layout',
           title: 'Top-Up Success',
           message: 'Card Top-Up succeed.',
+          data: results.rows[0],
+          balance: balanceInt,
         });
       });
     }

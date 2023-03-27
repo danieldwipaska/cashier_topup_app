@@ -49,7 +49,7 @@ router.post('/activate', (req, res) => {
         data: results.rows[0],
       });
     } else {
-      pool.query(queries.cardActivation, [true, barcode], (error, results) => {
+      pool.query(queries.cardActivate, [true, barcode], (error, results) => {
         if (error) return console.log(error);
         res.render('notificationSuccess', {
           layout: 'layouts/main-layout',
@@ -75,7 +75,7 @@ router.post('/deactivate', (req, res) => {
         data: results.rows[0],
       });
     } else {
-      pool.query(queries.cardActivation, [false, barcode], (error, results) => {
+      pool.query(queries.cardDeactivate, [false, false, '', 0, barcode], (error, results) => {
         if (error) return console.log(error);
         res.render('notificationSuccess', {
           layout: 'layouts/main-layout',

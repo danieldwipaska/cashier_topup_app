@@ -1,0 +1,15 @@
+<%- include('notificationSuccess') %>
+
+<div class="container-md my-2">
+  <div class="row">
+    <div class="mb-1 col-auto">
+      <label for="name" class="form-label text-secondary">Name</label>
+      <input type="text" class="form-control" id="name" name="name" value="<%= data.customer_name %>" readonly />
+    </div>
+
+    <div class="mb-1 col-auto">
+      <label for="balance" class="form-label text-secondary">Balance</label>
+      <input type="text" class="form-control" id="balance" name="balance" value="<%= balance %>" readonly />
+    </div>
+  </div>
+</div>

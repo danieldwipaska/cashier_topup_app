@@ -76,13 +76,15 @@ router.post('/', (req, res) => {
           data: results.rows[0],
         });
       } else {
-        pool.query(queries.updateBalance, [paymentInt, barcode], (error, results) => {
+        pool.query(queries.updateBalance, [paymentInt, barcode], (error, updateResults) => {
           if (error) console.log(error);
 
-          res.render('notificationSuccess', {
+          res.render('notificationSuccessWithBalance', {
             layout: 'layouts/main-layout',
             title: 'Payment Success',
             message: 'Payment succeed.',
+            data: results.rows[0],
+            balance: paymentInt,
           });
         });
       }
