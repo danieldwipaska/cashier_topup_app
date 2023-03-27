@@ -39,7 +39,7 @@ router.get('/search', (req, res) => {
 
 // CHECK-IN
 router.post('/', (req, res) => {
-  const { barcode, name: customer_name } = req.body;
+  const { barcode, name: customer_name, balance } = req.body;
 
   // SEARCH FOR CARD
   pool.query(queries.getCardById, [barcode], (error, results) => {
@@ -63,7 +63,7 @@ router.post('/', (req, res) => {
       });
     } else {
       // UPDATE DINE-IN STATUS
-      pool.query(queries.cardStatus, [true, customer_name, barcode], (error, results) => {
+      pool.query(queries.cardStatus, [true, customer_name, balance, barcode], (error, results) => {
         if (error) return console.log(error);
         res.render('notificationSuccess', {
           layout: 'layouts/main-layout',
