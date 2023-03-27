@@ -10,6 +10,7 @@ const activationRoute = require('./routes/activation');
 const checkinRoute = require('./routes/checkin');
 const checkoutRoute = require('./routes/checkout');
 const topupRoute = require('./routes/topup');
+const paymentRoute = require('./routes/payment');
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use('/activation', activationRoute);
 app.use('/checkin', checkinRoute);
 app.use('/checkout', checkoutRoute);
 app.use('/topup', topupRoute);
+app.use('/payment', paymentRoute);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
