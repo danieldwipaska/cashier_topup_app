@@ -83,8 +83,7 @@ router.post('/', (req, res) => {
             layout: 'layouts/main-layout',
             title: 'Payment Success',
             message: 'Payment succeed.',
-            data: results.rows[0],
-            balance: paymentInt,
+            data: updateResults.rows[0],
           });
         });
       }

@@ -6,7 +6,7 @@ const getCardById = 'SELECT * FROM cards WHERE barcode = $1';
 const cardActivate = 'UPDATE cards SET is_active = $1 WHERE barcode = $2';
 const cardDeactivate = 'UPDATE cards SET is_active = $1, dine_in = $2, customer_name = $3, balance = $4 WHERE barcode = $5';
 const cardStatus = 'UPDATE cards SET dine_in = $1, customer_name = $2, balance = $3 WHERE barcode = $4';
-const updateBalance = 'UPDATE cards SET balance = $1 WHERE barcode = $2';
+const updateBalance = 'UPDATE cards SET balance = $1 WHERE barcode = $2 RETURNING *';
 
 module.exports = {
   addCard,

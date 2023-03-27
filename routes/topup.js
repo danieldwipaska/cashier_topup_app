@@ -73,8 +73,7 @@ router.post('/', (req, res) => {
           layout: 'layouts/main-layout',
           title: 'Top-Up Success',
           message: 'Card Top-Up succeed.',
-          data: results.rows[0],
-          balance: balanceInt,
+          data: updateResults.rows[0],
         });
       });
     }
