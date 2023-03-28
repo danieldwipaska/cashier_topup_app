@@ -10,9 +10,17 @@ router.get('/', (req, res) => {
 });
 
 router.get('/advanced', (req, res) => {
-  res.render('advancedMenu', {
-    layout: 'layouts/main-layout',
-    title: 'Advanced Menu',
+  layout: 'layouts/main-layout',
+    res.render('advancedMenu', {
+      layout: 'layouts/main-layout',
+      title: 'Advanced Menu',
+    });
+});
+
+router.get('/login', (req, res) => {
+  res.render('login', {
+    layout: 'layouts/login-layout',
+    title: 'Login',
   });
 });
 
