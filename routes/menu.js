@@ -9,4 +9,11 @@ router.get('/', (req, res) => {
   });
 });
 
+router.get('/advanced', (req, res) => {
+  res.render('advancedMenu', {
+    layout: 'layouts/main-layout',
+    title: 'Advanced Menu',
+  });
+});
+
 module.exports = router;

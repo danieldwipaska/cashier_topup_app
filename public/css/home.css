@@ -99,6 +99,38 @@ a {
   animation-fill-mode: both;
 }
 
+.menu-button-advanced {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.7s;
+  animation-fill-mode: both;
+}
+
+.menu-button-cardlist {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.1s;
+  animation-fill-mode: both;
+}
+
+.menu-button-transaction {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.2s;
+  animation-fill-mode: both;
+}
+
+.menu-button-back {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.3s;
+  animation-fill-mode: both;
+}
+
 @keyframes menu {
   from {
     opacity: 0;
