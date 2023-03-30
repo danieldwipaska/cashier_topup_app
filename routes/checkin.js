@@ -3,6 +3,7 @@ const router = express.Router();
 const queries = require('../database/cards/queries');
 const pool = require('../db');
 const verifyToken = require('./middlewares/verifyToken');
+const { v4 } = require('uuid');
 
 // Status MENU
 router.get('/search', verifyToken, (req, res) => {
@@ -63,8 +64,9 @@ router.post('/', verifyToken, (req, res) => {
         data: results.rows[0],
       });
     } else {
+      const customer_id = v4();
       // UPDATE DINE-IN STATUS
-      pool.query(queries.cardStatus, [true, customer_name, balance, barcode], (error, results) => {
+      pool.query(queries.cardStatus, [true, customer_name, customer_id, balance, barcode], (error, results) => {
         if (error) return console.log(error);
         res.render('notificationSuccess', {
           layout: 'layouts/main-layout',

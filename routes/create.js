@@ -43,11 +43,12 @@ router.post('/', verifyToken, (req, res) => {
   const { barcode } = req.body;
   const balance = 0;
   const customer_name = '';
+  const customer_id = '';
   const is_member = false;
   const is_active = true;
   const dine_in = false;
 
-  pool.query(queries.addCard, [id, barcode, balance, customer_name, is_member, is_active, dine_in], (error, results) => {
+  pool.query(queries.addCard, [id, barcode, balance, customer_name, customer_id, is_member, is_active, dine_in], (error, results) => {
     if (error) return console.log(error);
     res.render('notificationSuccess', {
       layout: 'layouts/main-layout',

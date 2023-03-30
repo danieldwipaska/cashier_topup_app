@@ -31,4 +31,12 @@ router.get('/logout', verifyToken, (req, res) => {
   res.redirect('/');
 });
 
+router.get('/receipt', (req, res) => {
+  res.render('invoiceSimple', {
+    layout: 'layouts/receipt-layout',
+    title: 'Receipt',
+    alert: '',
+  });
+});
+
 module.exports = router;

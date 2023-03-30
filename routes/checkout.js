@@ -56,7 +56,7 @@ router.post('/', verifyToken, (req, res) => {
       });
     } else {
       // IF CARD NOT CHECK-OUT YET
-      pool.query(queries.cardStatus, [false, '', 0, barcode], (error, results) => {
+      pool.query(queries.cardStatus, [false, '', '', 0, barcode], (error, results) => {
         if (error) return console.log(error);
         res.render('notificationSuccess', {
           layout: 'layouts/main-layout',
