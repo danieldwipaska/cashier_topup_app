@@ -3,9 +3,10 @@ const router = express.Router();
 const pool = require('../db');
 const queries = require('../database/fnbs/queries');
 const { v4 } = require('uuid');
+const verifyToken = require('./middlewares/verifyToken');
 
 // PAGE FOR ADD FNB
-router.get('/add', (req, res) => {
+router.get('/add', verifyToken, (req, res) => {
   res.render('addFnb', {
     layout: 'layouts/main-layout',
     title: 'Food and Beverages',
@@ -13,7 +14,7 @@ router.get('/add', (req, res) => {
 });
 
 // GET ALL FNB
-router.get('/list', (req, res) => {
+router.get('/list', verifyToken, (req, res) => {
   pool.query(queries.getFnbs, [], (error, results) => {
     if (error) console.log(error);
 
@@ -28,7 +29,7 @@ router.get('/list', (req, res) => {
 });
 
 // ADD CARD
-router.post('/', (req, res) => {
+router.post('/', verifyToken, (req, res) => {
   const { menu, netto, price } = req.body;
 
   pool.query(queries.getFnbByMenu, [menu], (error, getResults) => {
@@ -58,7 +59,7 @@ router.post('/', (req, res) => {
 });
 
 // DELETE A FNB
-router.get('/:id/delete', (req, res) => {
+router.get('/:id/delete', verifyToken, (req, res) => {
   const { id } = req.params;
 
   pool.query(queries.getFnbById, [id], (error, getResults) => {

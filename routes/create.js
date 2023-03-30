@@ -3,9 +3,10 @@ const router = express.Router();
 const pool = require('../db');
 const queries = require('../database/cards/queries');
 const { v4 } = require('uuid');
+const verifyToken = require('./middlewares/verifyToken');
 
 // CREATE MENU
-router.get('/search', (req, res) => {
+router.get('/search', verifyToken, (req, res) => {
   const barcode = req.query.card;
 
   if (!barcode) {
@@ -37,7 +38,7 @@ router.get('/search', (req, res) => {
 });
 
 //ADD CARD
-router.post('/', (req, res) => {
+router.post('/', verifyToken, (req, res) => {
   const id = v4();
   const { barcode } = req.body;
   const balance = 0;

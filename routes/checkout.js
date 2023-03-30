@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const queries = require('../database/cards/queries');
 const pool = require('../db');
+const verifyToken = require('./middlewares/verifyToken');
 
 // Status MENU
-router.get('/search', (req, res) => {
+router.get('/search', verifyToken, (req, res) => {
   const { card: barcode } = req.query;
 
   if (!barcode) {
@@ -38,7 +39,7 @@ router.get('/search', (req, res) => {
 });
 
 // CHECK-OUT
-router.post('/', (req, res) => {
+router.post('/', verifyToken, (req, res) => {
   const { barcode } = req.body;
 
   // SEARCH FOR CARD

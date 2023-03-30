@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 const queries = require('../database/cards/queries');
+const verifyToken = require('./middlewares/verifyToken');
 
 // SEARCH
-router.get('/search', (req, res) => {
+router.get('/search', verifyToken, (req, res) => {
   const { card: barcode } = req.query;
 
   // INITIAL PAGE
@@ -18,7 +19,7 @@ router.get('/search', (req, res) => {
   } else {
     // SEARCH FOR CARD
     pool.query(queries.getCardById, [barcode], (error, results) => {
-      if (error) console.log(error);
+      if (error) return console.log(error);
       if (results.rows.length === 0) {
         res.render('search', {
           layout: 'layouts/main-layout',
@@ -40,13 +41,13 @@ router.get('/search', (req, res) => {
 });
 
 // TOP-UP
-router.post('/', (req, res) => {
+router.post('/', verifyToken, (req, res) => {
   const { barcode, addBalance } = req.body;
   let balanceInt = parseInt(addBalance, 10);
 
   // SEARCH FOR CARD
   pool.query(queries.getCardById, [barcode], (error, results) => {
-    if (error) console.log(error);
+    if (error) return console.log(error);
 
     // CHECK WHETHER CUSTOMER IS ACTIVE AND DINE-IN
     if (!results.rows[0].is_active) {
@@ -67,7 +68,7 @@ router.post('/', (req, res) => {
       // ADD NEW BALANCE
       balanceInt += results.rows[0].balance;
       pool.query(queries.updateBalance, [balanceInt, barcode], (error, updateResults) => {
-        if (error) console.log(error);
+        if (error) return console.log(error);
 
         res.render('notificationSuccessWithBalance', {
           layout: 'layouts/main-layout',

@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 const queries = require('../database/cards/queries');
+const verifyToken = require('./middlewares/verifyToken');
 
 // ACTIVATION MENU
-router.get('/search', (req, res) => {
+router.get('/search', verifyToken, (req, res) => {
   const barcode = req.query.card;
 
   if (!barcode) {
@@ -37,7 +38,7 @@ router.get('/search', (req, res) => {
 });
 
 // ACTIVATE
-router.post('/activate', (req, res) => {
+router.post('/activate', verifyToken, (req, res) => {
   const { barcode } = req.body;
   pool.query(queries.getCardById, [barcode], (error, results) => {
     if (error) return console.log(error);
@@ -63,7 +64,7 @@ router.post('/activate', (req, res) => {
 });
 
 // DEACTIVATE
-router.post('/deactivate', (req, res) => {
+router.post('/deactivate', verifyToken, (req, res) => {
   const { barcode } = req.body;
   pool.query(queries.getCardById, [barcode], (error, results) => {
     if (error) return console.log(error);
