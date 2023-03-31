@@ -5,7 +5,7 @@ const queries = require('../database/cards/queries');
 const payments = require('../database/payments/queries');
 const fnbs = require('../database/fnbs/queries');
 const verifyToken = require('./middlewares/verifyToken');
-const { v4 } = require('uuid');
+const { v4, v5 } = require('uuid');
 
 // SEARCH
 router.get('/search', verifyToken, (req, res) => {
@@ -63,12 +63,13 @@ router.get('/search', verifyToken, (req, res) => {
 // ADD TEMPORARY PAYMENTS
 router.post('/temp', (req, res) => {
   const { menu, price, barcode, customerName: customer_name, customerId: customer_id, amount } = req.body;
+  const invoiceNumber = '';
 
   let payment = price * amount;
 
   // SAVE TO DATABASE
   const id = v4();
-  pool.query(payments.addPayment, [id, barcode, customer_name, customer_id, payment, menu, false, amount], (error, addPaymentResults) => {
+  pool.query(payments.addPayment, [id, barcode, customer_name, customer_id, payment, menu, false, amount, invoiceNumber], (error, addPaymentResults) => {
     if (error) return console.log(error);
 
     res.redirect(`/payment/search?card=${barcode}`);
@@ -113,7 +114,8 @@ router.post('/', (req, res) => {
           res.status(404).json('Payment Not Found');
         } else {
           // UPDATE
-          pool.query(payments.updatePaymentPaid, [true, customer_id, false], (error, updatePaymentResults) => {
+          const invoiceNumber = v4();
+          pool.query(payments.updatePaymentPaid, [true, invoiceNumber, customer_id, false], (error, updatePaymentResults) => {
             if (error) return console.log(error);
 
             pool.query(queries.updateBalance, [total, getCardResults.rows[0].barcode], (error, updateBalanceResults) => {
@@ -122,12 +124,35 @@ router.post('/', (req, res) => {
                 title: 'Payment Success',
                 message: 'Payment succeed.',
                 data: updateBalanceResults.rows[0],
+                invoiceNumber: invoiceNumber,
               });
             });
           });
         }
       });
     }
+  });
+});
+
+// GENERATE INVOICE
+router.get('/invoice/:num', (req, res) => {
+  const { num } = req.params;
+
+  pool.query(payments.getInvoice, [num], (error, getInvoiceResults) => {
+    if (error) return console.log(error);
+
+    let paymentSum = 0;
+
+    getInvoiceResults.rows.forEach((getInvoiceResult) => {
+      paymentSum += getInvoiceResult.payment;
+    });
+
+    res.render('invoiceSimple', {
+      layout: 'layouts/receipt-layout',
+      title: 'invoice',
+      data: getInvoiceResults.rows,
+      paymentSum: paymentSum,
+    });
   });
 });
 

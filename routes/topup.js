@@ -75,6 +75,7 @@ router.post('/', verifyToken, (req, res) => {
           title: 'Top-Up Success',
           message: 'Card Top-Up succeed.',
           data: updateResults.rows[0],
+          invoiceNumber: '',
         });
       });
     }

@@ -7,6 +7,7 @@ payment INT NOT NULL,
 menu TEXT NOT NULL,
 paid_off BOOLEAN NOT NULL,
 amount INT NOT NULL,
+invoice_number TEXT,
 created_at TIMESTAMPTZ NOT NULL,
 updated_at TIMESTAMPTZ NOT NULL
 );
