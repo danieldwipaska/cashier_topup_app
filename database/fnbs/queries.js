@@ -1,4 +1,4 @@
-const addFnb = 'INSERT INTO fnbs (id, menu, netto, price, created_at, updated_at) VALUES ($1, $2, $3, $4, NOW(), NOW())';
+const addFnb = 'INSERT INTO fnbs (id, menu, kind, netto, price, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, NOW(), NOW())';
 const getFnbs = 'SELECT * FROM fnbs';
 const getFnbByMenu = 'SELECT * FROM fnbs WHERE menu = $1';
 const getFnbById = 'SELECT * FROM fnbs WHERE id = $1';

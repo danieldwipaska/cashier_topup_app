@@ -30,14 +30,14 @@ router.get('/list', verifyToken, (req, res) => {
 
 // ADD CARD
 router.post('/', verifyToken, (req, res) => {
-  const { menu, netto, price } = req.body;
+  const { menu, kind, netto, price } = req.body;
 
   pool.query(queries.getFnbByMenu, [menu], (error, getResults) => {
-    if (error) console.log(error);
+    if (error) return console.log(error);
 
     if (getResults.rows.length) {
       pool.query(queries.getFnbs, [], (error, results) => {
-        if (error) console.log(error);
+        if (error) return console.log(error);
 
         res.render('fnb', {
           layout: 'layouts/main-layout',
@@ -49,8 +49,8 @@ router.post('/', verifyToken, (req, res) => {
       });
     } else {
       const id = v4();
-      pool.query(queries.addFnb, [id, menu, netto, price], (error, addResults) => {
-        if (error) console.log();
+      pool.query(queries.addFnb, [id, menu, kind, netto, price], (error, addResults) => {
+        if (error) return console.log();
 
         res.redirect('/fnb/list');
       });
