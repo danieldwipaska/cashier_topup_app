@@ -1,4 +1,4 @@
-var deleteLinks = document.querySelectorAll('.delete-button');
+const deleteLinks = document.querySelectorAll('.delete-button');
 
 for (let i = 0; i < deleteLinks.length; i++) {
   deleteLinks[i].addEventListener('click', function (event) {

@@ -7,6 +7,7 @@ const cardActivate = 'UPDATE cards SET is_active = $1, updated_at = NOW() WHERE 
 const cardDeactivate = 'UPDATE cards SET is_active = $1, dine_in = $2, customer_name = $3, balance = $4, updated_at = NOW() WHERE barcode = $5';
 const cardStatus = 'UPDATE cards SET dine_in = $1, customer_name = $2, customer_id = $3, balance = $4, updated_at = NOW() WHERE barcode = $5'; //change
 const updateBalance = 'UPDATE cards SET balance = $1, updated_at = NOW() WHERE barcode = $2 RETURNING *';
+const getCardsDineIn = 'SELECT * FROM cards WHERE dine_in = $1';
 
 module.exports = {
   addCard,
@@ -16,6 +17,7 @@ module.exports = {
   cardDeactivate,
   cardStatus,
   updateBalance,
+  getCardsDineIn,
   //   checkEmailExists,
 
   //   removeStudent,
