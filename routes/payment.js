@@ -38,6 +38,8 @@ router.get('/search', verifyToken, (req, res) => {
           const drinkFnb = fnbResults.rows.filter((fnbResult) => fnbResult.kind === 'drink');
 
           pool.query(payments.getPaymentPaidByID, [results.rows[0].customer_id, false], (error, payment) => {
+            if (error) return console.log(error);
+
             let sumPayment = 0;
             payment.rows.forEach((menu) => {
               sumPayment += menu.payment;
@@ -63,8 +65,12 @@ router.get('/search', verifyToken, (req, res) => {
 // ADD TEMPORARY PAYMENTS
 router.post('/temp', (req, res) => {
   const { menu, price, barcode, customerName: customer_name, customerId: customer_id, amount } = req.body;
-  const invoiceNumber = '';
 
+  if (amount <= 0) {
+    return res.status(400).json({ message: 'Jumlah per item tidak boleh nol atau minus' });
+  }
+
+  const invoiceNumber = '';
   let payment = price * amount;
 
   // SAVE TO DATABASE
@@ -105,7 +111,7 @@ router.post('/', (req, res) => {
     total = getCardResults.rows[0].balance - payment;
 
     if (total < 0) {
-      res.redirect(`/payment/search?card=${getPaymentResults.rows[0].barcode}&info=not-enough-balance`);
+      return res.status(400).json({ message: 'Saldo tidak mencukupi' });
     } else {
       pool.query(payments.getPaymentPaidByID, [customer_id, false], (error, getPaymentResults) => {
         if (error) return console.log(error);

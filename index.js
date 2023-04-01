@@ -14,6 +14,7 @@ const topupRoute = require('./routes/topup');
 const paymentRoute = require('./routes/payment');
 const fnbRoutes = require('./routes/fnb');
 const authRoute = require('./routes/auth');
+const cardRoute = require('./routes/card');
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use('/topup', topupRoute);
 app.use('/payment', paymentRoute);
 app.use('/fnb', fnbRoutes);
 app.use('/auth', authRoute);
+app.use('/card', cardRoute);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

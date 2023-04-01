@@ -133,12 +133,12 @@
 
                   <form action="/payment/temp" method="post">
                     <div class="mb-1">
-                      <input type="hidden" name="menu" value="<%= elementFood.menu %>" />
-                      <input type="hidden" name="price" value="<%= elementFood.price %>" />
-                      <input type="hidden" name="barcode" value="<%= data.barcode %>" />
-                      <input type="hidden" name="customerName" value="<%= data.customer_name %>" />
-                      <input type="hidden" name="customerId" value="<%= data.customer_id %>" />
-                      <input type="number" name="amount" id="amount" style="width: 50%" />
+                      <input type="hidden" name="menu" value="<%= elementFood.menu %>" readonly />
+                      <input type="hidden" name="price" value="<%= elementFood.price %>" readonly />
+                      <input type="hidden" name="barcode" value="<%= data.barcode %>" readonly />
+                      <input type="hidden" name="customerName" value="<%= data.customer_name %>" readonly />
+                      <input type="hidden" name="customerId" value="<%= data.customer_id %>" readonly />
+                      <input type="number" name="amount" id="amount" style="width: 50%" required />
                     </div>
                     <button class="btn btn-info float-end" type="submit">Add</button>
                   </form>
@@ -159,12 +159,12 @@
                   <h5 class="card-title"><%= elementDrink.menu %></h5>
                   <form action="/payment/temp" method="post">
                     <div class="mb-1">
-                      <input type="hidden" name="menu" value="<%= elementDrink.menu %>" />
-                      <input type="hidden" name="price" value="<%= elementDrink.price %>" />
-                      <input type="hidden" name="barcode" value="<%= data.barcode %>" />
-                      <input type="hidden" name="customerName" value="<%= data.customer_name %>" />
-                      <input type="hidden" name="customerId" value="<%= data.customer_id %>" />
-                      <input type="number" name="amount" id="amount" style="width: 50%" />
+                      <input type="hidden" name="menu" value="<%= elementDrink.menu %>" readonly />
+                      <input type="hidden" name="price" value="<%= elementDrink.price %>" readonly />
+                      <input type="hidden" name="barcode" value="<%= data.barcode %>" readonly />
+                      <input type="hidden" name="customerName" value="<%= data.customer_name %>" readonly />
+                      <input type="hidden" name="customerId" value="<%= data.customer_id %>" readonly />
+                      <input type="number" name="amount" id="amount" style="width: 50%" required />
                     </div>
                     <button class="btn btn-info float-end" type="submit">Add</button>
                   </form>
@@ -228,14 +228,18 @@
           <div class="mb-1">
             <label for="payment" class="form-label text-secondary">Payment</label>
             <input type="number" class="form-control" id="payment" name="payment" value="<%= sumPayment %>" readonly />
+            <% if (data.balance - sumPayment < 0) { %>
+            <p class="text-danger px-2">NOT ENOUGH BALANCE</p>
+            <% }; %>
             <input class="form-control" type="hidden" name="customerId" value="<%= data.customer_id %>" readonly />
           </div>
         </div>
         <div class="row my-3 multi-button">
           <div class="col-md-8 mx-auto text-center">
             <a class="button shadow" href="/payment/search" role="button">Back</a>
-
+            <% if (data.balance - sumPayment >= 0 && sumPayment > 0) { %>
             <button class="button shadow" type="submit">Pay Now!</button>
+            <% }; %>
 
             <a class="button shadow" href="/" role="button">Menu</a>
           </div>

@@ -4,12 +4,12 @@
       <div class="card">
         <div class="card-body mx-4">
           <div class="container">
-            <p class="my-5 mx-5" style="font-size: 30px">Thank for your purchase</p>
+            <p class="my-5 mx-5 text-center" style="font-size: 30px">Bill</p>
             <div class="row">
               <table class="table table-sm table-borderless" style="width: 100%">
                 <tbody>
                   <tr>
-                    <td style="width: 70%">Customer</td>
+                    <td style="width: 30%">Customer</td>
                     <td><%= data[0].customer_name %></td>
                   </tr>
                   <tr>
@@ -52,13 +52,12 @@
               <hr style="border: 2px solid black" />
             </div>
             <div class="text-center" style="margin-top: 90px">
-              <a><u class="text-info">View in browser</u></a>
-              <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+              <a role="button" onclick="window.print()"><u class="text-info">Print</u></a>
+              <p>Terima kasih atas kunjungan anda.</p>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <button class="btn btn-dark" onclick="window.print()">print</button>
 </div>
