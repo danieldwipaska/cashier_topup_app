@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 const queries = require('../database/cards/queries');
+const payments = require('../database/payments/queries');
 const verifyToken = require('./middlewares/verifyToken');
+const { v4 } = require('uuid');
 
 // SEARCH
 router.get('/search', verifyToken, (req, res) => {
@@ -65,17 +67,25 @@ router.post('/', verifyToken, (req, res) => {
         data: results.rows[0],
       });
     } else {
-      // ADD NEW BALANCE
-      balanceInt += results.rows[0].balance;
-      pool.query(queries.updateBalance, [balanceInt, barcode], (error, updateResults) => {
+      // CREATE INVOICE
+      const id = v4();
+      const invoiceNumber = v4();
+      const sort = 'topup';
+      pool.query(payments.addPayment, [id, sort, results.rows[0].barcode, results.rows[0].customer_name, results.rows[0].customer_id, balanceInt, '', true, 0, invoiceNumber], (error, addPaymentResults) => {
         if (error) return console.log(error);
 
-        res.render('notificationSuccessWithBalance', {
-          layout: 'layouts/main-layout',
-          title: 'Top-Up Success',
-          message: 'Card Top-Up succeed.',
-          data: updateResults.rows[0],
-          invoiceNumber: '',
+        // ADD NEW BALANCE
+        balanceInt += results.rows[0].balance;
+        pool.query(queries.updateBalance, [balanceInt, barcode], (error, updateResults) => {
+          if (error) return console.log(error);
+
+          res.render('notificationSuccessWithBalance', {
+            layout: 'layouts/main-layout',
+            title: 'Top-Up Success',
+            message: 'Card Top-Up succeed.',
+            data: updateResults.rows[0],
+            invoiceNumber: invoiceNumber,
+          });
         });
       });
     }

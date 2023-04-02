@@ -1,12 +1,14 @@
+CREATE TYPE sort AS ENUM ('topup', 'pay');
 CREATE TABLE payments (
 id UUID NOT NULL PRIMARY KEY,
+sort "sort" NOT NULL,
 barcode VARCHAR(50) NOT NULL,
 customer_name VARCHAR(50),
 customer_id UUID NOT NULL, 
 payment INT NOT NULL,
-menu TEXT NOT NULL,
+menu TEXT,
 paid_off BOOLEAN NOT NULL,
-amount INT NOT NULL,
+amount INT,
 invoice_number TEXT,
 created_at TIMESTAMPTZ NOT NULL,
 updated_at TIMESTAMPTZ NOT NULL

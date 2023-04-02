@@ -30,12 +30,22 @@
             </div>
             <% data.forEach(element => { %>
             <div class="row">
+              <% if (!element.menu) { %>
+              <div class="col-xl-8">
+                <p class="m-0">Top-Up</p>
+              </div>
+              <div class="col-xl-2">
+                <p class="m-0">x 1</p>
+              </div>
+              <% } else { %>
               <div class="col-xl-8">
                 <p class="m-0"><%= element.menu %></p>
               </div>
               <div class="col-xl-2">
                 <p class="m-0">x <%= element.amount %></p>
               </div>
+              <% } %>
+
               <div class="col-xl-2">
                 <p class="float-end"><%= element.payment %></p>
               </div>

@@ -5,7 +5,7 @@ const queries = require('../database/cards/queries');
 const payments = require('../database/payments/queries');
 const fnbs = require('../database/fnbs/queries');
 const verifyToken = require('./middlewares/verifyToken');
-const { v4, v5 } = require('uuid');
+const { v4 } = require('uuid');
 
 // SEARCH
 router.get('/search', verifyToken, (req, res) => {
@@ -28,7 +28,14 @@ router.get('/search', verifyToken, (req, res) => {
           layout: 'layouts/main-layout',
           title: 'Search',
           subtitle: 'Payment',
-          alert: 'Card does not exist',
+          alert: 'Card does NOT EXIST',
+        });
+      } else if (!results.rows[0].dine_in) {
+        res.render('search', {
+          layout: 'layouts/main-layout',
+          title: 'Search',
+          subtitle: 'Payment',
+          alert: 'Card is NOT DINE-IN',
         });
       } else {
         pool.query(fnbs.getFnbs, [], (error, fnbResults) => {
@@ -63,8 +70,9 @@ router.get('/search', verifyToken, (req, res) => {
 });
 
 // ADD TEMPORARY PAYMENTS
-router.post('/temp', (req, res) => {
+router.post('/temp', verifyToken, (req, res) => {
   const { menu, price, barcode, customerName: customer_name, customerId: customer_id, amount } = req.body;
+  const sort = 'pay';
 
   if (amount <= 0) {
     return res.status(400).json({ message: 'Jumlah per item tidak boleh nol atau minus' });
@@ -75,7 +83,7 @@ router.post('/temp', (req, res) => {
 
   // SAVE TO DATABASE
   const id = v4();
-  pool.query(payments.addPayment, [id, barcode, customer_name, customer_id, payment, menu, false, amount, invoiceNumber], (error, addPaymentResults) => {
+  pool.query(payments.addPayment, [id, sort, barcode, customer_name, customer_id, payment, menu, false, amount, invoiceNumber], (error, addPaymentResults) => {
     if (error) return console.log(error);
 
     res.redirect(`/payment/search?card=${barcode}`);
@@ -83,7 +91,7 @@ router.post('/temp', (req, res) => {
 });
 
 // DELETE TEMPORARY PAYMENTS
-router.get('/temp/:id/delete', (req, res) => {
+router.get('/temp/:id/delete', verifyToken, (req, res) => {
   const { id } = req.params;
 
   pool.query(payments.getPaymentById, [id], (error, getPaymentResults) => {
@@ -102,7 +110,7 @@ router.get('/temp/:id/delete', (req, res) => {
 });
 
 // UPDATE PAYMENTS INTO PAID OFF
-router.post('/', (req, res) => {
+router.post('/', verifyToken, (req, res) => {
   const { barcode, payment, customerId: customer_id } = req.body;
 
   pool.query(queries.getCardById, [barcode], (error, getCardResults) => {
@@ -141,7 +149,7 @@ router.post('/', (req, res) => {
 });
 
 // GENERATE INVOICE
-router.get('/invoice/:num', (req, res) => {
+router.get('/invoice/:num', verifyToken, (req, res) => {
   const { num } = req.params;
 
   pool.query(payments.getInvoice, [num], (error, getInvoiceResults) => {
@@ -159,6 +167,40 @@ router.get('/invoice/:num', (req, res) => {
       data: getInvoiceResults.rows,
       paymentSum: paymentSum,
     });
+  });
+});
+
+// PAYMENT LIST
+router.get('/list', (req, res) => {
+  pool.query(payments.getPayments, [], (error, results) => {
+    if (error) return console.log(error);
+
+    res.render('paymentList', {
+      layout: 'layouts/main-layout',
+      title: 'Payment List',
+      data: results.rows,
+      messages: '',
+      alert: '',
+    });
+  });
+});
+
+// DELETE PAYMENT
+router.get('/:id/delete', verifyToken, (req, res) => {
+  const { id } = req.params;
+
+  pool.query(payments.getPaymentById, [id], (error, getResults) => {
+    if (error) console.log(error);
+
+    if (getResults.rows.length === 0) {
+      res.status(404).json('Payment Not Found');
+    } else {
+      pool.query(payments.deletePaymentById, [id], (error, deleteResults) => {
+        if (error) console.log();
+
+        res.redirect('/payment/list');
+      });
+    }
   });
 });
 

@@ -1,4 +1,4 @@
-const addPayment = 'INSERT INTO payments (id, barcode, customer_name, customer_id, payment, menu, paid_off, amount, invoice_number, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())';
+const addPayment = 'INSERT INTO payments (id, sort, barcode, customer_name, customer_id, payment, menu, paid_off, amount, invoice_number, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())';
 const getPayments = 'SELECT * FROM payments';
 const getPaymentByCustomerId = 'SELECT * FROM payments WHERE customer_id = $1';
 const getPaymentById = 'SELECT * FROM payments WHERE id = $1';
