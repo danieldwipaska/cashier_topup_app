@@ -33,7 +33,7 @@
             <th scope="col">Barcode</th>
             <th scope="col">Customer Name</th>
             <th scope="col">Customer Id</th>
-            <th scope="col">Payment</th>
+            <th scope="col">Payment(IDR)</th>
             <th scope="col">Menu</th>
             <th scope="col">Amount</th>
             <th scope="col">Paid Off</th>
@@ -50,7 +50,7 @@
             <td><%= element.barcode %></td>
             <td><%= element.customer_name %></td>
             <td><%= element.customer_id %></td>
-            <td><%= element.payment %></td>
+            <td><%= Intl.NumberFormat('en-US').format(element.payment) %></td>
             <td><%= element.menu %></td>
             <td><%= element.amount %></td>
             <td><%= element.paid_off %></td>
@@ -97,7 +97,7 @@
             <td><%= element.barcode %></td>
             <td><%= element.customer_name %></td>
             <td><%= element.customer_id %></td>
-            <td><%= element.payment %></td>
+            <td><%= Intl.NumberFormat('en-US').format(element.payment) %></td>
             <td><%= element.menu %></td>
             <td><%= element.amount %></td>
             <td><%= element.paid_off %></td>

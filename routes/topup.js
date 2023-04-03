@@ -5,6 +5,7 @@ const queries = require('../database/cards/queries');
 const payments = require('../database/payments/queries');
 const verifyToken = require('./middlewares/verifyToken');
 const { v4 } = require('uuid');
+const cardlogs = require('../database/cardlogs/queries');
 
 // SEARCH
 router.get('/search', verifyToken, (req, res) => {

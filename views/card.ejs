@@ -1,19 +1,19 @@
 <div class="container my-1">
   <div class="row">
     <div class="col-md-9 mx-auto">
-      <h3>Cards</h3>
+      <h3>Card List</h3>
     </div>
   </div>
 </div>
 <div class="container my-1">
   <div class="row">
     <div class="col-md mx-auto">
-      <table class="table table-sm">
+      <table class="table table-sm" style="font-size: small">
         <thead>
           <tr class="table-warning">
             <th scope="col">ID</th>
             <th scope="col">Barcode</th>
-            <th scope="col">Balance</th>
+            <th scope="col">Balance(IDR)</th>
             <th scope="col">Customer Name</th>
             <th scope="col">Customer ID</th>
             <th scope="col">Member</th>
@@ -26,7 +26,7 @@
           <tr class="table-info">
             <th scope="row"><%= element.id %></th>
             <td><%= element.barcode %></td>
-            <td><%= element.balance %></td>
+            <td><%= Intl.NumberFormat('en-US').format(element.balance) %></td>
             <td><%= element.customer_name %></td>
             <td><%= element.customer_id %></td>
             <td><%= element.is_member %></td>
@@ -37,7 +37,7 @@
           <tr class="table-light">
             <th scope="row"><%= element.id %></th>
             <td><%= element.barcode %></td>
-            <td><%= element.balance %></td>
+            <td><%= Intl.NumberFormat('en-US').format(element.balance) %></td>
             <td><%= element.customer_name %></td>
             <td><%= element.customer_id %></td>
             <td><%= element.is_member %></td>

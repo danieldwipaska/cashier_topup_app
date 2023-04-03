@@ -47,7 +47,7 @@
               <% } %>
 
               <div class="col-xl-2">
-                <p class="float-end"><%= element.payment %></p>
+                <p class="float-end number-format-id"><%= Intl.NumberFormat('en-US').format(element.payment) %></p>
               </div>
               <hr />
             </div>
@@ -57,7 +57,7 @@
             <hr style="border: 2px solid black" />
             <div class="row text-black">
               <div class="col-xl-12">
-                <p class="float-end fw-bold">Total: <%= paymentSum %></p>
+                <p class="float-end fw-bold"><span>Total: </span><span class="number-format-id"><%= Intl.NumberFormat('en-US').format(paymentSum) %></span></p>
               </div>
               <hr style="border: 2px solid black" />
             </div>

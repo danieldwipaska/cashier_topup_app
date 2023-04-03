@@ -94,6 +94,7 @@ router.post('/temp', verifyToken, (req, res) => {
 // DELETE TEMPORARY PAYMENTS
 router.get('/temp/:id/delete', verifyToken, (req, res) => {
   const { id } = req.params;
+  total;
 
   pool.query(payments.getPaymentById, [id], (error, getPaymentResults) => {
     if (error) return console.log(error);
@@ -209,7 +210,7 @@ router.get('/:id/delete', verifyToken, (req, res) => {
 
         // ADD A CARD LOG
         const cardlogId = v4();
-        pool.query(cardlogs.addCardlog, [cardlogId, barcode, getResults.rows[0].customer_name, getResults.rows[0].customer_id, 'Payment Delete', req.validUser.name], (error, addCardlogResults) => {
+        pool.query(cardlogs.addCardlog, [cardlogId, getResults.rows[0].barcode, getResults.rows[0].customer_name, getResults.rows[0].customer_id, 'Payment Delete', req.validUser.name], (error, addCardlogResults) => {
           if (error) return console.log(error);
 
           res.redirect('/payment/list');

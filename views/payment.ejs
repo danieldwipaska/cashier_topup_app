@@ -28,7 +28,7 @@
           <tr class="table-info">
             <th scope="row"><%= element.menu %></th>
             <td><%= element.amount %></td>
-            <td><%= element.payment %></td>
+            <td class="number-format-id"><%= Intl.NumberFormat('en-US').format(element.payment) %></td>
             <td>
               <a class="delete-button" href="/payment/temp/<%= element.id %>/delete" role="button" title="delete" data-confirm="Are you sure to delete this item?">
                 <svg width="25px" height="25px" viewBox="0 0 32 32" enable-background="new 0 0 32 32" id="Filled_Line" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -67,7 +67,7 @@
           <tr class="table-light">
             <th scope="row"><%= element.menu %></th>
             <td><%= element.amount %></td>
-            <td><%= element.payment %></td>
+            <td class="number-format-id"><%= Intl.NumberFormat('en-US').format(element.payment) %></td>
             <td>
               <a class="delete-button" href="/payment/temp/<%= element.id %>/delete" role="button" title="delete" data-confirm="Are you sure to delete this item?">
                 <svg width="25px" height="25px" viewBox="0 0 32 32" enable-background="new 0 0 32 32" id="Filled_Line" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -194,7 +194,7 @@
 
           <div class="mb-1">
             <label for="balance" class="form-label text-secondary">Balance</label>
-            <input type="text" class="form-control" id="balance" name="balance" value="<%= data.balance %>" readonly />
+            <input type="text" class="form-control" id="balance" name="balance" value="<%= Intl.NumberFormat('en-US').format(data.balance) %>" readonly />
           </div>
 
           <div class="mb-1 col-auto">
