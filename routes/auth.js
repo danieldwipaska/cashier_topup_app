@@ -5,9 +5,10 @@ const queries = require('../database/users/queries');
 const bcrypt = require('bcryptjs');
 const { v4 } = require('uuid');
 const jwt = require('jsonwebtoken');
+const verifyToken = require('./middlewares/verifyToken');
 
 // REGISTER
-router.post('/register', (req, res) => {
+router.post('/register', verifyToken, (req, res) => {
   const { username, password, position } = req.body;
 
   // SEARCH
@@ -60,7 +61,7 @@ router.post('/login', (req, res) => {
         }
 
         // Create and assign a token
-        const token = jwt.sign({ name: getResults.rows.username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
+        const token = jwt.sign({ name: getResults.rows[0].username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
         // console.log(token);
         let options = {
           path: '/',

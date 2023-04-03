@@ -4,6 +4,7 @@ const queries = require('../database/cards/queries');
 const pool = require('../db');
 const verifyToken = require('./middlewares/verifyToken');
 const { v4 } = require('uuid');
+const cardlogs = require('../database/cardlogs/queries');
 
 // Status MENU
 router.get('/search', verifyToken, (req, res) => {
@@ -66,12 +67,19 @@ router.post('/', verifyToken, (req, res) => {
     } else {
       const customer_id = v4();
       // UPDATE DINE-IN STATUS
-      pool.query(queries.cardStatus, [true, customer_name, customer_id, balance, barcode], (error, results) => {
+      pool.query(queries.cardStatus, [true, customer_name, customer_id, balance, barcode], (error, cardCheckinResults) => {
         if (error) return console.log(error);
-        res.render('notificationSuccess', {
-          layout: 'layouts/main-layout',
-          title: 'Check-in',
-          message: 'Card has been checked in successfully.',
+
+        // ADD A CARD LOG
+        const id = v4();
+        pool.query(cardlogs.addCardlog, [id, barcode, cardCheckinResults.rows[0].customer_name, cardCheckinResults.rows[0].customer_id, 'Check-in', req.validUser.name], (error, addCardlogResults) => {
+          if (error) return console.log(error);
+
+          res.render('notificationSuccess', {
+            layout: 'layouts/main-layout',
+            title: 'Check-in',
+            message: 'Card has been checked in successfully.',
+          });
         });
       });
     }

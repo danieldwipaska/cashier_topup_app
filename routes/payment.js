@@ -6,6 +6,7 @@ const payments = require('../database/payments/queries');
 const fnbs = require('../database/fnbs/queries');
 const verifyToken = require('./middlewares/verifyToken');
 const { v4 } = require('uuid');
+const cardlogs = require('../database/cardlogs/queries');
 
 // SEARCH
 router.get('/search', verifyToken, (req, res) => {
@@ -133,12 +134,20 @@ router.post('/', verifyToken, (req, res) => {
             if (error) return console.log(error);
 
             pool.query(queries.updateBalance, [total, getCardResults.rows[0].barcode], (error, updateBalanceResults) => {
-              res.render('notificationSuccessWithBalance', {
-                layout: 'layouts/main-layout',
-                title: 'Payment Success',
-                message: 'Payment succeed.',
-                data: updateBalanceResults.rows[0],
-                invoiceNumber: invoiceNumber,
+              if (error) return console.log(error);
+
+              // ADD A CARD LOG
+              const cardlogId = v4();
+              pool.query(cardlogs.addCardlog, [cardlogId, barcode, getCardResults.rows[0].customer_name, getCardResults.rows[0].customer_id, 'Payment', req.validUser.name], (error, addCardlogResults) => {
+                if (error) return console.log(error);
+
+                res.render('notificationSuccessWithBalance', {
+                  layout: 'layouts/main-layout',
+                  title: 'Payment Success',
+                  message: 'Payment succeed.',
+                  data: updateBalanceResults.rows[0],
+                  invoiceNumber: invoiceNumber,
+                });
               });
             });
           });
@@ -198,7 +207,13 @@ router.get('/:id/delete', verifyToken, (req, res) => {
       pool.query(payments.deletePaymentById, [id], (error, deleteResults) => {
         if (error) console.log();
 
-        res.redirect('/payment/list');
+        // ADD A CARD LOG
+        const cardlogId = v4();
+        pool.query(cardlogs.addCardlog, [cardlogId, barcode, getResults.rows[0].customer_name, getResults.rows[0].customer_id, 'Payment Delete', req.validUser.name], (error, addCardlogResults) => {
+          if (error) return console.log(error);
+
+          res.redirect('/payment/list');
+        });
       });
     }
   });

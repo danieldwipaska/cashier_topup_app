@@ -79,12 +79,18 @@ router.post('/', verifyToken, (req, res) => {
         pool.query(queries.updateBalance, [balanceInt, barcode], (error, updateResults) => {
           if (error) return console.log(error);
 
-          res.render('notificationSuccessWithBalance', {
-            layout: 'layouts/main-layout',
-            title: 'Top-Up Success',
-            message: 'Card Top-Up succeed.',
-            data: updateResults.rows[0],
-            invoiceNumber: invoiceNumber,
+          // ADD A CARD LOG
+          const cardlogId = v4();
+          pool.query(cardlogs.addCardlog, [cardlogId, barcode, updateResults.rows[0].customer_name, updateResults.rows[0].customer_id, 'Top-up', req.validUser.name], (error, addCardlogResults) => {
+            if (error) return console.log(error);
+
+            res.render('notificationSuccessWithBalance', {
+              layout: 'layouts/main-layout',
+              title: 'Top-Up Success',
+              message: 'Card Top-Up succeed.',
+              data: updateResults.rows[0],
+              invoiceNumber: invoiceNumber,
+            });
           });
         });
       });

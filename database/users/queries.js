@@ -1,5 +1,5 @@
 const addUser = 'INSERT INTO users (id, username, password, position, created_at, updated_at) VALUES ($1, $2, $3, $4, NOW(), NOW())';
-const getUser = 'SELECT * FROM users';
+const getUsers = 'SELECT * FROM users';
 const getUserByUsername = 'SELECT * FROM users WHERE username = $1';
 const getUserById = 'SELECT * FROM users WHERE id = $1';
 const deleteUserById = 'DELETE FROM users WHERE id = $1';
@@ -9,7 +9,7 @@ const deleteUserById = 'DELETE FROM users WHERE id = $1';
 
 module.exports = {
   addUser,
-  getUser,
+  getUsers,
   getUserByUsername,
   getUserById,
   deleteUserById,

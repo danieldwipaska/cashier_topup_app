@@ -16,6 +16,7 @@ const fnbRoutes = require('./routes/fnb');
 const authRoute = require('./routes/auth');
 const cardRoute = require('./routes/card');
 const dineInCalcRoute = require('./routes/api/dineInCalc');
+const userRoute = require('./routes/user');
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.use('/fnb', fnbRoutes);
 app.use('/auth', authRoute);
 app.use('/card', cardRoute);
 app.use('/api/dinein', dineInCalcRoute);
+app.use('/user', userRoute);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

@@ -28,7 +28,7 @@ router.get('/list', verifyToken, (req, res) => {
   });
 });
 
-// ADD CARD
+// ADD FNB
 router.post('/', verifyToken, (req, res) => {
   const { menu, kind, netto, price } = req.body;
 

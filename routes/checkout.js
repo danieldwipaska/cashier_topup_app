@@ -3,6 +3,8 @@ const router = express.Router();
 const queries = require('../database/cards/queries');
 const pool = require('../db');
 const verifyToken = require('./middlewares/verifyToken');
+const cardlogs = require('../database/cardlogs/queries');
+const { v4 } = require('uuid');
 
 // Status MENU
 router.get('/search', verifyToken, (req, res) => {
@@ -56,12 +58,19 @@ router.post('/', verifyToken, (req, res) => {
       });
     } else {
       // IF CARD NOT CHECK-OUT YET
-      pool.query(queries.cardStatus, [false, '', '', 0, barcode], (error, results) => {
+      pool.query(queries.cardStatus, [false, '', '', 0, barcode], (error, cardCheckoutResults) => {
         if (error) return console.log(error);
-        res.render('notificationSuccess', {
-          layout: 'layouts/main-layout',
-          title: 'Check-Out',
-          message: 'Card has been checked out successfully.',
+
+        // ADD A CARD LOG
+        const id = v4();
+        pool.query(cardlogs.addCardlog, [id, barcode, results.rows[0].customer_name, results.rows[0].customer_id, 'Check-out', req.validUser.name], (error, addCardlogResults) => {
+          if (error) return console.log(error);
+
+          res.render('notificationSuccess', {
+            layout: 'layouts/main-layout',
+            title: 'Check-Out',
+            message: 'Card has been checked out successfully.',
+          });
         });
       });
     }
