@@ -4,14 +4,15 @@ const queries = require('../database/cards/queries');
 const pool = require('../db');
 const verifyToken = require('./middlewares/verifyToken');
 const { v4 } = require('uuid');
-const cardlogs = require('../database/cardlogs/queries');
+const { errorLog, infoLog } = require('../config/logger/functions');
+const { checkinLogger } = require('../config/logger/childLogger');
 
 // Status MENU
 router.get('/search', verifyToken, (req, res) => {
   const { card: barcode } = req.query;
 
   if (!barcode) {
-    res.render('search', {
+    return res.render('search', {
       layout: 'layouts/main-layout',
       title: 'Search',
       subtitle: 'Check-In Status',
@@ -20,16 +21,20 @@ router.get('/search', verifyToken, (req, res) => {
   } else {
     //SEARCH FOR CARD
     pool.query(queries.getCardById, [barcode], (error, results) => {
-      if (error) return console.log(error);
+      if (error) {
+        errorLog(checkinLogger, error, 'Error in HTTP GET /search when calling queries.getCardById');
+        return res.status(500).json('Server Error');
+      }
+
       if (results.rows.length === 0) {
-        res.render('search', {
+        return res.render('search', {
           layout: 'layouts/main-layout',
           title: 'Search',
           subtitle: 'Check-In Status',
           alert: 'Card does not exists',
         });
       } else {
-        res.render('checkin', {
+        return res.render('checkin', {
           layout: 'layouts/main-layout',
           title: 'Check-In Status',
           data: results.rows[0],
@@ -46,11 +51,14 @@ router.post('/', verifyToken, (req, res) => {
 
   // SEARCH FOR CARD
   pool.query(queries.getCardById, [barcode], (error, results) => {
-    if (error) return console.log(error);
+    if (error) {
+      errorLog(checkinLogger, error, 'Error in HTTP POST / when calling queries.getCardById');
+      return res.status(500).json('Server Error');
+    }
 
     if (results.rows[0].is_active === false) {
       // IF CARD IS NOT ACTIVE
-      res.render('checkin', {
+      return res.render('checkin', {
         layout: 'layouts/main-layout',
         title: 'Check-In Status',
         alert: 'Card is NOT ACTIVE.\nPlease activate the card first',
@@ -58,7 +66,7 @@ router.post('/', verifyToken, (req, res) => {
       });
     } else if (results.rows[0].dine_in === true) {
       // IF CARD IS ALREADY CHECK-IN
-      res.render('checkin', {
+      return res.render('checkin', {
         layout: 'layouts/main-layout',
         title: 'Check-In Status',
         alert: 'Card is already check-in',
@@ -68,18 +76,19 @@ router.post('/', verifyToken, (req, res) => {
       const customer_id = v4();
       // UPDATE DINE-IN STATUS
       pool.query(queries.cardStatus, [true, customer_name, customer_id, balance, barcode], (error, cardCheckinResults) => {
-        if (error) return console.log(error);
+        if (error) {
+          errorLog(checkinLogger, error, 'Error in HTTP POST / when calling queries.cardStatus');
+          return res.status(500).json('Server Error');
+        }
 
-        // ADD A CARD LOG
-        const id = v4();
-        pool.query(cardlogs.addCardlog, [id, barcode, cardCheckinResults.rows[0].customer_name, cardCheckinResults.rows[0].customer_id, 'Check-in', req.validUser.name], (error, addCardlogResults) => {
-          if (error) return console.log(error);
+        // SEND LOG
+        infoLog(checkinLogger, 'dine-in status was successfully updated into true', barcode, customer_name, customer_id, req.validUser.name);
 
-          res.render('notificationSuccess', {
-            layout: 'layouts/main-layout',
-            title: 'Check-in',
-            message: 'Card has been checked in successfully.',
-          });
+        // RESPONSE
+        return res.render('notificationSuccess', {
+          layout: 'layouts/main-layout',
+          title: 'Check-in',
+          message: 'Card has been checked in successfully.',
         });
       });
     }

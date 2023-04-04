@@ -6,7 +6,8 @@ const payments = require('../database/payments/queries');
 const fnbs = require('../database/fnbs/queries');
 const verifyToken = require('./middlewares/verifyToken');
 const { v4 } = require('uuid');
-const cardlogs = require('../database/cardlogs/queries');
+const { errorLog, infoLog } = require('../config/logger/functions');
+const { paymentLogger } = require('../config/logger/childLogger');
 
 // SEARCH
 router.get('/search', verifyToken, (req, res) => {
@@ -14,7 +15,7 @@ router.get('/search', verifyToken, (req, res) => {
 
   // INITIAL PAGE
   if (!barcode) {
-    res.render('search', {
+    return res.render('search', {
       layout: 'layouts/main-layout',
       title: 'Search',
       subtitle: 'Payment',
@@ -23,16 +24,19 @@ router.get('/search', verifyToken, (req, res) => {
   } else {
     // SEARCH FOR CARD
     pool.query(queries.getCardById, [barcode], (error, results) => {
-      if (error) return console.log(error);
+      if (error) {
+        errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling queries.getCardById');
+        return res.status(500).json('Server Error');
+      }
       if (results.rows.length === 0) {
-        res.render('search', {
+        return res.render('search', {
           layout: 'layouts/main-layout',
           title: 'Search',
           subtitle: 'Payment',
           alert: 'Card does NOT EXIST',
         });
       } else if (!results.rows[0].dine_in) {
-        res.render('search', {
+        return res.render('search', {
           layout: 'layouts/main-layout',
           title: 'Search',
           subtitle: 'Payment',
@@ -40,19 +44,25 @@ router.get('/search', verifyToken, (req, res) => {
         });
       } else {
         pool.query(fnbs.getFnbs, [], (error, fnbResults) => {
-          if (error) return console.log(error);
+          if (error) {
+            errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling fnbs.getFnbs');
+            return res.status(500).json('Server Error');
+          }
 
           const foodFnb = fnbResults.rows.filter((fnbResult) => fnbResult.kind === 'food');
           const drinkFnb = fnbResults.rows.filter((fnbResult) => fnbResult.kind === 'drink');
 
           pool.query(payments.getPaymentPaidByID, [results.rows[0].customer_id, false], (error, payment) => {
-            if (error) return console.log(error);
+            if (error) {
+              errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling payments.getPaymentPaidByID');
+              return res.status(500).json('Server Error');
+            }
 
             let sumPayment = 0;
             payment.rows.forEach((menu) => {
               sumPayment += menu.payment;
             });
-            res.render('payment', {
+            return res.render('payment', {
               layout: 'layouts/main-layout',
               title: 'Top-Up',
               subtitle: 'Payment',
@@ -76,7 +86,7 @@ router.post('/temp', verifyToken, (req, res) => {
   const sort = 'pay';
 
   if (amount <= 0) {
-    return res.status(400).json({ message: 'Jumlah per item tidak boleh nol atau minus' });
+    return res.status(400).json({ message: 'Total per item must not be 0 or less than 0' });
   }
 
   const invoiceNumber = '';
@@ -85,8 +95,13 @@ router.post('/temp', verifyToken, (req, res) => {
   // SAVE TO DATABASE
   const id = v4();
   pool.query(payments.addPayment, [id, sort, barcode, customer_name, customer_id, payment, menu, false, amount, invoiceNumber], (error, addPaymentResults) => {
-    if (error) return console.log(error);
+    if (error) {
+      errorLog(paymentLogger, error, 'Error in HTTP POST /temp when calling payments.addPayment');
+      return res.status(500).json('Server Error');
+    }
 
+    // SEND LOG
+    infoLog(paymentLogger, 'Temporary payment was successfully added', barcode, customer_name, customer_id, req.validUser.name);
     res.redirect(`/payment/search?card=${barcode}`);
   });
 });
@@ -94,18 +109,26 @@ router.post('/temp', verifyToken, (req, res) => {
 // DELETE TEMPORARY PAYMENTS
 router.get('/temp/:id/delete', verifyToken, (req, res) => {
   const { id } = req.params;
-  total;
 
   pool.query(payments.getPaymentById, [id], (error, getPaymentResults) => {
-    if (error) return console.log(error);
+    if (error) {
+      errorLog(paymentLogger, error, 'Error in HTTP GET /temp/:id/delete when calling payments.getPaymentById');
+      return res.status(500).json('Server Error');
+    }
 
     if (!getPaymentResults.rows.length) {
-      res.status(404).json('Payment Not Found');
+      return res.status(404).json('Payment Not Found');
     } else {
       pool.query(payments.deletePaymentById, [id], (error, deletePaymentResults) => {
-        if (error) return console.log(error);
+        if (error) {
+          errorLog(paymentLogger, error, 'Error in HTTP GET /temp/:id/delete when calling payments.deletePaymentById');
+          return res.status(500).json('Server Error');
+        }
 
-        res.redirect(`/payment/search?card=${getPaymentResults.rows[0].barcode}`);
+        // SEND LOG
+        infoLog(paymentLogger, 'Temporary Payment was successfully deleted', getPaymentResults.rows[0].barcode, getPaymentResults.rows[0].customer_name, getPaymentResults.rows[0].customer_id, req.validUser.name);
+
+        return res.redirect(`/payment/search?card=${getPaymentResults.rows[0].barcode}`);
       });
     }
   });
@@ -116,39 +139,62 @@ router.post('/', verifyToken, (req, res) => {
   const { barcode, payment, customerId: customer_id } = req.body;
 
   pool.query(queries.getCardById, [barcode], (error, getCardResults) => {
-    if (error) return console.log(error);
+    if (error) {
+      errorLog(paymentLogger, error, 'Error in HTTP POST / when calling queries.getCardById');
+      return res.status(500).json('Server Error');
+    }
 
     total = getCardResults.rows[0].balance - payment;
 
-    if (total < 0) {
+    if (!getCardResults.rows.length) {
+      return res.status(404).json('Card does not exist');
+    } else if (total < 0) {
       return res.status(400).json({ message: 'Saldo tidak mencukupi' });
     } else {
       pool.query(payments.getPaymentPaidByID, [customer_id, false], (error, getPaymentResults) => {
-        if (error) return console.log(error);
+        if (error) {
+          errorLog(paymentLogger, error, 'Error in HTTP POST / when calling payments.getPaymentPaidByID');
+          return res.status(500).json('Server Error');
+        }
 
         if (!getPaymentResults.rows.length) {
-          res.status(404).json('Payment Not Found');
+          return res.status(404).json('Payment Not Found');
         } else {
-          // UPDATE
+          // UPDATE PAID OFF AND GENERATE INVOICE
           const invoiceNumber = v4();
           pool.query(payments.updatePaymentPaid, [true, invoiceNumber, customer_id, false], (error, updatePaymentResults) => {
-            if (error) return console.log(error);
+            if (error) {
+              errorLog(paymentLogger, error, 'Error in HTTP POST / when calling payments.updatePaymentPaid');
+              return res.status(500).json('Server Error');
+            }
 
+            // SEND LOG
+            infoLog(
+              paymentLogger,
+              'Paid Off was successfully updated into true and Invoice was successfully generated',
+              getPaymentResults.rows[0].barcode,
+              getPaymentResults.rows[0].customer_name,
+              getPaymentResults.rows[0].customer_id,
+              req.validUser.name
+            );
+
+            // UPDATE BALANCE
             pool.query(queries.updateBalance, [total, getCardResults.rows[0].barcode], (error, updateBalanceResults) => {
-              if (error) return console.log(error);
+              if (error) {
+                errorLog(paymentLogger, error, 'Error in HTTP POST / when calling queries.updateBalance');
+                return res.status(500).json('Server Error');
+              }
 
-              // ADD A CARD LOG
-              const cardlogId = v4();
-              pool.query(cardlogs.addCardlog, [cardlogId, barcode, getCardResults.rows[0].customer_name, getCardResults.rows[0].customer_id, 'Payment', req.validUser.name], (error, addCardlogResults) => {
-                if (error) return console.log(error);
+              // SEND LOG
+              infoLog(paymentLogger, 'Balance was successfully updated', updateBalanceResults.rows[0].barcode, updateBalanceResults.rows[0].customer_name, updateBalanceResults.rows[0].customer_id, req.validUser.name);
 
-                res.render('notificationSuccessWithBalance', {
-                  layout: 'layouts/main-layout',
-                  title: 'Payment Success',
-                  message: 'Payment succeed.',
-                  data: updateBalanceResults.rows[0],
-                  invoiceNumber: invoiceNumber,
-                });
+              // RESPONSE
+              return res.render('notificationSuccessWithBalance', {
+                layout: 'layouts/main-layout',
+                title: 'Payment Success',
+                message: 'Payment succeed.',
+                data: updateBalanceResults.rows[0],
+                invoiceNumber: invoiceNumber,
               });
             });
           });
@@ -158,12 +204,15 @@ router.post('/', verifyToken, (req, res) => {
   });
 });
 
-// GENERATE INVOICE
+// GET INVOICE
 router.get('/invoice/:num', verifyToken, (req, res) => {
   const { num } = req.params;
 
   pool.query(payments.getInvoice, [num], (error, getInvoiceResults) => {
-    if (error) return console.log(error);
+    if (error) {
+      errorLog(paymentLogger, error, 'Error in HTTP GET /invoice/:num when calling payments.getInvoice');
+      return res.status(500).json('Server Error');
+    }
 
     let paymentSum = 0;
 
@@ -171,7 +220,7 @@ router.get('/invoice/:num', verifyToken, (req, res) => {
       paymentSum += getInvoiceResult.payment;
     });
 
-    res.render('invoiceSimple', {
+    return res.render('invoiceSimple', {
       layout: 'layouts/receipt-layout',
       title: 'invoice',
       data: getInvoiceResults.rows,
@@ -183,9 +232,12 @@ router.get('/invoice/:num', verifyToken, (req, res) => {
 // PAYMENT LIST
 router.get('/list', (req, res) => {
   pool.query(payments.getPayments, [], (error, results) => {
-    if (error) return console.log(error);
+    if (error) {
+      errorLog(paymentLogger, error, 'Error in HTTP GET /list when calling payments.getPayments');
+      return res.status(500).json('Server Error');
+    }
 
-    res.render('paymentList', {
+    return res.render('paymentList', {
       layout: 'layouts/main-layout',
       title: 'Payment List',
       data: results.rows,
@@ -200,21 +252,24 @@ router.get('/:id/delete', verifyToken, (req, res) => {
   const { id } = req.params;
 
   pool.query(payments.getPaymentById, [id], (error, getResults) => {
-    if (error) console.log(error);
+    if (error) {
+      errorLog(paymentLogger, error, 'Error in HTTP GET /:id/delete when calling payments.getPaymentById');
+      return res.status(500).json('Server Error');
+    }
 
     if (getResults.rows.length === 0) {
       res.status(404).json('Payment Not Found');
     } else {
       pool.query(payments.deletePaymentById, [id], (error, deleteResults) => {
-        if (error) console.log();
+        if (error) {
+          errorLog(paymentLogger, error, 'Error in HTTP GET /:id/delete when calling payments.deletePaymentById');
+          return res.status(500).json('Server Error');
+        }
 
-        // ADD A CARD LOG
-        const cardlogId = v4();
-        pool.query(cardlogs.addCardlog, [cardlogId, getResults.rows[0].barcode, getResults.rows[0].customer_name, getResults.rows[0].customer_id, 'Payment Delete', req.validUser.name], (error, addCardlogResults) => {
-          if (error) return console.log(error);
+        // SEND LOG
+        infoLog(paymentLogger, 'Payment was successfully deleted', getResults.rows[0].barcode, getResults.rows[0].customer_name, getResults.rows[0].customer_id, req.validUser.name);
 
-          res.redirect('/payment/list');
-        });
+        return res.redirect('/payment/list');
       });
     }
   });

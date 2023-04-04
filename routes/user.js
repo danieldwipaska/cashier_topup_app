@@ -3,10 +3,15 @@ const router = express.Router();
 const pool = require('../db');
 const users = require('../database/users/queries');
 const verifyToken = require('./middlewares/verifyToken');
+const { userLogger } = require('../config/logger/childLogger');
+const { infoLog, errorLog } = require('../config/logger/functions');
 
 router.get('/list', verifyToken, (req, res) => {
   pool.query(users.getUsers, [], (error, results) => {
-    if (error) return console.log(error);
+    if (error) {
+      errorLog(userLogger, error, 'Error in HTTP GET /list when calling users.getUsers');
+      return res.status(500).json('Server Error');
+    }
 
     return res.render('user', {
       layout: 'layouts/main-layout',
@@ -23,13 +28,19 @@ router.get('/:id/delete', verifyToken, (req, res) => {
   const { id } = req.params;
 
   pool.query(users.getUserById, [id], (error, getResults) => {
-    if (error) console.log(error);
+    if (error) {
+      errorLog(userLogger, error, 'Error in HTTP GET /:id/delete when calling users.getUserById');
+      return res.status(500).json('Server Error');
+    }
 
     if (getResults.rows.length === 0) {
       pool.query(users.getUsers, [], (error, results) => {
-        if (error) console.log(error);
+        if (error) {
+          errorLog(userLogger, error, 'Error in HTTP GET /:id/delete when calling users.getUsers');
+          return res.status(500).json('Server Error');
+        }
 
-        res.render('user', {
+        return res.render('user', {
           layout: 'layouts/main-layout',
           title: 'User List',
           alert: 'User is missing',
@@ -39,9 +50,14 @@ router.get('/:id/delete', verifyToken, (req, res) => {
       });
     } else {
       pool.query(users.deleteUserById, [id], (error, deleteResults) => {
-        if (error) console.log();
+        if (error) {
+          errorLog(userLogger, error, 'Error in HTTP GET /:id/delete when calling users.deleteUserById');
+          return res.status(500).json('Server Error');
+        }
 
-        res.redirect('/user/list');
+        infoLog(userLogger, 'User was successfully deleted', '', '', '', req.validUser.name);
+
+        return res.redirect('/user/list');
       });
     }
   });

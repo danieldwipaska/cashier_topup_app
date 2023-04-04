@@ -5,7 +5,8 @@ const queries = require('../database/cards/queries');
 const payments = require('../database/payments/queries');
 const verifyToken = require('./middlewares/verifyToken');
 const { v4 } = require('uuid');
-const cardlogs = require('../database/cardlogs/queries');
+const { errorLog, infoLog } = require('../config/logger/functions');
+const { topupLogger } = require('../config/logger/childLogger');
 
 // SEARCH
 router.get('/search', verifyToken, (req, res) => {
@@ -13,7 +14,7 @@ router.get('/search', verifyToken, (req, res) => {
 
   // INITIAL PAGE
   if (!barcode) {
-    res.render('search', {
+    return res.render('search', {
       layout: 'layouts/main-layout',
       title: 'Search',
       subtitle: 'Top-Up',
@@ -22,16 +23,19 @@ router.get('/search', verifyToken, (req, res) => {
   } else {
     // SEARCH FOR CARD
     pool.query(queries.getCardById, [barcode], (error, results) => {
-      if (error) return console.log(error);
+      if (error) {
+        errorLog(topupLogger, error, 'Error in HTTP GET /search when calling queries.getCardById');
+        return res.status(500).json('Server Error');
+      }
       if (results.rows.length === 0) {
-        res.render('search', {
+        return res.render('search', {
           layout: 'layouts/main-layout',
           title: 'Search',
           subtitle: 'Top-Up',
           alert: 'Card does not exist',
         });
       } else {
-        res.render('topup', {
+        return res.render('topup', {
           layout: 'layouts/main-layout',
           title: 'Top-Up',
           subtitle: 'Top-Up',
@@ -50,18 +54,24 @@ router.post('/', verifyToken, (req, res) => {
 
   // SEARCH FOR CARD
   pool.query(queries.getCardById, [barcode], (error, results) => {
-    if (error) return console.log(error);
+    if (error) {
+      errorLog(topupLogger, error, 'Error in HTTP POST / when calling queries.getCardByID');
+      return res.status(500).json('Server Error');
+    }
 
-    // CHECK WHETHER CUSTOMER IS ACTIVE AND DINE-IN
-    if (!results.rows[0].is_active) {
-      res.render('topup', {
+    if (!results.rows.length) {
+      return res.status(404).json('Card does not exist');
+    } else if (!results.rows[0].is_active) {
+      // CHECK WHETHER CUSTOMER IS ACTIVE
+      return res.render('topup', {
         layout: 'layouts/main-layout',
         title: 'Top-Up',
         alert: 'Card is NOT ACTIVE.\nPlease activate the card first',
         data: results.rows[0],
       });
     } else if (!results.rows[0].dine_in) {
-      res.render('topup', {
+      // CHECK WHETHER CUSTOMER IS DINE-IN
+      return res.render('topup', {
         layout: 'layouts/main-layout',
         title: 'Top-Up',
         alert: 'Card has NOT CHECKED IN yet. Only person who is dine-in can do Top-Up.',
@@ -73,25 +83,31 @@ router.post('/', verifyToken, (req, res) => {
       const invoiceNumber = v4();
       const sort = 'topup';
       pool.query(payments.addPayment, [id, sort, results.rows[0].barcode, results.rows[0].customer_name, results.rows[0].customer_id, balanceInt, '', true, 0, invoiceNumber], (error, addPaymentResults) => {
-        if (error) return console.log(error);
+        if (error) {
+          errorLog(topupLogger, error, 'Error in HTTP POST / when calling payments.addPayment');
+          return res.status(500).json('Server Error');
+        }
+
+        // SEND LOG
+        infoLog(topupLogger, 'Payment was successfully added and invoice number was successfully generated', results.rows[0].barcode, results.rows[0].customer_name, results.rows[0].customer_id, req.validUser.name);
 
         // ADD NEW BALANCE
         balanceInt += results.rows[0].balance;
         pool.query(queries.updateBalance, [balanceInt, barcode], (error, updateResults) => {
-          if (error) return console.log(error);
+          if (error) {
+            errorLog(topupLogger, error, 'Error in HTTP POST / when calling queries.updateBalance');
+            return res.status(500).json('Server Error');
+          }
 
-          // ADD A CARD LOG
-          const cardlogId = v4();
-          pool.query(cardlogs.addCardlog, [cardlogId, barcode, updateResults.rows[0].customer_name, updateResults.rows[0].customer_id, 'Top-up', req.validUser.name], (error, addCardlogResults) => {
-            if (error) return console.log(error);
+          // SEND LOG
+          infoLog(topupLogger, 'Balance was successfully updated', updateResults.rows[0].barcode, updateResults.rows[0].customer_name, updateResults.rows[0].customer_id, req.validUser.name);
 
-            res.render('notificationSuccessWithBalance', {
-              layout: 'layouts/main-layout',
-              title: 'Top-Up Success',
-              message: 'Card Top-Up succeed.',
-              data: updateResults.rows[0],
-              invoiceNumber: invoiceNumber,
-            });
+          return res.render('notificationSuccessWithBalance', {
+            layout: 'layouts/main-layout',
+            title: 'Top-Up Success',
+            message: 'Card Top-Up succeed.',
+            data: updateResults.rows[0],
+            invoiceNumber: invoiceNumber,
           });
         });
       });
