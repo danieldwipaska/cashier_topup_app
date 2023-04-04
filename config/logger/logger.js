@@ -1,5 +1,19 @@
 const winston = require('winston');
+require('winston-daily-rotate-file');
 const { combine, timestamp, json, errors } = winston.format;
+
+const fileRotateTransportError = new winston.transports.DailyRotateFile({
+  filename: 'logs/error-%DATE%.log',
+  datePattern: 'YYYY-MM-DD',
+  maxFiles: '14d',
+  level: 'error',
+});
+
+const fileRotateTransportCombined = new winston.transports.DailyRotateFile({
+  filename: 'logs/combined-%DATE%.log',
+  datePattern: 'YYYY-MM-DD',
+  maxFiles: '14d',
+});
 
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
@@ -10,15 +24,7 @@ const logger = winston.createLogger({
     }),
     json()
   ),
-  transports: [
-    new winston.transports.File({
-      filename: 'logs/combined.log',
-    }),
-    new winston.transports.File({
-      filename: 'logs/app-error.log',
-      level: 'error',
-    }),
-  ],
+  transports: [fileRotateTransportCombined, fileRotateTransportError],
 });
 
 module.exports = logger;
