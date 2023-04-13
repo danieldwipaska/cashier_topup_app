@@ -7,9 +7,10 @@ const verifyToken = require('./middlewares/verifyToken');
 const { v4 } = require('uuid');
 const { errorLog, infoLog } = require('../config/logger/functions');
 const { topupLogger } = require('../config/logger/childLogger');
+const { cashierAndDeveloper } = require('./middlewares/userRole');
 
 // SEARCH
-router.get('/search', verifyToken, (req, res) => {
+router.get('/search', verifyToken, cashierAndDeveloper, (req, res) => {
   const { card: barcode } = req.query;
 
   // INITIAL PAGE
@@ -48,7 +49,7 @@ router.get('/search', verifyToken, (req, res) => {
 });
 
 // TOP-UP
-router.post('/', verifyToken, (req, res) => {
+router.post('/', verifyToken, cashierAndDeveloper, (req, res) => {
   const { barcode, addBalance } = req.body;
   let balanceInt = parseInt(addBalance, 10);
 

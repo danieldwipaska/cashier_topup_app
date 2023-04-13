@@ -6,9 +6,12 @@ const bcrypt = require('bcryptjs');
 const { v4 } = require('uuid');
 const jwt = require('jsonwebtoken');
 const verifyToken = require('./middlewares/verifyToken');
+const { errorLog } = require('../config/logger/functions');
+const { loginLogger } = require('../config/logger/childLogger');
+const { developerOnly } = require('./middlewares/userRole');
 
 // REGISTER
-router.post('/register', verifyToken, (req, res) => {
+router.post('/register', verifyToken, developerOnly, (req, res) => {
   const { username, password, position } = req.body;
 
   // SEARCH
@@ -39,7 +42,10 @@ router.post('/login', (req, res) => {
   const { username, password } = req.body;
 
   pool.query(queries.getUserByUsername, [username], async (error, getResults) => {
-    if (error) return console.log(error);
+    if (error) {
+      errorLog(loginLogger, error, 'Error in HTTP POST /login when calling queries.getUserByUsername');
+      return res.status(500).json('Server Error');
+    }
 
     if (getResults.rows.length === 0) {
       return res.render('login', {
@@ -50,7 +56,10 @@ router.post('/login', (req, res) => {
     } else {
       // Check whether password is correct or not
       bcrypt.compare(password, getResults.rows[0].password, (err, result) => {
-        if (err) return console.log(err);
+        if (err) {
+          errorLog(loginLogger, err, 'Error in HTTP POST /login when calling bcrypt.compare');
+          return res.status(500).json('Server Error');
+        }
 
         if (!result) {
           return res.render('login', {
@@ -61,7 +70,7 @@ router.post('/login', (req, res) => {
         }
 
         // Create and assign a token
-        const token = jwt.sign({ name: getResults.rows[0].username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
+        const token = jwt.sign({ name: getResults.rows[0].username, position: getResults.rows[0].position }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
         // console.log(token);
         let options = {
           path: '/',

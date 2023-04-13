@@ -5,8 +5,10 @@ const users = require('../database/users/queries');
 const verifyToken = require('./middlewares/verifyToken');
 const { userLogger } = require('../config/logger/childLogger');
 const { infoLog, errorLog } = require('../config/logger/functions');
+const { developerOnly } = require('./middlewares/userRole');
 
-router.get('/list', verifyToken, (req, res) => {
+// USER LIST
+router.get('/list', verifyToken, developerOnly, (req, res) => {
   pool.query(users.getUsers, [], (error, results) => {
     if (error) {
       errorLog(userLogger, error, 'Error in HTTP GET /list when calling users.getUsers');
@@ -24,7 +26,7 @@ router.get('/list', verifyToken, (req, res) => {
 });
 
 // DELETE A USER
-router.get('/:id/delete', verifyToken, (req, res) => {
+router.get('/:id/delete', verifyToken, developerOnly, (req, res) => {
   const { id } = req.params;
 
   pool.query(users.getUserById, [id], (error, getResults) => {

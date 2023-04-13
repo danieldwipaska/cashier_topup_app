@@ -5,9 +5,10 @@ const queries = require('../database/cards/queries');
 const verifyToken = require('./middlewares/verifyToken');
 const { errorLog } = require('../config/logger/functions');
 const { cardLogger } = require('../config/logger/childLogger');
+const { cashierAndDeveloper } = require('./middlewares/userRole');
 
 // GET ALL CARDS
-router.get('/list', verifyToken, (req, res) => {
+router.get('/list', verifyToken, cashierAndDeveloper, (req, res) => {
   pool.query(queries.getCards, [], (error, getCardsResults) => {
     if (error) {
       errorLog(cardLogger, error, 'Error in HTTP GET /list when calling queries.getCards');

@@ -6,9 +6,10 @@ const verifyToken = require('./middlewares/verifyToken');
 const { v4 } = require('uuid');
 const { errorLog, infoLog } = require('../config/logger/functions');
 const { checkinLogger } = require('../config/logger/childLogger');
+const { cashierAndDeveloper } = require('./middlewares/userRole');
 
 // Status MENU
-router.get('/search', verifyToken, (req, res) => {
+router.get('/search', verifyToken, cashierAndDeveloper, (req, res) => {
   const { card: barcode } = req.query;
 
   if (!barcode) {
@@ -46,7 +47,7 @@ router.get('/search', verifyToken, (req, res) => {
 });
 
 // CHECK-IN
-router.post('/', verifyToken, (req, res) => {
+router.post('/', verifyToken, cashierAndDeveloper, (req, res) => {
   const { barcode, name: customer_name, balance } = req.body;
 
   // SEARCH FOR CARD

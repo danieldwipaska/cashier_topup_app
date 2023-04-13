@@ -6,9 +6,10 @@ const { v4 } = require('uuid');
 const verifyToken = require('./middlewares/verifyToken');
 const { fnbLogger } = require('../config/logger/childLogger');
 const { errorLog, infoLog } = require('../config/logger/functions');
+const { cashierAndDeveloper } = require('./middlewares/userRole');
 
 // PAGE FOR ADD FNB
-router.get('/add', verifyToken, (req, res) => {
+router.get('/add', verifyToken, cashierAndDeveloper, (req, res) => {
   return res.render('addFnb', {
     layout: 'layouts/main-layout',
     title: 'Food and Beverages',
@@ -16,7 +17,7 @@ router.get('/add', verifyToken, (req, res) => {
 });
 
 // GET ALL FNB
-router.get('/list', verifyToken, (req, res) => {
+router.get('/list', verifyToken, cashierAndDeveloper, (req, res) => {
   pool.query(queries.getFnbs, [], (error, results) => {
     if (error) {
       errorLog(fnbLogger, error, 'Error in HTTP GET /list when calling queries.getFnbs');
@@ -34,7 +35,7 @@ router.get('/list', verifyToken, (req, res) => {
 });
 
 // ADD FNB
-router.post('/', verifyToken, (req, res) => {
+router.post('/', verifyToken, cashierAndDeveloper, (req, res) => {
   const { menu, kind, netto, price } = req.body;
 
   pool.query(queries.getFnbByMenu, [menu], (error, getResults) => {
@@ -76,7 +77,7 @@ router.post('/', verifyToken, (req, res) => {
 });
 
 // DELETE A FNB
-router.get('/:id/delete', verifyToken, (req, res) => {
+router.get('/:id/delete', verifyToken, cashierAndDeveloper, (req, res) => {
   const { id } = req.params;
 
   pool.query(queries.getFnbById, [id], (error, getResults) => {

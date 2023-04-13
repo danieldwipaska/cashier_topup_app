@@ -5,9 +5,10 @@ const queries = require('../database/cards/queries');
 const verifyToken = require('./middlewares/verifyToken');
 const { errorLog, infoLog } = require('../config/logger/functions');
 const { activationLogger } = require('../config/logger/childLogger');
+const { cashierAndDeveloper } = require('./middlewares/userRole');
 
 // ACTIVATION MENU
-router.get('/search', verifyToken, (req, res) => {
+router.get('/search', verifyToken, cashierAndDeveloper, (req, res) => {
   const barcode = req.query.card;
 
   if (!barcode) {
@@ -44,7 +45,7 @@ router.get('/search', verifyToken, (req, res) => {
 });
 
 // ACTIVATE
-router.post('/activate', verifyToken, (req, res) => {
+router.post('/activate', verifyToken, cashierAndDeveloper, (req, res) => {
   const { barcode } = req.body;
   pool.query(queries.getCardById, [barcode], (error, results) => {
     if (error) {
@@ -81,7 +82,7 @@ router.post('/activate', verifyToken, (req, res) => {
 });
 
 // DEACTIVATE
-router.post('/deactivate', verifyToken, (req, res) => {
+router.post('/deactivate', verifyToken, cashierAndDeveloper, (req, res) => {
   const { barcode } = req.body;
   pool.query(queries.getCardById, [barcode], (error, results) => {
     if (error) {

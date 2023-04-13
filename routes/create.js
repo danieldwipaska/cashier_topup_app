@@ -6,9 +6,10 @@ const { v4 } = require('uuid');
 const verifyToken = require('./middlewares/verifyToken');
 const { createLogger } = require('../config/logger/childLogger');
 const { infoLog, errorLog } = require('../config/logger/functions');
+const { cashierAndDeveloper } = require('./middlewares/userRole');
 
 // CREATE MENU
-router.get('/search', verifyToken, (req, res) => {
+router.get('/search', verifyToken, cashierAndDeveloper, (req, res) => {
   const barcode = req.query.card;
 
   if (!barcode) {
@@ -43,7 +44,7 @@ router.get('/search', verifyToken, (req, res) => {
 });
 
 //ADD CARD
-router.post('/', verifyToken, (req, res) => {
+router.post('/', verifyToken, cashierAndDeveloper, (req, res) => {
   const id = v4();
   const { barcode } = req.body;
   const balance = 0;

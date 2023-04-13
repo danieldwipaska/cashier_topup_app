@@ -8,9 +8,10 @@ const verifyToken = require('./middlewares/verifyToken');
 const { v4 } = require('uuid');
 const { errorLog, infoLog } = require('../config/logger/functions');
 const { paymentLogger } = require('../config/logger/childLogger');
+const { allRoles } = require('./middlewares/userRole');
 
 // SEARCH
-router.get('/search', verifyToken, (req, res) => {
+router.get('/search', verifyToken, allRoles, (req, res) => {
   const { card: barcode } = req.query;
 
   // INITIAL PAGE
@@ -81,7 +82,7 @@ router.get('/search', verifyToken, (req, res) => {
 });
 
 // ADD TEMPORARY PAYMENTS
-router.post('/temp', verifyToken, (req, res) => {
+router.post('/temp', verifyToken, allRoles, (req, res) => {
   const { menu, price, barcode, customerName: customer_name, customerId: customer_id, amount } = req.body;
   const sort = 'pay';
 
@@ -107,7 +108,7 @@ router.post('/temp', verifyToken, (req, res) => {
 });
 
 // DELETE TEMPORARY PAYMENTS
-router.get('/temp/:id/delete', verifyToken, (req, res) => {
+router.get('/temp/:id/delete', verifyToken, allRoles, (req, res) => {
   const { id } = req.params;
 
   pool.query(payments.getPaymentById, [id], (error, getPaymentResults) => {
@@ -135,7 +136,7 @@ router.get('/temp/:id/delete', verifyToken, (req, res) => {
 });
 
 // UPDATE PAYMENTS INTO PAID OFF
-router.post('/', verifyToken, (req, res) => {
+router.post('/', verifyToken, allRoles, (req, res) => {
   const { barcode, payment, customerId: customer_id } = req.body;
 
   pool.query(queries.getCardById, [barcode], (error, getCardResults) => {
@@ -205,7 +206,7 @@ router.post('/', verifyToken, (req, res) => {
 });
 
 // GET INVOICE
-router.get('/invoice/:num', verifyToken, (req, res) => {
+router.get('/invoice/:num', verifyToken, allRoles, (req, res) => {
   const { num } = req.params;
 
   pool.query(payments.getInvoice, [num], (error, getInvoiceResults) => {
@@ -230,7 +231,7 @@ router.get('/invoice/:num', verifyToken, (req, res) => {
 });
 
 // PAYMENT LIST
-router.get('/list', (req, res) => {
+router.get('/list', verifyToken, allRoles, (req, res) => {
   pool.query(payments.getPayments, [], (error, results) => {
     if (error) {
       errorLog(paymentLogger, error, 'Error in HTTP GET /list when calling payments.getPayments');
@@ -248,7 +249,7 @@ router.get('/list', (req, res) => {
 });
 
 // DELETE PAYMENT
-router.get('/:id/delete', verifyToken, (req, res) => {
+router.get('/:id/delete', verifyToken, allRoles, (req, res) => {
   const { id } = req.params;
 
   pool.query(payments.getPaymentById, [id], (error, getResults) => {
