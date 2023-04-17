@@ -51,7 +51,7 @@ router.get('/search', verifyToken, cashierAndDeveloper, (req, res) => {
 // TOP-UP
 router.post('/', verifyToken, cashierAndDeveloper, (req, res) => {
   const { barcode, addBalance } = req.body;
-  let balanceInt = parseInt(addBalance, 10);
+  const balanceInt = parseInt(addBalance, 10);
 
   // SEARCH FOR CARD
   pool.query(queries.getCardById, [barcode], (error, results) => {
@@ -79,29 +79,29 @@ router.post('/', verifyToken, cashierAndDeveloper, (req, res) => {
         data: results.rows[0],
       });
     } else {
-      // CREATE INVOICE
-      const id = v4();
-      const invoiceNumber = v4();
-      const sort = 'topup';
-      pool.query(payments.addPayment, [id, sort, results.rows[0].barcode, results.rows[0].customer_name, results.rows[0].customer_id, balanceInt, '', true, 0, invoiceNumber], (error, addPaymentResults) => {
+      // ADD NEW BALANCE
+      const resBalance = balanceInt + results.rows[0].balance;
+      pool.query(queries.updateBalance, [resBalance, barcode], (error, updateResults) => {
         if (error) {
-          errorLog(topupLogger, error, 'Error in HTTP POST / when calling payments.addPayment');
+          errorLog(topupLogger, error, 'Error in HTTP POST / when calling queries.updateBalance');
           return res.status(500).json('Server Error');
         }
 
         // SEND LOG
-        infoLog(topupLogger, 'Payment was successfully added and invoice number was successfully generated', results.rows[0].barcode, results.rows[0].customer_name, results.rows[0].customer_id, req.validUser.name);
+        infoLog(topupLogger, 'Balance was successfully updated', updateResults.rows[0].barcode, updateResults.rows[0].customer_name, updateResults.rows[0].customer_id, req.validUser.name);
 
-        // ADD NEW BALANCE
-        balanceInt += results.rows[0].balance;
-        pool.query(queries.updateBalance, [balanceInt, barcode], (error, updateResults) => {
+        // CREATE INVOICE
+        const id = v4();
+        const invoiceNumber = v4();
+        const sort = 'topup';
+        pool.query(payments.addPayment, [id, sort, results.rows[0].barcode, results.rows[0].customer_name, results.rows[0].customer_id, balanceInt, '', true, 0, invoiceNumber, resBalance, req.validUser.name], (error, addPaymentResults) => {
           if (error) {
-            errorLog(topupLogger, error, 'Error in HTTP POST / when calling queries.updateBalance');
+            errorLog(topupLogger, error, 'Error in HTTP POST / when calling payments.addPayment');
             return res.status(500).json('Server Error');
           }
 
           // SEND LOG
-          infoLog(topupLogger, 'Balance was successfully updated', updateResults.rows[0].barcode, updateResults.rows[0].customer_name, updateResults.rows[0].customer_id, req.validUser.name);
+          infoLog(topupLogger, 'Payment was successfully added and invoice number was successfully generated', results.rows[0].barcode, results.rows[0].customer_name, results.rows[0].customer_id, req.validUser.name);
 
           return res.render('notificationSuccessWithBalance', {
             layout: 'layouts/main-layout',

@@ -10,6 +10,8 @@ menu TEXT,
 paid_off BOOLEAN NOT NULL,
 amount INT,
 invoice_number TEXT,
+res_balance INT,
+username VARCHAR(50) NOT NULL,
 created_at TIMESTAMPTZ NOT NULL,
 updated_at TIMESTAMPTZ NOT NULL
 );

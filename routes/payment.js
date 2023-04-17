@@ -95,7 +95,7 @@ router.post('/temp', verifyToken, allRoles, (req, res) => {
 
   // SAVE TO DATABASE
   const id = v4();
-  pool.query(payments.addPayment, [id, sort, barcode, customer_name, customer_id, payment, menu, false, amount, invoiceNumber], (error, addPaymentResults) => {
+  pool.query(payments.addPayment, [id, sort, barcode, customer_name, customer_id, payment, menu, false, amount, invoiceNumber, null, req.validUser.name], (error, addPaymentResults) => {
     if (error) {
       errorLog(paymentLogger, error, 'Error in HTTP POST /temp when calling payments.addPayment');
       return res.status(500).json('Server Error');
@@ -145,11 +145,11 @@ router.post('/', verifyToken, allRoles, (req, res) => {
       return res.status(500).json('Server Error');
     }
 
-    total = getCardResults.rows[0].balance - payment;
+    const resBalance = getCardResults.rows[0].balance - payment;
 
     if (!getCardResults.rows.length) {
       return res.status(404).json('Card does not exist');
-    } else if (total < 0) {
+    } else if (resBalance < 0) {
       return res.status(400).json({ message: 'Saldo tidak mencukupi' });
     } else {
       pool.query(payments.getPaymentPaidByID, [customer_id, false], (error, getPaymentResults) => {
@@ -161,33 +161,33 @@ router.post('/', verifyToken, allRoles, (req, res) => {
         if (!getPaymentResults.rows.length) {
           return res.status(404).json('Payment Not Found');
         } else {
-          // UPDATE PAID OFF AND GENERATE INVOICE
-          const invoiceNumber = v4();
-          pool.query(payments.updatePaymentPaid, [true, invoiceNumber, customer_id, false], (error, updatePaymentResults) => {
+          // UPDATE BALANCE
+          pool.query(queries.updateBalance, [resBalance, getCardResults.rows[0].barcode], (error, updateBalanceResults) => {
             if (error) {
-              errorLog(paymentLogger, error, 'Error in HTTP POST / when calling payments.updatePaymentPaid');
+              errorLog(paymentLogger, error, 'Error in HTTP POST / when calling queries.updateBalance');
               return res.status(500).json('Server Error');
             }
 
             // SEND LOG
-            infoLog(
-              paymentLogger,
-              'Paid Off was successfully updated into true and Invoice was successfully generated',
-              getPaymentResults.rows[0].barcode,
-              getPaymentResults.rows[0].customer_name,
-              getPaymentResults.rows[0].customer_id,
-              req.validUser.name
-            );
+            infoLog(paymentLogger, 'Balance was successfully updated', updateBalanceResults.rows[0].barcode, updateBalanceResults.rows[0].customer_name, updateBalanceResults.rows[0].customer_id, req.validUser.name);
 
-            // UPDATE BALANCE
-            pool.query(queries.updateBalance, [total, getCardResults.rows[0].barcode], (error, updateBalanceResults) => {
+            // UPDATE PAID OFF AND GENERATE INVOICE
+            const invoiceNumber = v4();
+            pool.query(payments.updatePaymentPaid, [true, invoiceNumber, resBalance, customer_id, false], (error, updatePaymentResults) => {
               if (error) {
-                errorLog(paymentLogger, error, 'Error in HTTP POST / when calling queries.updateBalance');
+                errorLog(paymentLogger, error, 'Error in HTTP POST / when calling payments.updatePaymentPaid');
                 return res.status(500).json('Server Error');
               }
 
               // SEND LOG
-              infoLog(paymentLogger, 'Balance was successfully updated', updateBalanceResults.rows[0].barcode, updateBalanceResults.rows[0].customer_name, updateBalanceResults.rows[0].customer_id, req.validUser.name);
+              infoLog(
+                paymentLogger,
+                'Paid Off was successfully updated into true and Invoice was successfully generated',
+                getPaymentResults.rows[0].barcode,
+                getPaymentResults.rows[0].customer_name,
+                getPaymentResults.rows[0].customer_id,
+                req.validUser.name
+              );
 
               // RESPONSE
               return res.render('notificationSuccessWithBalance', {

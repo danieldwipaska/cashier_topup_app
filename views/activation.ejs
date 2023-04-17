@@ -59,22 +59,22 @@
         </div>
       </div>
       <div class="row my-5 multi-button">
-        <div class="col-md-8 mx-auto text-center">
-          <a class="button shadow" href="/activation/search" role="button">Back</a>
+        <div class="col-lg-8 mx-auto text-center">
+          <a class="button shadow my-3" href="/activation/search" role="button">Back</a>
           <span class="mx-1">
             <% if (data.is_active === false) { %>
             <form action="/activation/activate" method="post">
               <input type="hidden" name="barcode" value="<%= data.barcode %>" />
-              <button class="button shadow" type="submit">Activate</button>
+              <button class="button shadow my-3" type="submit">Activate</button>
             </form>
             <% } else { %>
             <form action="/activation/deactivate" method="post">
               <input type="hidden" name="barcode" value="<%= data.barcode %>" />
-              <button class="button shadow" type="submit">Deactivate</button>
+              <button class="button shadow my-3" type="submit">Deactivate</button>
             </form>
             <% } %>
           </span>
-          <a class="button shadow" href="/" role="button">Menu</a>
+          <a class="button shadow my-3" href="/" role="button">Menu</a>
         </div>
       </div>
     </div>

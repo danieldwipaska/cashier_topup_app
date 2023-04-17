@@ -21,8 +21,8 @@
                     <td><%= data[0].created_at %></td>
                   </tr>
                   <tr>
-                    <td>Bartender</td>
-                    <td></td>
+                    <td>Admin/Bartender</td>
+                    <td><%= data[0].username %></td>
                   </tr>
                 </tbody>
               </table>
@@ -58,6 +58,11 @@
             <div class="row text-black">
               <div class="col-xl-12">
                 <p class="float-end fw-bold"><span>Total: </span><span class="number-format-id"><%= Intl.NumberFormat('en-US').format(paymentSum) %></span></p>
+              </div>
+            </div>
+            <div class="row text-black">
+              <div class="col-xl-12">
+                <p class="float-end"><span>Balance: </span><span class="number-format-id"><%= Intl.NumberFormat('en-US').format(data[0].res_balance) %></span></p>
               </div>
               <hr style="border: 2px solid black" />
             </div>
