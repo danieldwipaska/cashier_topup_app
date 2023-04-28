@@ -3,8 +3,11 @@ const addPayment =
 const getPayments = 'SELECT * FROM payments';
 const getPaymentByCustomerId = 'SELECT * FROM payments WHERE customer_id = $1';
 const getPaymentById = 'SELECT * FROM payments WHERE id = $1';
+const getPaymentByPaidOff = 'SELECT * FROM payments WHERE paid_off = $1';
+const getPaymentsByInvoice = 'SELECT * FROM payments WHERE invoice_number = $1';
 const getPaymentPaidByID = 'SELECT * FROM payments WHERE customer_id = $1 AND paid_off = $2';
 const deletePaymentById = 'DELETE FROM payments WHERE id = $1;';
+const deletePaymentByInvoice = 'DELETE FROM payments WHERE invoice_number = $1';
 const updatePaymentPaid = 'UPDATE payments SET paid_off = $1, invoice_number = $2, res_balance = $3, updated_at = NOW() WHERE customer_id = $4 AND paid_off = $5';
 const getInvoice = 'SELECT * FROM payments WHERE invoice_number = $1';
 // const checkEmailExists = 'SELECT s FROM students s WHERE s.email = $1';
@@ -16,8 +19,11 @@ module.exports = {
   getPayments,
   getPaymentByCustomerId,
   getPaymentById,
+  getPaymentByPaidOff,
+  getPaymentsByInvoice,
   getPaymentPaidByID,
   deletePaymentById,
+  deletePaymentByInvoice,
   updatePaymentPaid,
   getInvoice,
   //   checkEmailExists,

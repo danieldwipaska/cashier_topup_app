@@ -232,7 +232,7 @@ router.get('/invoice/:num', verifyToken, allRoles, (req, res) => {
 
 // PAYMENT LIST
 router.get('/list', verifyToken, allRoles, (req, res) => {
-  pool.query(payments.getPayments, [], (error, results) => {
+  pool.query(payments.getPaymentByPaidOff, [true], (error, results) => {
     if (error) {
       errorLog(paymentLogger, error, 'Error in HTTP GET /list when calling payments.getPayments');
       return res.status(500).json('Server Error');
@@ -249,26 +249,26 @@ router.get('/list', verifyToken, allRoles, (req, res) => {
 });
 
 // DELETE PAYMENT
-router.get('/:id/delete', verifyToken, allRoles, (req, res) => {
-  const { id } = req.params;
+router.get('/:invoice/delete', verifyToken, allRoles, (req, res) => {
+  const { invoice } = req.params;
 
-  pool.query(payments.getPaymentById, [id], (error, getResults) => {
+  pool.query(payments.getPaymentsByInvoice, [invoice], (error, getResults) => {
     if (error) {
-      errorLog(paymentLogger, error, 'Error in HTTP GET /:id/delete when calling payments.getPaymentById');
+      errorLog(paymentLogger, error, 'Error in HTTP GET /:id/delete when calling payments.getPaymentsByInvoice');
       return res.status(500).json('Server Error');
     }
 
     if (getResults.rows.length === 0) {
       res.status(404).json('Payment Not Found');
     } else {
-      pool.query(payments.deletePaymentById, [id], (error, deleteResults) => {
+      pool.query(payments.deletePaymentByInvoice, [invoice], (error, deleteResults) => {
         if (error) {
-          errorLog(paymentLogger, error, 'Error in HTTP GET /:id/delete when calling payments.deletePaymentById');
+          errorLog(paymentLogger, error, 'Error in HTTP GET /:id/delete when calling payments.deletePaymentByInvoice');
           return res.status(500).json('Server Error');
         }
 
         // SEND LOG
-        infoLog(paymentLogger, 'Payment was successfully deleted', getResults.rows[0].barcode, getResults.rows[0].customer_name, getResults.rows[0].customer_id, req.validUser.name);
+        infoLog(paymentLogger, 'Payments were successfully deleted', getResults.rows[0].barcode, getResults.rows[0].customer_name, getResults.rows[0].customer_id, req.validUser.name);
 
         return res.redirect('/payment/list');
       });
