@@ -53,8 +53,9 @@ router.post('/', verifyToken, cashierAndDeveloper, (req, res) => {
   const is_member = false;
   const is_active = true;
   const dine_in = false;
+  const deposit = null;
 
-  pool.query(queries.addCard, [id, barcode, balance, customer_name, customer_id, is_member, is_active, dine_in], (error, results) => {
+  pool.query(queries.addCard, [id, barcode, balance, deposit, customer_name, customer_id, is_member, is_active, dine_in], (error, results) => {
     if (error) {
       errorLog(createLogger, error, 'Error in HTTP POST / when calling queries.addCard');
       return res.status(500).json('Server Error');

@@ -14,6 +14,7 @@
             <th scope="col">ID</th>
             <th scope="col">Barcode</th>
             <th scope="col">Balance(IDR)</th>
+            <th scope="col">Deposit</th>
             <th scope="col">Customer Name</th>
             <th scope="col">Customer ID</th>
             <th scope="col">Member</th>
@@ -27,6 +28,7 @@
             <th scope="row"><%= element.id %></th>
             <td><%= element.barcode %></td>
             <td><%= Intl.NumberFormat('en-US').format(element.balance) %></td>
+            <td><%= element.deposit %></td>
             <td><%= element.customer_name %></td>
             <td><%= element.customer_id %></td>
             <td><%= element.is_member %></td>
@@ -38,6 +40,7 @@
             <th scope="row"><%= element.id %></th>
             <td><%= element.barcode %></td>
             <td><%= Intl.NumberFormat('en-US').format(element.balance) %></td>
+            <td><%= element.deposit %></td>
             <td><%= element.customer_name %></td>
             <td><%= element.customer_id %></td>
             <td><%= element.is_member %></td>

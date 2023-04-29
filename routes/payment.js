@@ -3,6 +3,7 @@ const router = express.Router();
 const pool = require('../db');
 const queries = require('../database/cards/queries');
 const payments = require('../database/payments/queries');
+const rules = require('../database/rules/queries');
 const fnbs = require('../database/fnbs/queries');
 const verifyToken = require('./middlewares/verifyToken');
 const { v4 } = require('uuid');
@@ -63,16 +64,25 @@ router.get('/search', verifyToken, allRoles, (req, res) => {
             payment.rows.forEach((menu) => {
               sumPayment += menu.payment;
             });
-            return res.render('payment', {
-              layout: 'layouts/main-layout',
-              title: 'Top-Up',
-              subtitle: 'Payment',
-              alert: '',
-              data: results.rows[0],
-              dataPayTemp: payment.rows,
-              foods: foodFnb,
-              drinks: drinkFnb,
-              sumPayment: sumPayment,
+
+            pool.query(rules.getRules, [], (error, rules) => {
+              if (error) {
+                errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling rules.getRules');
+                return res.status(500).json('Server Error');
+              }
+
+              return res.render('payment', {
+                layout: 'layouts/main-layout',
+                title: 'Payments',
+                subtitle: 'Payment',
+                alert: '',
+                data: results.rows[0],
+                dataPayTemp: payment.rows,
+                foods: foodFnb,
+                drinks: drinkFnb,
+                sumPayment: sumPayment,
+                rules: rules.rows,
+              });
             });
           });
         });
@@ -83,7 +93,7 @@ router.get('/search', verifyToken, allRoles, (req, res) => {
 
 // ADD TEMPORARY PAYMENTS
 router.post('/temp', verifyToken, allRoles, (req, res) => {
-  const { menu, price, barcode, customerName: customer_name, customerId: customer_id, amount } = req.body;
+  const { menu, price, barcode, customerName: customer_name, customerId: customer_id, amount, service, tax } = req.body;
   const sort = 'pay';
 
   if (amount <= 0) {
@@ -91,11 +101,13 @@ router.post('/temp', verifyToken, allRoles, (req, res) => {
   }
 
   const invoiceNumber = '';
-  let payment = price * amount;
+  let totalPrice = price * amount;
+  let payment = totalPrice + (totalPrice * 5) / 100;
+  payment = payment + (payment * 10) / 100;
 
   // SAVE TO DATABASE
   const id = v4();
-  pool.query(payments.addPayment, [id, sort, barcode, customer_name, customer_id, payment, menu, false, amount, invoiceNumber, null, req.validUser.name], (error, addPaymentResults) => {
+  pool.query(payments.addPayment, [id, sort, barcode, customer_name, customer_id, payment, service, tax, menu, false, amount, totalPrice, invoiceNumber, null, req.validUser.name], (error, addPaymentResults) => {
     if (error) {
       errorLog(paymentLogger, error, 'Error in HTTP POST /temp when calling payments.addPayment');
       return res.status(500).json('Server Error');
@@ -162,7 +174,7 @@ router.post('/', verifyToken, allRoles, (req, res) => {
           return res.status(404).json('Payment Not Found');
         } else {
           // UPDATE BALANCE
-          pool.query(queries.updateBalance, [resBalance, getCardResults.rows[0].barcode], (error, updateBalanceResults) => {
+          pool.query(queries.updateBalance, [resBalance, getCardResults.rows[0].deposit, getCardResults.rows[0].barcode], (error, updateBalanceResults) => {
             if (error) {
               errorLog(paymentLogger, error, 'Error in HTTP POST / when calling queries.updateBalance');
               return res.status(500).json('Server Error');

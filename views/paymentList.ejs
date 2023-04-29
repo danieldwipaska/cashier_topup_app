@@ -36,6 +36,7 @@
             <th scope="col">Payment(IDR)</th>
             <th scope="col">Menu</th>
             <th scope="col">Amount</th>
+            <th scope="col">Menu Price(IDR)</th>
             <th scope="col">Paid Off</th>
             <th scope="col">Time</th>
             <th scope="col">Act</th>
@@ -53,6 +54,7 @@
             <td><%= Intl.NumberFormat('en-US').format(element.payment) %></td>
             <td><%= element.menu %></td>
             <td><%= element.amount %></td>
+            <td><%= element.total_price %></td>
             <td><%= element.paid_off %></td>
             <td><%= element.updated_at %></td>
             <td>
@@ -158,6 +160,7 @@
             <td><%= Intl.NumberFormat('en-US').format(element.payment) %></td>
             <td><%= element.menu %></td>
             <td><%= element.amount %></td>
+            <td><%= element.total_price %></td>
             <td><%= element.paid_off %></td>
             <td><%= element.updated_at %></td>
             <td>

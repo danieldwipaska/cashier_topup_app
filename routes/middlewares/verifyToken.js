@@ -10,7 +10,7 @@ module.exports = function (req, res, next) {
       return res.render('login', {
         layout: 'layouts/login-layout',
         title: 'Login',
-        msg: 'Please login first',
+        alert: 'Please login first',
       });
     req.validUser = user;
     next();

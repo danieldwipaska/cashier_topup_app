@@ -8,15 +8,16 @@ dotenv.config();
 const menuRoute = require('./routes/menu');
 const createRoute = require('./routes/create');
 const activationRoute = require('./routes/activation');
-const checkinRoute = require('./routes/checkin');
+// const checkinRoute = require('./routes/checkin');
 const checkoutRoute = require('./routes/checkout');
 const topupRoute = require('./routes/topup');
 const paymentRoute = require('./routes/payment');
 const fnbRoutes = require('./routes/fnb');
 const authRoute = require('./routes/auth');
 const cardRoute = require('./routes/card');
-const dineInCalcRoute = require('./routes/api/dineInCalc');
+// const dineInCalcRoute = require('./routes/api/dineInCalc');
 const userRoute = require('./routes/user');
+const ruleRoute = require('./routes/rule');
 
 const app = express();
 
@@ -35,15 +36,16 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/', menuRoute);
 app.use('/create', createRoute);
 app.use('/activation', activationRoute);
-app.use('/checkin', checkinRoute);
+// app.use('/checkin', checkinRoute);
 app.use('/checkout', checkoutRoute);
 app.use('/topup', topupRoute);
 app.use('/payment', paymentRoute);
 app.use('/fnb', fnbRoutes);
 app.use('/auth', authRoute);
 app.use('/card', cardRoute);
-app.use('/api/dinein', dineInCalcRoute);
+// app.use('/api/dinein', dineInCalcRoute);
 app.use('/user', userRoute);
+app.use('/rule', ruleRoute);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

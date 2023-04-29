@@ -51,27 +51,19 @@ a {
   text-decoration: none;
 }
 
-.menu-button-checkin {
+/* .menu-button-checkin {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
   animation-delay: 0.1s;
   animation-fill-mode: both;
-}
-
-.menu-button-checkout {
-  position: relative;
-  animation-name: menu;
-  animation-duration: 1s;
-  animation-delay: 0.2s;
-  animation-fill-mode: both;
-}
+} */
 
 .menu-button-topup {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
-  animation-delay: 0.3s;
+  animation-delay: 0.1s;
   animation-fill-mode: both;
 }
 
@@ -79,7 +71,15 @@ a {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
-  animation-delay: 0.4s;
+  animation-delay: 0.2s;
+  animation-fill-mode: both;
+}
+
+.menu-button-checkout {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.3s;
   animation-fill-mode: both;
 }
 
@@ -87,7 +87,7 @@ a {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
-  animation-delay: 0.5s;
+  animation-delay: 0.4s;
   animation-fill-mode: both;
 }
 
@@ -95,7 +95,7 @@ a {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
-  animation-delay: 0.6s;
+  animation-delay: 0.5s;
   animation-fill-mode: both;
 }
 
@@ -103,11 +103,11 @@ a {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
-  animation-delay: 0.7s;
+  animation-delay: 0.6s;
   animation-fill-mode: both;
 }
 
-.menu-button-cardlist {
+.menu-button-fnblist {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
@@ -115,7 +115,7 @@ a {
   animation-fill-mode: both;
 }
 
-.menu-button-transaction {
+.menu-button-cardlist {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
@@ -123,11 +123,35 @@ a {
   animation-fill-mode: both;
 }
 
-.menu-button-back {
+.menu-button-paymentlist {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
   animation-delay: 0.3s;
+  animation-fill-mode: both;
+}
+
+.menu-button-userlist {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.4s;
+  animation-fill-mode: both;
+}
+
+.menu-button-transaction {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.5s;
+  animation-fill-mode: both;
+}
+
+.menu-button-back {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.6s;
   animation-fill-mode: both;
 }
 

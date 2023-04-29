@@ -10,6 +10,7 @@ const fnbLogger = logger.child({ feature: 'Fnb List' });
 const userLogger = logger.child({ feature: 'User List' });
 const cardLogger = logger.child({ feature: 'Card List' });
 const loginLogger = logger.child({ feature: 'Login' });
+const ruleLogger = logger.child({ feature: 'Rule List' });
 
 module.exports = {
   checkinLogger,
@@ -22,4 +23,5 @@ module.exports = {
   userLogger,
   cardLogger,
   loginLogger,
+  ruleLogger,
 };
