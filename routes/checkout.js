@@ -1,8 +1,10 @@
 const express = require('express');
+const { v4 } = require('uuid');
 const { checkoutLogger } = require('../config/logger/childLogger');
 const { errorLog, infoLog } = require('../config/logger/functions');
 const router = express.Router();
 const queries = require('../database/cards/queries');
+const payments = require('../database/payments/queries');
 const pool = require('../db');
 const { cashierAndDeveloper } = require('./middlewares/userRole');
 const verifyToken = require('./middlewares/verifyToken');
@@ -64,12 +66,12 @@ router.post('/', verifyToken, cashierAndDeveloper, (req, res) => {
       return res.render('checkout', {
         layout: 'layouts/main-layout',
         title: 'Check-Out Status',
-        alert: 'Card is already check-out',
+        alert: 'Card is not used yet',
         data: results.rows[0],
       });
     } else {
       // UPDATE CARD
-      pool.query(queries.cardStatus, [false, '', '', 0, results.rows[0].barcode], (error, cardCheckoutResults) => {
+      pool.query(queries.cardStatus, [false, '', '', 0, 0, results.rows[0].barcode], (error, cardCheckoutResults) => {
         if (error) {
           errorLog(checkoutLogger, error, 'Error in HTTP POST / when calling queries.cardStatus');
           return res.status(500).json('Server Error');
@@ -77,11 +79,29 @@ router.post('/', verifyToken, cashierAndDeveloper, (req, res) => {
 
         infoLog(checkoutLogger, 'dine-in was successfully updated into false', results.rows[0].barcode, results.rows[0].customer_name, results.rows[0].customer_id, req.validUser.name);
 
-        return res.render('notificationSuccess', {
-          layout: 'layouts/main-layout',
-          title: 'Check-Out',
-          message: 'Card has been checked out successfully.',
-        });
+        // ADD PAYMENT
+        const id = v4();
+        const invoiceNumber = v4();
+        const sort = 'checkout';
+        pool.query(
+          payments.addPayment,
+          [id, sort, results.rows[0].barcode, results.rows[0].customer_name, results.rows[0].customer_id, results.rows[0].balance + results.rows[0].deposit, null, null, '', true, 0, 0, invoiceNumber, 0, req.validUser.name],
+          (error, addPaymentResult) => {
+            if (error) {
+              errorLog(checkoutLogger, error, 'Error in HTTP POST / when calling payments.addPayment');
+              return res.status(500).json('Server Error');
+            }
+
+            // SEND LOG
+            infoLog(checkoutLogger, 'Payment was successfully added and invoice number was successfully generated', results.rows[0].barcode, results.rows[0].customer_name, results.rows[0].customer_id, req.validUser.name);
+
+            return res.render('notificationSuccess', {
+              layout: 'layouts/main-layout',
+              title: 'Check-Out',
+              message: 'Card has been checked out successfully.',
+            });
+          }
+        );
       });
     }
   });

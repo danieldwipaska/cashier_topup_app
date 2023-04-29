@@ -1,4 +1,4 @@
-CREATE TYPE sort AS ENUM ('topup', 'pay');
+CREATE TYPE sort AS ENUM ('topup', 'pay', 'checkout');
 CREATE TABLE payments (
 id UUID NOT NULL PRIMARY KEY,
 sort sort NOT NULL,

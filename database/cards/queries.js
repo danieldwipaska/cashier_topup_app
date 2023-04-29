@@ -5,7 +5,7 @@ const getCardById = 'SELECT * FROM cards WHERE barcode = $1';
 // const removeStudent = 'DELETE FROM students WHERE id = $1';
 const cardActivate = 'UPDATE cards SET is_active = $1, updated_at = NOW() WHERE barcode = $2';
 const cardDeactivate = 'UPDATE cards SET is_active = $1, dine_in = $2, customer_name = $3, balance = $4, customer_id = $5, updated_at = NOW() WHERE barcode = $6';
-const cardStatus = 'UPDATE cards SET dine_in = $1, customer_name = $2, customer_id = $3, balance = $4, updated_at = NOW() WHERE barcode = $5 RETURNING *'; //change
+const cardStatus = 'UPDATE cards SET dine_in = $1, customer_name = $2, customer_id = $3, balance = $4, deposit = $5, updated_at = NOW() WHERE barcode = $6 RETURNING *'; //change
 const updateBalance = 'UPDATE cards SET balance = $1, deposit = $2, updated_at = NOW() WHERE barcode = $3 RETURNING *';
 const getCardsDineIn = 'SELECT * FROM cards WHERE dine_in = $1';
 

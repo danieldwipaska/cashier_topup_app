@@ -76,7 +76,7 @@ router.post('/', verifyToken, cashierAndDeveloper, (req, res) => {
       if (!results.rows[0].dine_in) {
         const customer_id = v4();
         // UPDATE DINE-IN STATUS
-        pool.query(queries.cardStatus, [true, customer_name, customer_id, 0, barcode], (error, cardCheckinResults) => {
+        pool.query(queries.cardStatus, [true, customer_name, customer_id, 0, 0, barcode], (error, cardCheckinResults) => {
           if (error) {
             errorLog(topupLogger, error, 'Error in HTTP POST / when calling queries.cardStatus');
             return res.status(500).json('Server Error');
