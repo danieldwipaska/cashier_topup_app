@@ -18,6 +18,7 @@ const cardRoute = require('./routes/card');
 // const dineInCalcRoute = require('./routes/api/dineInCalc');
 const userRoute = require('./routes/user');
 const ruleRoute = require('./routes/rule');
+const stockRoute = require('./routes/stock');
 
 const app = express();
 
@@ -46,6 +47,7 @@ app.use('/card', cardRoute);
 // app.use('/api/dinein', dineInCalcRoute);
 app.use('/user', userRoute);
 app.use('/rule', ruleRoute);
+app.use('/stock', stockRoute);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
