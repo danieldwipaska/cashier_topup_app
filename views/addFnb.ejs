@@ -32,13 +32,77 @@
             <label for="drink" class="form-check-label text-secondary">Drink</label>
           </div>
         </div>
+        <div class="row mt-3 mb-2">
+          <div class="col-md">
+            <h4 class="text-secondary">Stock used</h4>
+          </div>
+        </div>
+        <div class="row">
+          <div class="mb-1 radioStock">
+            <% data.forEach((element) => { %>
+            <div class="mb-1 mx-3 my-2 form-check form-check-inline">
+              <input type="radio" class="form-check-input" id="<%= element.name %>" name="radioStockName" value="<%= element.name %>" />
+              <label class="form-check-label text-secondary"><%= element.name %></label>
+            </div>
+            <% }); %>
+          </div>
+
+          <div class="mb-1 col-auto">
+            <label for="stockName" class="form-label text-secondary">Type</label>
+            <input type="text" class="form-control" id="stockName" name="stockName" readonly />
+          </div>
+          <div class="mb-1 col-auto">
+            <label for="stockAmount" class="form-label text-secondary">Amount</label>
+            <input type="text" class="form-control" id="stockAmount" name="stockAmount" />
+          </div>
+          <div class="mb-1 mt-1">
+            <a class="btn btn-info stock-button">add</a>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="mb-1 col-auto">
+            <textarea name="rawMat" id="rawMat" cols="22" rows="5" readonly required></textarea>
+          </div>
+
+          <div class="mb-1 col-auto">
+            <textarea name="rawAmount" id="rawAmount" cols="22" rows="5" readonly required></textarea>
+          </div>
+        </div>
         <div class="row my-5 multi-button">
           <div class="col-md-8 mx-auto text-center">
             <a class="button shadow" href="/fnb/list" role="button">Back</a>
-            <button class="button shadow" type="submit">Add</button>
+            <button class="button shadow" type="submit">Submit</button>
           </div>
         </div>
       </form>
     </div>
   </div>
 </div>
+<script>
+  const stockButton = document.querySelector('.stock-button');
+  let rawMatStr = '';
+  let rawAmountStr = '';
+
+  const stockName = document.querySelector('#stockName');
+  const stockAmount = document.querySelector('#stockAmount');
+  const rawMat = document.querySelector('#rawMat');
+  const rawAmount = document.querySelector('#rawAmount');
+
+  stockButton.addEventListener('click', () => {
+    if (!stockName.value || !stockAmount.value) return;
+
+    rawMatStr += stockName.value + ' ';
+    rawAmountStr += stockAmount.value + ' ';
+
+    rawMat.innerHTML = rawMatStr;
+    rawAmount.innerHTML = rawAmountStr;
+  });
+
+  const radioStock = document.querySelector('.radioStock');
+  console.log(radioStock);
+  radioStock.addEventListener('click', function (e) {
+    if (e.target.value != undefined) {
+      stockName.value = e.target.value;
+    }
+  });
+</script>

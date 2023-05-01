@@ -32,7 +32,6 @@
       <table class="table fs-6">
         <thead>
           <tr class="table-warning">
-            <th scope="col">ID</th>
             <th scope="col">Menu</th>
             <th scope="col">Netto</th>
             <th scope="col">Price(IDR)</th>
@@ -42,8 +41,7 @@
         <tbody>
           <% data.forEach((element,i) => { %> <% if (i % 2 === 0) { %>
           <tr class="table-info">
-            <th scope="row"><%= element.id %></th>
-            <td><%= element.menu %></td>
+            <th scope="row"><%= element.menu %></th>
             <td><%= element.netto %></td>
             <td><%= Intl.NumberFormat('en-US').format(element.price) %></td>
             <td>
@@ -82,8 +80,7 @@
           </tr>
           <% } else { %>
           <tr class="table-light">
-            <th scope="row"><%= element.id %></th>
-            <td><%= element.menu %></td>
+            <th scope="row"><%= element.menu %></th>
             <td><%= element.netto %></td>
             <td><%= Intl.NumberFormat('en-US').format(element.price) %></td>
             <td>

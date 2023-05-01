@@ -28,6 +28,37 @@ router.get('/list', verifyToken, allRoles, async (req, res) => {
   }
 });
 
+// GET A STOCK BY ID
+router.get('/:id', verifyToken, allRoles, async (req, res) => {
+  const { id } = req.params;
+  try {
+    // GET A STOCK
+    const stocks = await pool.query(queries.getStockById, [id]);
+
+    return res.render('updateStock', {
+      layout: 'layouts/main-layout',
+      title: 'Update Stock',
+      alert: '',
+      messages: '',
+      data: stocks.rows[0],
+    });
+  } catch (err) {
+    // ERROR LOG
+    errorLog(stockLogger, err, 'Error in HTTP GET /:id when calling queries.getStockById');
+    return res.status(500).json('Server Error');
+  }
+});
+
+// CLIENT ADD STOCK
+router.get('/list/add', verifyToken, allRoles, (req, res) => {
+  return res.render('addStock', {
+    layout: 'layouts/main-layout',
+    title: 'Add a Stock',
+    alert: '',
+    messages: '',
+  });
+});
+
 // ADD A STOCK
 router.post('/', verifyToken, allRoles, async (req, res) => {
   const { name, amount, unit } = req.body;
