@@ -5,6 +5,7 @@ const queries = require('../database/cards/queries');
 const payments = require('../database/payments/queries');
 const rules = require('../database/rules/queries');
 const fnbs = require('../database/fnbs/queries');
+const stocks = require('../database/stocks/queries');
 const verifyToken = require('./middlewares/verifyToken');
 const { v4 } = require('uuid');
 const { errorLog, infoLog } = require('../config/logger/functions');
@@ -92,59 +93,94 @@ router.get('/search', verifyToken, allRoles, (req, res) => {
 });
 
 // ADD TEMPORARY PAYMENTS
-router.post('/temp', verifyToken, allRoles, (req, res) => {
+router.post('/temp', verifyToken, allRoles, async (req, res) => {
   const { menu, price, barcode, customerName: customer_name, customerId: customer_id, amount, service, tax } = req.body;
   const sort = 'pay';
 
-  if (amount <= 0) {
-    return res.status(400).json({ message: 'Total per item must not be 0 or less than 0' });
-  }
+  if (amount <= 0) return res.status(400).json({ message: 'Total per item must not be 0 or less than 0' });
 
   const invoiceNumber = '';
   let totalPrice = price * amount;
   let payment = totalPrice + (totalPrice * 5) / 100;
   payment = payment + (payment * 10) / 100;
 
-  // SAVE TO DATABASE
-  const id = v4();
-  pool.query(payments.addPayment, [id, sort, barcode, customer_name, customer_id, payment, service, tax, menu, false, amount, totalPrice, invoiceNumber, null, req.validUser.name], (error, addPaymentResults) => {
-    if (error) {
-      errorLog(paymentLogger, error, 'Error in HTTP POST /temp when calling payments.addPayment');
-      return res.status(500).json('Server Error');
-    }
+  try {
+    const id = v4();
+    await pool.query(payments.addPayment, [id, sort, barcode, customer_name, customer_id, payment, service, tax, menu, false, amount, totalPrice, invoiceNumber, null, req.validUser.name]);
 
     // SEND LOG
     infoLog(paymentLogger, 'Temporary payment was successfully added', barcode, customer_name, customer_id, req.validUser.name);
-    res.redirect(`/payment/search?card=${barcode}`);
-  });
+
+    // UPDATE THE STOCKS
+    try {
+      const fnbsResults = await pool.query(fnbs.getFnbByMenu, [menu]);
+
+      // fnbsResults.rows[0].raw_mat <--- array
+      // fnbsResults.rows[0].raw_amount <--- array
+
+      for (let i = 0; i < fnbsResults.rows[0].raw_mat.length; i++) {
+        let stocksResults = await pool.query(stocks.getStockByName, [fnbsResults.rows[0].raw_mat[i]]);
+
+        let newStock = stocksResults.rows[0].amount - fnbsResults.rows[0].raw_amount[i] * amount;
+
+        if (newStock < 0) return res.status(400).json(`Stock ${fnbsResults.rows[0].raw_mat[i]} is not enough`);
+
+        await pool.query(stocks.updateStockByName, [newStock, fnbsResults.rows[0].raw_mat[i]]);
+      }
+
+      return res.redirect(`/payment/search?card=${barcode}`);
+    } catch (error) {
+      errorLog(paymentLogger, error, 'Error in HTTP POST /temp when calling payments.getFnbByMenu');
+      return res.status(500).json('Server Error');
+    }
+  } catch (error) {
+    errorLog(paymentLogger, error, 'Error in HTTP POST /temp when calling payments.addPayment');
+    return res.status(500).json('Server Error');
+  }
 });
 
 // DELETE TEMPORARY PAYMENTS
-router.get('/temp/:id/delete', verifyToken, allRoles, (req, res) => {
+router.get('/temp/:id/delete', verifyToken, allRoles, async (req, res) => {
   const { id } = req.params;
 
-  pool.query(payments.getPaymentById, [id], (error, getPaymentResults) => {
-    if (error) {
-      errorLog(paymentLogger, error, 'Error in HTTP GET /temp/:id/delete when calling payments.getPaymentById');
-      return res.status(500).json('Server Error');
-    }
+  // GET A PAYMENT BY ID
+  try {
+    const paymentResults = await pool.query(payments.getPaymentById, [id]);
 
-    if (!getPaymentResults.rows.length) {
-      return res.status(404).json('Payment Not Found');
-    } else {
-      pool.query(payments.deletePaymentById, [id], (error, deletePaymentResults) => {
-        if (error) {
-          errorLog(paymentLogger, error, 'Error in HTTP GET /temp/:id/delete when calling payments.deletePaymentById');
-          return res.status(500).json('Server Error');
+    if (!paymentResults.rows.length) return res.status(404).json('Payment not found');
+
+    try {
+      await pool.query(payments.deletePaymentById, [id]);
+
+      // SEND LOG
+      infoLog(paymentLogger, 'Temporary Payment was successfully deleted', paymentResults.rows[0].barcode, paymentResults.rows[0].customer_name, paymentResults.rows[0].customer_id, req.validUser.name);
+
+      try {
+        const fnbsResults = await pool.query(fnbs.getFnbByMenu, [paymentResults.rows[0].menu]);
+
+        for (let i = 0; i < fnbsResults.rows[0].raw_mat.length; i++) {
+          let stocksResults = await pool.query(stocks.getStockByName, [fnbsResults.rows[0].raw_mat[i]]);
+
+          let newStock = stocksResults.rows[0].amount + fnbsResults.rows[0].raw_amount[i] * paymentResults.rows[0].amount;
+
+          if (newStock < 0) return res.status(400).json(`Stock ${fnbsResults.rows[0].raw_mat[i]} is not enough`);
+
+          await pool.query(stocks.updateStockByName, [newStock, fnbsResults.rows[0].raw_mat[i]]);
         }
 
-        // SEND LOG
-        infoLog(paymentLogger, 'Temporary Payment was successfully deleted', getPaymentResults.rows[0].barcode, getPaymentResults.rows[0].customer_name, getPaymentResults.rows[0].customer_id, req.validUser.name);
-
-        return res.redirect(`/payment/search?card=${getPaymentResults.rows[0].barcode}`);
-      });
+        return res.redirect(`/payment/search?card=${paymentResults.rows[0].barcode}`);
+      } catch (error) {
+        errorLog(paymentLogger, error, 'Error in HTTP GET /temp/:id/delete when calling payments.getFnbByMenu');
+        return res.status(500).json('Server Error');
+      }
+    } catch (error) {
+      errorLog(paymentLogger, error, 'Error in HTTP GET /temp/:id/delete when calling payments.deletePaymentById');
+      return res.status(500).json('Server Error');
     }
-  });
+  } catch (error) {
+    errorLog(paymentLogger, error, 'Error in HTTP GET /temp/:id/delete when calling payments.getPaymentById');
+    return res.status(500).json('Server Error');
+  }
 });
 
 // UPDATE PAYMENTS INTO PAID OFF
