@@ -15,6 +15,15 @@
             <input type="text" class="form-control" id="barcode" name="barcode" readonly value="<%= data %>" />
           </div>
 
+          <div class="mb-1 mx-3 my-2 form-check">
+            <input type="radio" class="form-check-input" id="normalCard" name="isMember" value="false" checked />
+            <label for="normalCard" class="form-check-label text-secondary">Normal</label>
+          </div>
+          <div class="mb-1 mx-3 my-2 form-check">
+            <input type="radio" class="form-check-input" id="memberCard" name="isMember" value="true" />
+            <label for="memberCard" class="form-check-label text-secondary">Member</label>
+          </div>
+
           <div class="mb-1">
             <label for="name" class="form-label text-secondary">Name</label>
             <input type="text" class="form-control" id="name" name="name" value="Not Available" disabled />

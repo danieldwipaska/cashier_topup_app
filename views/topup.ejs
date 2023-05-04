@@ -22,18 +22,6 @@
     <div class="col-md-9 mx-auto my-1 px-4">
       <form action="/topup" method="post">
         <div class="row">
-          <% if (data.dine_in) { %>
-          <div class="mb-1 col-auto">
-            <label for="dineIn" class="form-label text-secondary">Status</label>
-            <input type="text" class="form-control bg-warning text-dark" id="dineIn" name="dineIn" value="USED" readonly />
-          </div>
-          <% } else { %>
-          <div class="mb-1 col-auto">
-            <label for="dineIn" class="form-label text-secondary">Dine In</label>
-            <input type="text" class="form-control bg-success text-light" id="dineIn" name="dineIn" value="NEW" readonly />
-          </div>
-
-          <% } %>
           <div class="mb-1 col-auto">
             <label for="isMember" class="form-label text-secondary">Member Status</label>
             <input type="text" class="form-control" id="isMember" name="isMember" value="<%= data.is_member %>" readonly />
@@ -44,9 +32,9 @@
             <input type="text" class="form-control" id="barcode" name="barcode" readonly value="<%= data.barcode %>" />
           </div>
 
-          <div class="mb-1">
+          <div class="mb-2">
             <label for="name" class="form-label text-secondary">Name</label>
-            <input type="text" class="form-control" id="name" name="name" value="<%= data.customer_name %>" autofocus="autofocus" required />
+            <input type="text" class="form-control customer-name-input" id="name" name="name" value="<%= data.customer_name %>" readonly />
           </div>
 
           <div class="mb-1">
@@ -56,7 +44,7 @@
 
           <div class="mb-1">
             <label for="addBalance" class="form-label text-secondary">Add Balance</label>
-            <input type="text" class="form-control" id="addBalance" name="addBalance" data-type="currency" required />
+            <input type="text" class="form-control" id="addBalance" name="addBalance" data-type="currency" autofocus="autofocus" required />
           </div>
 
           <div class="mb-1">
@@ -89,3 +77,23 @@
     </div>
   </div>
 </div>
+<!-- <script>
+  const memberInput = document.querySelector('.member-input');
+  const memberArea = document.querySelector('.member-area');
+  const inputs = memberArea.querySelectorAll('input');
+  const customerNameInput = document.querySelector('.customer-name-input');
+
+  memberInput.addEventListener('click', () => {
+    memberArea.classList.toggle('visually-hidden');
+
+    inputs.forEach((e) => {
+      if (e.getAttribute('disabled')) {
+        e.removeAttribute('disabled');
+        e.setAttribute('required', 'required');
+      } else {
+        e.removeAttribute('required');
+        e.setAttribute('disabled', 'disabled');
+      }
+    });
+  });
+</script> -->

@@ -19,7 +19,6 @@
             <th scope="col">Customer ID</th>
             <th scope="col">Member</th>
             <th scope="col">Activation</th>
-            <th scope="col">Dine In</th>
           </tr>
         </thead>
         <tbody>
@@ -33,7 +32,6 @@
             <td><%= element.customer_id %></td>
             <td><%= element.is_member %></td>
             <td><%= element.is_active %></td>
-            <td><%= element.dine_in %></td>
           </tr>
           <% } else { %>
           <tr class="table-light">
@@ -45,7 +43,6 @@
             <td><%= element.customer_id %></td>
             <td><%= element.is_member %></td>
             <td><%= element.is_active %></td>
-            <td><%= element.dine_in %></td>
           </tr>
           <% } %> <% }); %>
         </tbody>

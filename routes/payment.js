@@ -38,12 +38,12 @@ router.get('/search', verifyToken, allRoles, (req, res) => {
           subtitle: 'Payment',
           alert: 'Card does NOT EXIST',
         });
-      } else if (!results.rows[0].dine_in) {
+      } else if (!results.rows[0].is_active) {
         return res.render('search', {
           layout: 'layouts/main-layout',
           title: 'Search',
           subtitle: 'Payment',
-          alert: 'Card is NOT DINE-IN',
+          alert: 'Card is NOT ACTIVE',
         });
       } else {
         pool.query(fnbs.getFnbs, [], (error, fnbResults) => {

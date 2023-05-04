@@ -155,6 +155,10 @@ a {
   animation-fill-mode: both;
 }
 
+.member-area {
+  transition: 0.7s;
+}
+
 @keyframes menu {
   from {
     opacity: 0;

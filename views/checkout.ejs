@@ -46,25 +46,12 @@
             <label for="isActive" class="form-label text-secondary">Activation</label>
             <input type="text" class="form-control" id="isActive" name="isActive" value="<%= data.is_active %>" readonly />
           </div>
-
-          <% if (data.dine_in === true) { %>
-          <div class="mb-1 col-auto">
-            <label for="dineIn" class="form-label text-secondary">Dine In</label>
-            <input type="text" class="form-control bg-success text-light" id="dineIn" name="dineIn" value="<%= data.dine_in %>" readonly />
-          </div>
-          <% } else { %>
-          <div class="mb-1 col-auto">
-            <label for="dineIn" class="form-label text-secondary">Dine In</label>
-            <input type="text" class="form-control bg-danger text-light" id="dineIn" name="dineIn" value="<%= data.dine_in %>" readonly />
-          </div>
-
-          <% } %>
         </div>
         <div class="row my-5 multi-button">
           <div class="col-lg-8 mx-auto text-center">
             <a class="button shadow my-3" href="/checkout/search" role="button">Back</a>
 
-            <% if (data.dine_in === true) { %>
+            <% if (data.is_active === true) { %>
             <button class="button shadow my-3" type="submit">Check-Out</button>
             <% } %>
 
