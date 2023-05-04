@@ -3,7 +3,7 @@ const router = express.Router();
 const pool = require('../db');
 const queries = require('../database/cards/queries');
 const verifyToken = require('./middlewares/verifyToken');
-const { errorLog } = require('../config/logger/functions');
+const { errorLog, infoLog } = require('../config/logger/functions');
 const { cardLogger } = require('../config/logger/childLogger');
 const { cashierAndDeveloper } = require('./middlewares/userRole');
 
@@ -20,6 +20,34 @@ router.get('/list', verifyToken, cashierAndDeveloper, (req, res) => {
       data: getCardsResults.rows,
     });
   });
+});
+
+// DELETE CARD
+router.get('/:id/delete', verifyToken, cashierAndDeveloper, async (req, res) => {
+  const { id } = req.params;
+
+  // GET CARD
+  try {
+    const cards = await pool.query(queries.getCardByCardId, [id]);
+
+    if (!cards.rows.length) return res.status(404).json('Card not found');
+
+    // DELETE CARD
+    try {
+      await pool.query(queries.deleteCardById, [cards.rows[0].id]);
+
+      // SEND LOG
+      infoLog(cardLogger, 'Card was successfully deleted', '', '', '', req.validUser.name);
+
+      return res.redirect('/card/list');
+    } catch (error) {
+      errorLog(cardLogger, error, 'Error in HTTP GET /:id/delete when calling queries.deleteCardById');
+      return res.status(500).json('Server Error');
+    }
+  } catch (error) {
+    errorLog(memberLogger, error, 'Error in HTTP GET /:id/delete when calling queries.getCardByCardId');
+    return res.status(500).json('Server Error');
+  }
 });
 
 module.exports = router;
