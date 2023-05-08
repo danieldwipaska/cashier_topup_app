@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-const queries = require('../database/fnbs/queries');
-const stocksqueries = require('../database/stocks/queries');
+const fnbQueries = require('../database/fnbs/queries');
+const stockQueries = require('../database/stocks/queries');
 const { v4 } = require('uuid');
 const verifyToken = require('./middlewares/verifyToken');
 const { fnbLogger } = require('../config/logger/childLogger');
@@ -12,7 +12,7 @@ const { cashierAndDeveloper } = require('./middlewares/userRole');
 // PAGE FOR ADD FNB
 router.get('/add', verifyToken, cashierAndDeveloper, async (req, res) => {
   try {
-    const stocks = await pool.query(stocksqueries.getStocks, []);
+    const stocks = await pool.query(stockQueries.getStocks, []);
 
     return res.render('addFnb', {
       layout: 'layouts/main-layout',
@@ -20,16 +20,16 @@ router.get('/add', verifyToken, cashierAndDeveloper, async (req, res) => {
       data: stocks.rows,
     });
   } catch (error) {
-    errorLog(fnbLogger, error, 'Error in HTTP GET /add when calling stocksqueries.getStocks');
+    errorLog(fnbLogger, error, 'Error in HTTP GET /add when calling stockQueries.getStocks');
     return res.status(500).json('Server Error');
   }
 });
 
 // GET ALL FNB
 router.get('/list', verifyToken, cashierAndDeveloper, (req, res) => {
-  pool.query(queries.getFnbs, [], (error, results) => {
+  pool.query(fnbQueries.getFnbs, [], (error, results) => {
     if (error) {
-      errorLog(fnbLogger, error, 'Error in HTTP GET /list when calling queries.getFnbs');
+      errorLog(fnbLogger, error, 'Error in HTTP GET /list when calling fnbQueries.getFnbs');
       return res.status(500).json('Server Error');
     }
 
@@ -48,7 +48,7 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
   const { menu, kind, netto, price, rawMat, rawAmount } = req.body;
 
   try {
-    const fnbs = await pool.query(queries.getFnbByMenu, [menu]);
+    const fnbs = await pool.query(fnbQueries.getFnbByMenu, [menu]);
     if (fnbs.rows.length) return res.status(400).json('Menu does already exist');
 
     try {
@@ -59,18 +59,18 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
 
       const id = v4();
 
-      await pool.query(queries.addFnb, [id, menu, kind, netto, price, rawMatArr, rawAmountArr]);
+      await pool.query(fnbQueries.addFnb, [id, menu, kind, netto, price, rawMatArr, rawAmountArr]);
 
       // SEND LOG
       infoLog(fnbLogger, 'Fnb was successfully added', '', '', '', req.validUser.name);
 
       return res.redirect('/fnb/list');
     } catch (error) {
-      errorLog(fnbLogger, error, 'Error in HTTP POST / when calling queries.addFnb');
+      errorLog(fnbLogger, error, 'Error in HTTP POST / when calling fnbQueries.addFnb');
       return res.status(500).json('Server Error');
     }
   } catch (error) {
-    errorLog(fnbLogger, error, 'Error in HTTP POST / when calling queries.getFnbByMenu');
+    errorLog(fnbLogger, error, 'Error in HTTP POST / when calling fnbQueries.getFnbByMenu');
     return res.status(500).json('Server Error');
   }
 });
@@ -81,22 +81,22 @@ router.post('/:id', verifyToken, cashierAndDeveloper, async (req, res) => {
   const { menu, kind, netto, price, rawMat, rawAmount } = req.body;
 
   try {
-    const fnbs = await pool.query(queries.getFnbById, [id]);
+    const fnbs = await pool.query(fnbQueries.getFnbById, [id]);
     if (!fnbs.rows.length) return res.status(404).json('Fnb does not exist');
 
     try {
-      const fnbs = await pool.query(queries.updateFnbById, [menu, kind, netto, price, rawMat, rawAmount, id]);
+      const fnbs = await pool.query(fnbQueries.updateFnbById, [menu, kind, netto, price, rawMat, rawAmount, id]);
 
       // SEND LOG
       infoLog(fnbLogger, 'Fnb was successfully updated', '', '', '', req.validUser.name);
 
       return res.redirect('/fnb/list');
     } catch (error) {
-      errorLog(fnbLogger, error, 'Error in HTTP POST /:id when calling queries.updateFnbById');
+      errorLog(fnbLogger, error, 'Error in HTTP POST /:id when calling fnbQueries.updateFnbById');
       return res.status(500).json('Server Error');
     }
   } catch (error) {
-    errorLog(fnbLogger, error, 'Error in HTTP POST /:id when calling queries.getFnbById');
+    errorLog(fnbLogger, error, 'Error in HTTP POST /:id when calling fnbQueries.getFnbById');
     return res.status(500).json('Server Error');
   }
 });
@@ -105,16 +105,16 @@ router.post('/:id', verifyToken, cashierAndDeveloper, async (req, res) => {
 router.get('/:id/delete', verifyToken, cashierAndDeveloper, (req, res) => {
   const { id } = req.params;
 
-  pool.query(queries.getFnbById, [id], (error, getResults) => {
+  pool.query(fnbQueries.getFnbById, [id], (error, getResults) => {
     if (error) {
-      errorLog(fnbLogger, error, 'Error in HTTP GET /:id/delete when calling queries.getFnbById');
+      errorLog(fnbLogger, error, 'Error in HTTP GET /:id/delete when calling fnbQueries.getFnbById');
       return res.status(500).json('Server Error');
     }
 
     if (getResults.rows.length === 0) {
-      pool.query(queries.getFnbs, [], (error, results) => {
+      pool.query(fnbQueries.getFnbs, [], (error, results) => {
         if (error) {
-          errorLog(fnbLogger, error, 'Error in HTTP GET /:id/delete when calling queries.getFnbs');
+          errorLog(fnbLogger, error, 'Error in HTTP GET /:id/delete when calling fnbQueries.getFnbs');
           return res.status(500).json('Server Error');
         }
 
@@ -127,9 +127,9 @@ router.get('/:id/delete', verifyToken, cashierAndDeveloper, (req, res) => {
         });
       });
     } else {
-      pool.query(queries.deleteFnbById, [id], (error, deleteResults) => {
+      pool.query(fnbQueries.deleteFnbById, [id], (error, deleteResults) => {
         if (error) {
-          errorLog(fnbLogger, error, 'Error in HTTP GET /:id/delete when calling queries.deleteFnbById');
+          errorLog(fnbLogger, error, 'Error in HTTP GET /:id/delete when calling fnbQueries.deleteFnbById');
           return res.status(500).json('Server Error');
         }
 

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-const queries = require('../database/cards/queries');
+const cardQueries = require('../database/cards/queries');
 const { v4 } = require('uuid');
 const verifyToken = require('./middlewares/verifyToken');
 const { createLogger } = require('../config/logger/childLogger');
@@ -20,9 +20,9 @@ router.get('/search', verifyToken, cashierAndDeveloper, (req, res) => {
       alert: '',
     });
   } else {
-    pool.query(queries.getCardById, [barcode], (error, results) => {
+    pool.query(cardQueries.getCardById, [barcode], (error, results) => {
       if (error) {
-        errorLog(createLogger, error, 'Error in HTTP GET /search when calling queries.getCardById');
+        errorLog(createLogger, error, 'Error in HTTP GET /search when calling cardQueries.getCardById');
         return res.status(500).json('Server Error');
       }
       if (results.rows.length) {
@@ -60,9 +60,9 @@ router.post('/', verifyToken, cashierAndDeveloper, (req, res) => {
     is_member = false;
   }
 
-  pool.query(queries.addCard, [id, barcode, balance, deposit, customer_name, customer_id, is_member, is_active], (error, results) => {
+  pool.query(cardQueries.addCard, [id, barcode, balance, deposit, customer_name, customer_id, is_member, is_active], (error, results) => {
     if (error) {
-      errorLog(createLogger, error, 'Error in HTTP POST / when calling queries.addCard');
+      errorLog(createLogger, error, 'Error in HTTP POST / when calling cardQueries.addCard');
       return res.status(500).json('Server Error');
     }
 

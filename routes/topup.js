@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-const queries = require('../database/cards/queries');
-const payments = require('../database/payments/queries');
-const memberqueries = require('../database/members/queries');
+const cardQueries = require('../database/cards/queries');
+const paymentQueries = require('../database/payments/queries');
+// const memberqueries = require('../database/members/queries');
 const verifyToken = require('./middlewares/verifyToken');
 const { v4 } = require('uuid');
 const { errorLog, infoLog } = require('../config/logger/functions');
@@ -24,9 +24,9 @@ router.get('/search', verifyToken, cashierAndDeveloper, (req, res) => {
     });
   } else {
     // SEARCH FOR CARD
-    pool.query(queries.getCardById, [barcode], (error, results) => {
+    pool.query(cardQueries.getCardById, [barcode], (error, results) => {
       if (error) {
-        errorLog(topupLogger, error, 'Error in HTTP GET /search when calling queries.getCardById');
+        errorLog(topupLogger, error, 'Error in HTTP GET /search when calling cardQueries.getCardById');
         return res.status(500).json('Server Error');
       }
       if (results.rows.length === 0) {
@@ -65,7 +65,7 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
   let depositCount = depositInt;
 
   try {
-    const cards = await pool.query(queries.getCardById, [barcode]);
+    const cards = await pool.query(cardQueries.getCardById, [barcode]);
 
     if (!cards.rows.length) return res.status(404).json('Card does not exist');
 
@@ -79,7 +79,7 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
       });
 
     try {
-      const paymentResults = await pool.query(payments.getPaymentByCustomerIdAndSort, [cards.rows[0].customer_id, 'topup']);
+      const paymentResults = await pool.query(paymentQueries.getPaymentByCustomerIdAndSort, [cards.rows[0].customer_id, 'topup']);
 
       if (paymentResults.rows.length) {
         depositCount = 0;
@@ -89,7 +89,7 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
         // ADD NEW BALANCE
         const resBalance = balanceInt + cards.rows[0].balance - depositCount;
 
-        const cardUpdated = await pool.query(queries.updateBalance, [resBalance, depositInt, barcode]);
+        const cardUpdated = await pool.query(cardQueries.updateBalance, [resBalance, depositInt, barcode]);
 
         // SEND LOG
         infoLog(topupLogger, 'Balance was successfully updated', cardUpdated.rows[0].barcode, cardUpdated.rows[0].customer_name, cardUpdated.rows[0].customer_id, req.validUser.name);
@@ -100,7 +100,7 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
           const invoiceNumber = v4();
           const sort = 'topup';
 
-          await pool.query(payments.addPayment, [id, sort, cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, balanceInt, null, null, '', true, 0, 0, invoiceNumber, resBalance, req.validUser.name]);
+          await pool.query(paymentQueries.addPayment, [id, sort, cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, balanceInt, null, null, '', true, 0, 0, invoiceNumber, resBalance, req.validUser.name]);
 
           // SEND LOG
           infoLog(topupLogger, 'Payment was successfully added and invoice number was successfully generated', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);
@@ -113,19 +113,19 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
             invoiceNumber: invoiceNumber,
           });
         } catch (error) {
-          errorLog(topupLogger, error, 'Error in HTTP POST / when calling payments.addPayment');
+          errorLog(topupLogger, error, 'Error in HTTP POST / when calling paymentQueries.addPayment');
           return res.status(500).json('Server Error');
         }
       } catch (error) {
-        errorLog(topupLogger, error, 'Error in HTTP POST / when calling queries.updateBalance');
+        errorLog(topupLogger, error, 'Error in HTTP POST / when calling cardQueries.updateBalance');
         return res.status(500).json('Server Error');
       }
     } catch (error) {
-      errorLog(topupLogger, error, 'Error in HTTP POST / when calling payments.getPaymentByCustomerIdAndSort');
+      errorLog(topupLogger, error, 'Error in HTTP POST / when calling paymentQueries.getPaymentByCustomerIdAndSort');
       return res.status(500).json('Server Error');
     }
   } catch (error) {
-    errorLog(topupLogger, error, 'Error in HTTP POST / when calling queries.getCardByID');
+    errorLog(topupLogger, error, 'Error in HTTP POST / when calling cardQueries.getCardByID');
     return res.status(500).json('Server Error');
   }
 });

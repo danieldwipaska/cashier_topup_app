@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-const queries = require('../database/rules/queries');
+const ruleQueries = require('../database/rules/queries');
 const { v4 } = require('uuid');
 const verifyToken = require('./middlewares/verifyToken');
 const { ruleLogger } = require('../config/logger/childLogger');
@@ -10,9 +10,9 @@ const { cashierAndDeveloper, allRoles } = require('./middlewares/userRole');
 
 // GET ALL RULES
 router.get('/list', verifyToken, cashierAndDeveloper, (req, res) => {
-  pool.query(queries.getRules, [], (error, results) => {
+  pool.query(ruleQueries.getRules, [], (error, results) => {
     if (error) {
-      errorLog(ruleLogger, error, 'Error in HTTP GET /list when calling queries.getRules');
+      errorLog(ruleLogger, error, 'Error in HTTP GET /list when calling ruleQueries.getRules');
       return res.status(500).json('Server Error');
     }
 
@@ -30,16 +30,16 @@ router.get('/list', verifyToken, cashierAndDeveloper, (req, res) => {
 router.post('/', verifyToken, allRoles, (req, res) => {
   const { name, value } = req.body;
 
-  pool.query(queries.getRuleByName, [name], (error, getResults) => {
+  pool.query(ruleQueries.getRuleByName, [name], (error, getResults) => {
     if (error) {
-      errorLog(ruleLogger, error, 'Error in HTTP POST / when calling queries.getRuleByName');
+      errorLog(ruleLogger, error, 'Error in HTTP POST / when calling ruleQueries.getRuleByName');
       return res.status(500).json('Server Error');
     }
 
     if (getResults.rows.length) {
-      pool.query(queries.getRules, [], (error, results) => {
+      pool.query(ruleQueries.getRules, [], (error, results) => {
         if (error) {
-          errorLog(ruleLogger, error, 'Error in HTTP POST / when calling queries.getRules');
+          errorLog(ruleLogger, error, 'Error in HTTP POST / when calling ruleQueries.getRules');
           return res.status(500).json('Server Error');
         }
 
@@ -53,9 +53,9 @@ router.post('/', verifyToken, allRoles, (req, res) => {
       });
     } else {
       const id = v4();
-      pool.query(queries.addRule, [id, name, value], (error, addResults) => {
+      pool.query(ruleQueries.addRule, [id, name, value], (error, addResults) => {
         if (error) {
-          errorLog(ruleLogger, error, 'Error in HTTP POST / when calling queries.addRule');
+          errorLog(ruleLogger, error, 'Error in HTTP POST / when calling ruleQueries.addRule');
           return res.status(500).json('Server Error');
         }
 
@@ -72,16 +72,16 @@ router.post('/', verifyToken, allRoles, (req, res) => {
 router.get('/:id/delete', verifyToken, cashierAndDeveloper, (req, res) => {
   const { id } = req.params;
 
-  pool.query(queries.getRuleById, [id], (error, getResults) => {
+  pool.query(ruleQueries.getRuleById, [id], (error, getResults) => {
     if (error) {
-      errorLog(ruleLogger, error, 'Error in HTTP GET /:id/delete when calling queries.getRuleById');
+      errorLog(ruleLogger, error, 'Error in HTTP GET /:id/delete when calling ruleQueries.getRuleById');
       return res.status(500).json('Server Error');
     }
 
     if (getResults.rows.length === 0) {
-      pool.query(queries.getRules, [], (error, results) => {
+      pool.query(ruleQueries.getRules, [], (error, results) => {
         if (error) {
-          errorLog(ruleLogger, error, 'Error in HTTP GET /:id/delete when calling queries.getRules');
+          errorLog(ruleLogger, error, 'Error in HTTP GET /:id/delete when calling ruleQueries.getRules');
           return res.status(500).json('Server Error');
         }
 
@@ -94,9 +94,9 @@ router.get('/:id/delete', verifyToken, cashierAndDeveloper, (req, res) => {
         });
       });
     } else {
-      pool.query(queries.deleteRuleById, [id], (error, deleteResults) => {
+      pool.query(ruleQueries.deleteRuleById, [id], (error, deleteResults) => {
         if (error) {
-          errorLog(ruleLogger, error, 'Error in HTTP GET /:id/delete when calling queries.deleteRuleById');
+          errorLog(ruleLogger, error, 'Error in HTTP GET /:id/delete when calling ruleQueries.deleteRuleById');
           return res.status(500).json('Server Error');
         }
 

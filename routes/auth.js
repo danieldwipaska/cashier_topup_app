@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-const queries = require('../database/users/queries');
+const userQueries = require('../database/users/queries');
 const bcrypt = require('bcryptjs');
 const { v4 } = require('uuid');
 const jwt = require('jsonwebtoken');
@@ -15,7 +15,7 @@ router.post('/register', verifyToken, developerOnly, (req, res) => {
   const { username, password, position } = req.body;
 
   // SEARCH
-  pool.query(queries.getUserByUsername, [username], async (error, usernameResults) => {
+  pool.query(userQueries.getUserByUsername, [username], async (error, usernameResults) => {
     if (error) return console.log(error);
 
     if (usernameResults.rows.length) {
@@ -26,7 +26,7 @@ router.post('/register', verifyToken, developerOnly, (req, res) => {
         bcrypt.hash(password, salt, (error, hash) => {
           if (error) return console.log(error);
           const id = v4();
-          pool.query(queries.addUser, [id, username, hash, position], (error, addResults) => {
+          pool.query(userQueries.addUser, [id, username, hash, position], (error, addResults) => {
             if (error) return console.log(error);
 
             res.status(200).json('Account has been created successfully');
@@ -41,9 +41,9 @@ router.post('/register', verifyToken, developerOnly, (req, res) => {
 router.post('/login', (req, res) => {
   const { username, password } = req.body;
 
-  pool.query(queries.getUserByUsername, [username], async (error, getResults) => {
+  pool.query(userQueries.getUserByUsername, [username], async (error, getResults) => {
     if (error) {
-      errorLog(loginLogger, error, 'Error in HTTP POST /login when calling queries.getUserByUsername');
+      errorLog(loginLogger, error, 'Error in HTTP POST /login when calling userQueries.getUserByUsername');
       return res.status(500).json('Server Error');
     }
 

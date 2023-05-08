@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-const queries = require('../database/cards/queries');
+const cardQueries = require('../database/cards/queries');
 const verifyToken = require('./middlewares/verifyToken');
 const { errorLog, infoLog } = require('../config/logger/functions');
 const { cardLogger } = require('../config/logger/childLogger');
@@ -9,9 +9,9 @@ const { cashierAndDeveloper } = require('./middlewares/userRole');
 
 // GET ALL CARDS
 router.get('/list', verifyToken, cashierAndDeveloper, (req, res) => {
-  pool.query(queries.getCards, [], (error, getCardsResults) => {
+  pool.query(cardQueries.getCards, [], (error, getCardsResults) => {
     if (error) {
-      errorLog(cardLogger, error, 'Error in HTTP GET /list when calling queries.getCards');
+      errorLog(cardLogger, error, 'Error in HTTP GET /list when calling cardQueries.getCards');
     }
 
     return res.render('card', {
@@ -28,24 +28,24 @@ router.get('/:id/delete', verifyToken, cashierAndDeveloper, async (req, res) => 
 
   // GET CARD
   try {
-    const cards = await pool.query(queries.getCardByCardId, [id]);
+    const cards = await pool.query(cardQueries.getCardByCardId, [id]);
 
     if (!cards.rows.length) return res.status(404).json('Card not found');
 
     // DELETE CARD
     try {
-      await pool.query(queries.deleteCardById, [cards.rows[0].id]);
+      await pool.query(cardQueries.deleteCardById, [cards.rows[0].id]);
 
       // SEND LOG
       infoLog(cardLogger, 'Card was successfully deleted', '', '', '', req.validUser.name);
 
       return res.redirect('/card/list');
     } catch (error) {
-      errorLog(cardLogger, error, 'Error in HTTP GET /:id/delete when calling queries.deleteCardById');
+      errorLog(cardLogger, error, 'Error in HTTP GET /:id/delete when calling cardQueries.deleteCardById');
       return res.status(500).json('Server Error');
     }
   } catch (error) {
-    errorLog(memberLogger, error, 'Error in HTTP GET /:id/delete when calling queries.getCardByCardId');
+    errorLog(memberLogger, error, 'Error in HTTP GET /:id/delete when calling cardQueries.getCardByCardId');
     return res.status(500).json('Server Error');
   }
 });

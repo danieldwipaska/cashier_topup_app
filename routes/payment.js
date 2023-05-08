@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-const queries = require('../database/cards/queries');
-const payments = require('../database/payments/queries');
-const rules = require('../database/rules/queries');
-const fnbs = require('../database/fnbs/queries');
-const stocks = require('../database/stocks/queries');
+const cardQueries = require('../database/cards/queries');
+const paymentQueries = require('../database/payments/queries');
+const ruleQueries = require('../database/rules/queries');
+const fnbQueries = require('../database/fnbs/queries');
+const stockQueries = require('../database/stocks/queries');
 const verifyToken = require('./middlewares/verifyToken');
 const { v4 } = require('uuid');
 const { errorLog, infoLog } = require('../config/logger/functions');
@@ -27,7 +27,7 @@ router.get('/search', verifyToken, allRoles, async (req, res) => {
   }
 
   try {
-    const cards = await pool.query(queries.getCardById, [barcode]);
+    const cards = await pool.query(cardQueries.getCardById, [barcode]);
 
     if (cards.rows.length === 0) {
       return res.render('search', {
@@ -48,12 +48,12 @@ router.get('/search', verifyToken, allRoles, async (req, res) => {
     }
 
     try {
-      let fnbsResults = await pool.query(fnbs.getFnbs, []);
+      let fnbsResults = await pool.query(fnbQueries.getFnbs, []);
 
       for (let i = 0; i < fnbsResults.rows.length; i++) {
         const matStockAmount = [];
         for (let j = 0; j < fnbsResults.rows[i].raw_mat.length; j++) {
-          const stocksResults = await pool.query(stocks.getStockByName, [fnbsResults.rows[i].raw_mat[j]]);
+          const stocksResults = await pool.query(stockQueries.getStockByName, [fnbsResults.rows[i].raw_mat[j]]);
 
           if (!stocksResults) {
             matStockAmount.push(null);
@@ -72,7 +72,7 @@ router.get('/search', verifyToken, allRoles, async (req, res) => {
       const drinkFnb = fnbsResults.rows.filter((fnbResult) => fnbResult.kind === 'drink');
 
       try {
-        const paymentResults = await pool.query(payments.getPaymentPaidByID, [cards.rows[0].customer_id, false]);
+        const paymentResults = await pool.query(paymentQueries.getPaymentPaidByID, [cards.rows[0].customer_id, false]);
 
         let sumPayment = 0;
 
@@ -81,7 +81,7 @@ router.get('/search', verifyToken, allRoles, async (req, res) => {
         });
 
         try {
-          const ruleResults = await pool.query(rules.getRules, []);
+          const ruleResults = await pool.query(ruleQueries.getRules, []);
 
           return res.render('payment', {
             layout: 'layouts/main-layout',
@@ -96,19 +96,19 @@ router.get('/search', verifyToken, allRoles, async (req, res) => {
             rules: ruleResults.rows,
           });
         } catch (error) {
-          errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling rules.getRules');
+          errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling ruleQueries.getRules');
           return res.status(500).json('Server Error');
         }
       } catch (error) {
-        errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling payments.getPaymentPaidByID');
+        errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling paymentQueries.getPaymentPaidByID');
         return res.status(500).json('Server Error');
       }
     } catch (error) {
-      errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling fnbs.getFnbs');
+      errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling fnbQueries.getFnbs');
       return res.status(500).json('Server Error');
     }
   } catch (error) {
-    errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling queries.getCardById');
+    errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling cardQueries.getCardById');
     return res.status(500).json('Server Error');
   }
 });
@@ -127,35 +127,35 @@ router.post('/temp', verifyToken, allRoles, async (req, res) => {
 
   try {
     const id = v4();
-    await pool.query(payments.addPayment, [id, sort, barcode, customer_name, customer_id, payment, service, tax, menu, false, amount, totalPrice, invoiceNumber, null, req.validUser.name]);
+    await pool.query(paymentQueries.addPayment, [id, sort, barcode, customer_name, customer_id, payment, service, tax, menu, false, amount, totalPrice, invoiceNumber, null, req.validUser.name]);
 
     // SEND LOG
     infoLog(paymentLogger, 'Temporary payment was successfully added', barcode, customer_name, customer_id, req.validUser.name);
 
     // UPDATE THE STOCKS
     try {
-      const fnbsResults = await pool.query(fnbs.getFnbByMenu, [menu]);
+      const fnbsResults = await pool.query(fnbQueries.getFnbByMenu, [menu]);
 
       // fnbsResults.rows[0].raw_mat <--- array
       // fnbsResults.rows[0].raw_amount <--- array
 
       for (let i = 0; i < fnbsResults.rows[0].raw_mat.length; i++) {
-        let stocksResults = await pool.query(stocks.getStockByName, [fnbsResults.rows[0].raw_mat[i]]);
+        let stocksResults = await pool.query(stockQueries.getStockByName, [fnbsResults.rows[0].raw_mat[i]]);
 
         let newStock = stocksResults.rows[0].amount - fnbsResults.rows[0].raw_amount[i] * amount;
 
         if (newStock < 0) return res.status(400).json(`Stock ${fnbsResults.rows[0].raw_mat[i]} is not enough`);
 
-        await pool.query(stocks.updateStockByName, [newStock, fnbsResults.rows[0].raw_mat[i]]);
+        await pool.query(stockQueries.updateStockByName, [newStock, fnbsResults.rows[0].raw_mat[i]]);
       }
 
       return res.redirect(`/payment/search?card=${barcode}`);
     } catch (error) {
-      errorLog(paymentLogger, error, 'Error in HTTP POST /temp when calling payments.getFnbByMenu');
+      errorLog(paymentLogger, error, 'Error in HTTP POST /temp when calling fnbQueries.getFnbByMenu');
       return res.status(500).json('Server Error');
     }
   } catch (error) {
-    errorLog(paymentLogger, error, 'Error in HTTP POST /temp when calling payments.addPayment');
+    errorLog(paymentLogger, error, 'Error in HTTP POST /temp when calling paymentQueries.addPayment');
     return res.status(500).json('Server Error');
   }
 });
@@ -166,40 +166,40 @@ router.get('/temp/:id/delete', verifyToken, allRoles, async (req, res) => {
 
   // GET A PAYMENT BY ID
   try {
-    const paymentResults = await pool.query(payments.getPaymentById, [id]);
+    const paymentResults = await pool.query(paymentQueries.getPaymentById, [id]);
 
     if (!paymentResults.rows.length) return res.status(404).json('Payment not found');
 
     try {
-      await pool.query(payments.deletePaymentById, [id]);
+      await pool.query(paymentQueries.deletePaymentById, [id]);
 
       // SEND LOG
       infoLog(paymentLogger, 'Temporary Payment was successfully deleted', paymentResults.rows[0].barcode, paymentResults.rows[0].customer_name, paymentResults.rows[0].customer_id, req.validUser.name);
 
       try {
-        const fnbsResults = await pool.query(fnbs.getFnbByMenu, [paymentResults.rows[0].menu]);
+        const fnbsResults = await pool.query(fnbQueries.getFnbByMenu, [paymentResults.rows[0].menu]);
 
         for (let i = 0; i < fnbsResults.rows[0].raw_mat.length; i++) {
-          let stocksResults = await pool.query(stocks.getStockByName, [fnbsResults.rows[0].raw_mat[i]]);
+          let stocksResults = await pool.query(stockQueries.getStockByName, [fnbsResults.rows[0].raw_mat[i]]);
 
           let newStock = stocksResults.rows[0].amount + fnbsResults.rows[0].raw_amount[i] * paymentResults.rows[0].amount;
 
           if (newStock < 0) return res.status(400).json(`Stock ${fnbsResults.rows[0].raw_mat[i]} is not enough`);
 
-          await pool.query(stocks.updateStockByName, [newStock, fnbsResults.rows[0].raw_mat[i]]);
+          await pool.query(stockQueries.updateStockByName, [newStock, fnbsResults.rows[0].raw_mat[i]]);
         }
 
         return res.redirect(`/payment/search?card=${paymentResults.rows[0].barcode}`);
       } catch (error) {
-        errorLog(paymentLogger, error, 'Error in HTTP GET /temp/:id/delete when calling payments.getFnbByMenu');
+        errorLog(paymentLogger, error, 'Error in HTTP GET /temp/:id/delete when calling fnbQueries.getFnbByMenu');
         return res.status(500).json('Server Error');
       }
     } catch (error) {
-      errorLog(paymentLogger, error, 'Error in HTTP GET /temp/:id/delete when calling payments.deletePaymentById');
+      errorLog(paymentLogger, error, 'Error in HTTP GET /temp/:id/delete when calling paymentQueries.deletePaymentById');
       return res.status(500).json('Server Error');
     }
   } catch (error) {
-    errorLog(paymentLogger, error, 'Error in HTTP GET /temp/:id/delete when calling payments.getPaymentById');
+    errorLog(paymentLogger, error, 'Error in HTTP GET /temp/:id/delete when calling paymentQueries.getPaymentById');
     return res.status(500).json('Server Error');
   }
 });
@@ -208,9 +208,9 @@ router.get('/temp/:id/delete', verifyToken, allRoles, async (req, res) => {
 router.post('/', verifyToken, allRoles, (req, res) => {
   const { barcode, payment, customerId: customer_id } = req.body;
 
-  pool.query(queries.getCardById, [barcode], (error, getCardResults) => {
+  pool.query(cardQueries.getCardById, [barcode], (error, getCardResults) => {
     if (error) {
-      errorLog(paymentLogger, error, 'Error in HTTP POST / when calling queries.getCardById');
+      errorLog(paymentLogger, error, 'Error in HTTP POST / when calling cardQueries.getCardById');
       return res.status(500).json('Server Error');
     }
 
@@ -221,9 +221,9 @@ router.post('/', verifyToken, allRoles, (req, res) => {
     } else if (resBalance < 0) {
       return res.status(400).json({ message: 'Saldo tidak mencukupi' });
     } else {
-      pool.query(payments.getPaymentPaidByID, [customer_id, false], (error, getPaymentResults) => {
+      pool.query(paymentQueries.getPaymentPaidByID, [customer_id, false], (error, getPaymentResults) => {
         if (error) {
-          errorLog(paymentLogger, error, 'Error in HTTP POST / when calling payments.getPaymentPaidByID');
+          errorLog(paymentLogger, error, 'Error in HTTP POST / when calling paymentQueries.getPaymentPaidByID');
           return res.status(500).json('Server Error');
         }
 
@@ -231,9 +231,9 @@ router.post('/', verifyToken, allRoles, (req, res) => {
           return res.status(404).json('Payment Not Found');
         } else {
           // UPDATE BALANCE
-          pool.query(queries.updateBalance, [resBalance, getCardResults.rows[0].deposit, getCardResults.rows[0].barcode], (error, updateBalanceResults) => {
+          pool.query(cardQueries.updateBalance, [resBalance, getCardResults.rows[0].deposit, getCardResults.rows[0].barcode], (error, updateBalanceResults) => {
             if (error) {
-              errorLog(paymentLogger, error, 'Error in HTTP POST / when calling queries.updateBalance');
+              errorLog(paymentLogger, error, 'Error in HTTP POST / when calling cardQueries.updateBalance');
               return res.status(500).json('Server Error');
             }
 
@@ -242,9 +242,9 @@ router.post('/', verifyToken, allRoles, (req, res) => {
 
             // UPDATE PAID OFF AND GENERATE INVOICE
             const invoiceNumber = v4();
-            pool.query(payments.updatePaymentPaid, [true, invoiceNumber, resBalance, customer_id, false], (error, updatePaymentResults) => {
+            pool.query(paymentQueries.updatePaymentPaid, [true, invoiceNumber, resBalance, customer_id, false], (error, updatePaymentResults) => {
               if (error) {
-                errorLog(paymentLogger, error, 'Error in HTTP POST / when calling payments.updatePaymentPaid');
+                errorLog(paymentLogger, error, 'Error in HTTP POST / when calling paymentQueries.updatePaymentPaid');
                 return res.status(500).json('Server Error');
               }
 
@@ -278,9 +278,9 @@ router.post('/', verifyToken, allRoles, (req, res) => {
 router.get('/invoice/:num', verifyToken, allRoles, (req, res) => {
   const { num } = req.params;
 
-  pool.query(payments.getInvoice, [num], (error, getInvoiceResults) => {
+  pool.query(paymentQueries.getInvoice, [num], (error, getInvoiceResults) => {
     if (error) {
-      errorLog(paymentLogger, error, 'Error in HTTP GET /invoice/:num when calling payments.getInvoice');
+      errorLog(paymentLogger, error, 'Error in HTTP GET /invoice/:num when calling paymentQueries.getInvoice');
       return res.status(500).json('Server Error');
     }
 
@@ -301,9 +301,9 @@ router.get('/invoice/:num', verifyToken, allRoles, (req, res) => {
 
 // PAYMENT LIST
 router.get('/list', verifyToken, allRoles, (req, res) => {
-  pool.query(payments.getPaymentByPaidOff, [true], (error, results) => {
+  pool.query(paymentQueries.getPaymentByPaidOff, [true], (error, results) => {
     if (error) {
-      errorLog(paymentLogger, error, 'Error in HTTP GET /list when calling payments.getPayments');
+      errorLog(paymentLogger, error, 'Error in HTTP GET /list when calling paymentQueries.getPaymentByPaidOff');
       return res.status(500).json('Server Error');
     }
 
@@ -321,18 +321,18 @@ router.get('/list', verifyToken, allRoles, (req, res) => {
 router.get('/:invoice/delete', verifyToken, allRoles, (req, res) => {
   const { invoice } = req.params;
 
-  pool.query(payments.getPaymentsByInvoice, [invoice], (error, getResults) => {
+  pool.query(paymentQueries.getPaymentsByInvoice, [invoice], (error, getResults) => {
     if (error) {
-      errorLog(paymentLogger, error, 'Error in HTTP GET /:id/delete when calling payments.getPaymentsByInvoice');
+      errorLog(paymentLogger, error, 'Error in HTTP GET /:invoice/delete when calling paymentQueries.getPaymentsByInvoice');
       return res.status(500).json('Server Error');
     }
 
     if (getResults.rows.length === 0) {
       res.status(404).json('Payment Not Found');
     } else {
-      pool.query(payments.deletePaymentByInvoice, [invoice], (error, deleteResults) => {
+      pool.query(paymentQueries.deletePaymentByInvoice, [invoice], (error, deleteResults) => {
         if (error) {
-          errorLog(paymentLogger, error, 'Error in HTTP GET /:id/delete when calling payments.deletePaymentByInvoice');
+          errorLog(paymentLogger, error, 'Error in HTTP GET /:invoice/delete when calling paymentQueries.deletePaymentByInvoice');
           return res.status(500).json('Server Error');
         }
 
@@ -352,7 +352,7 @@ router.get('/:invoice/delete', verifyToken, allRoles, (req, res) => {
 //   let paymentInt = parseInt(payment, 10);
 
 //   // SEARCH FOR CARD
-//   pool.query(queries.getCardById, [barcode], (error, results) => {
+//   pool.query(cardQueries.getCardById, [barcode], (error, results) => {
 //     if (error) return console.log(error);
 
 //     // CHECK WHETHER CUSTOMER IS ACTIVE AND DINE-IN
@@ -389,7 +389,7 @@ router.get('/:invoice/delete', verifyToken, allRoles, (req, res) => {
 //         pool.query(payments.addPayment, [id, results.rows[0].barcode, results.rows[0].customer_name, customer_id, paymentInt, menu, amount], (error, addPaymentResults) => {
 //           if (error) return console.log(error);
 
-//           pool.query(queries.updateBalance, [paymentInt, barcode], (error, updateResults) => {
+//           pool.query(cardQueries.updateBalance, [paymentInt, barcode], (error, updateResults) => {
 //             if (error) return console.log(error);
 
 //             res.render('notificationSuccessWithBalance', {

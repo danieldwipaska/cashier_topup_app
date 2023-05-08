@@ -57,7 +57,7 @@ router.get('/search', verifyToken, cashierAndDeveloper, async (req, res) => {
         data: cards.rows[0],
       });
     } catch (error) {
-      errorLog(memberLogger, error, 'Error in HTTP GET /search when calling queries.getCardById');
+      errorLog(memberLogger, error, 'Error in HTTP GET /search when calling cardQueries.getCardById');
       return res.status(500).json('Server Error');
     }
   }
@@ -76,7 +76,7 @@ router.get('/list', verifyToken, cashierAndDeveloper, async (req, res) => {
       data: members.rows,
     });
   } catch (error) {
-    errorLog(memberLogger, error, 'Error in HTTP GET /list when calling queries.getMembers');
+    errorLog(memberLogger, error, 'Error in HTTP GET /list when calling memberQueries.getMembers');
     return res.status(500).json('Server Error');
   }
 });

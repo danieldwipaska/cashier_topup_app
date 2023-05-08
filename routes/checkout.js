@@ -3,8 +3,8 @@ const { v4 } = require('uuid');
 const { checkoutLogger } = require('../config/logger/childLogger');
 const { errorLog, infoLog } = require('../config/logger/functions');
 const router = express.Router();
-const queries = require('../database/cards/queries');
-const payments = require('../database/payments/queries');
+const cardQueries = require('../database/cards/queries');
+const paymentQueries = require('../database/payments/queries');
 const memberQueries = require('../database/members/queries');
 const pool = require('../db');
 const { cashierAndDeveloper } = require('./middlewares/userRole');
@@ -23,9 +23,9 @@ router.get('/search', verifyToken, cashierAndDeveloper, (req, res) => {
     });
   } else {
     //SEARCH FOR CARD
-    pool.query(queries.getCardById, [barcode], (error, results) => {
+    pool.query(cardQueries.getCardById, [barcode], (error, results) => {
       if (error) {
-        errorLog(checkoutLogger, error, 'Error in HTTP GET /search when calling queries.getCardById');
+        errorLog(checkoutLogger, error, 'Error in HTTP GET /search when calling cardQueries.getCardById');
         return res.status(500).json('Server Error');
       }
 
@@ -54,7 +54,7 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
 
   // SEARCH FOR CARD
   try {
-    const cards = await pool.query(queries.getCardById, [barcode]);
+    const cards = await pool.query(cardQueries.getCardById, [barcode]);
 
     if (!cards.rows.length) {
       // IF CARD DOES NOT EXIST
@@ -70,16 +70,16 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
     } else {
       // UPDATE CARD
       try {
-        await pool.query(queries.cardStatus, [false, '', '', 0, 0, cards.rows[0].is_member, cards.rows[0].barcode]);
+        await pool.query(cardQueries.cardStatus, [false, '', '', 0, 0, cards.rows[0].is_member, cards.rows[0].barcode]);
 
-        infoLog(checkoutLogger, 'dine-in was successfully updated into false', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);
+        infoLog(checkoutLogger, 'Card is_active was successfully updated into false', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);
 
         try {
           // ADD PAYMENT
           const id = v4();
           const invoiceNumber = v4();
           const sort = 'checkout';
-          await pool.query(payments.addPayment, [
+          await pool.query(paymentQueries.addPayment, [
             id,
             sort,
             cards.rows[0].barcode,
@@ -137,16 +137,16 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
             message: 'Card has been checked out successfully.',
           });
         } catch (error) {
-          errorLog(checkoutLogger, error, 'Error in HTTP POST / when calling payments.addPayment');
+          errorLog(checkoutLogger, error, 'Error in HTTP POST / when calling paymentQueries.addPayment');
           return res.status(500).json('Server Error');
         }
       } catch (error) {
-        errorLog(checkoutLogger, error, 'Error in HTTP POST / when calling queries.cardStatus');
+        errorLog(checkoutLogger, error, 'Error in HTTP POST / when calling cardQueries.cardStatus');
         return res.status(500).json('Server Error');
       }
     }
   } catch (error) {
-    errorLog(checkoutLogger, error, 'Error in HTTP POST / when calling queries.getCardById');
+    errorLog(checkoutLogger, error, 'Error in HTTP POST / when calling cardQueries.getCardById');
     return res.status(500).json('Server Error');
   }
 });

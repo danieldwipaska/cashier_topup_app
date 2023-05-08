@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-const users = require('../database/users/queries');
+const userQueries = require('../database/users/queries');
 const verifyToken = require('./middlewares/verifyToken');
 const { userLogger } = require('../config/logger/childLogger');
 const { infoLog, errorLog } = require('../config/logger/functions');
@@ -9,9 +9,9 @@ const { developerOnly } = require('./middlewares/userRole');
 
 // USER LIST
 router.get('/list', verifyToken, developerOnly, (req, res) => {
-  pool.query(users.getUsers, [], (error, results) => {
+  pool.query(userQueries.getUsers, [], (error, results) => {
     if (error) {
-      errorLog(userLogger, error, 'Error in HTTP GET /list when calling users.getUsers');
+      errorLog(userLogger, error, 'Error in HTTP GET /list when calling userQueries.getUsers');
       return res.status(500).json('Server Error');
     }
 
@@ -29,16 +29,16 @@ router.get('/list', verifyToken, developerOnly, (req, res) => {
 router.get('/:id/delete', verifyToken, developerOnly, (req, res) => {
   const { id } = req.params;
 
-  pool.query(users.getUserById, [id], (error, getResults) => {
+  pool.query(userQueries.getUserById, [id], (error, getResults) => {
     if (error) {
-      errorLog(userLogger, error, 'Error in HTTP GET /:id/delete when calling users.getUserById');
+      errorLog(userLogger, error, 'Error in HTTP GET /:id/delete when calling userQueries.getUserById');
       return res.status(500).json('Server Error');
     }
 
     if (getResults.rows.length === 0) {
-      pool.query(users.getUsers, [], (error, results) => {
+      pool.query(userQueries.getUsers, [], (error, results) => {
         if (error) {
-          errorLog(userLogger, error, 'Error in HTTP GET /:id/delete when calling users.getUsers');
+          errorLog(userLogger, error, 'Error in HTTP GET /:id/delete when calling userQueries.getUsers');
           return res.status(500).json('Server Error');
         }
 
@@ -51,9 +51,9 @@ router.get('/:id/delete', verifyToken, developerOnly, (req, res) => {
         });
       });
     } else {
-      pool.query(users.deleteUserById, [id], (error, deleteResults) => {
+      pool.query(userQueries.deleteUserById, [id], (error, deleteResults) => {
         if (error) {
-          errorLog(userLogger, error, 'Error in HTTP GET /:id/delete when calling users.deleteUserById');
+          errorLog(userLogger, error, 'Error in HTTP GET /:id/delete when calling userQueries.deleteUserById');
           return res.status(500).json('Server Error');
         }
 

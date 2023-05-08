@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-const queries = require('../database/cards/queries');
+const cardQueries = require('../database/cards/queries');
 const verifyToken = require('./middlewares/verifyToken');
 const { errorLog, infoLog } = require('../config/logger/functions');
 const { activationLogger } = require('../config/logger/childLogger');
@@ -22,7 +22,7 @@ router.get('/search', verifyToken, cashierAndDeveloper, async (req, res) => {
   }
 
   try {
-    const cards = await pool.query(queries.getCardById, [barcode]);
+    const cards = await pool.query(cardQueries.getCardById, [barcode]);
 
     if (cards.rows.length === 0) {
       return res.render('search', {
@@ -48,7 +48,7 @@ router.get('/search', verifyToken, cashierAndDeveloper, async (req, res) => {
       alert: '',
     });
   } catch (error) {
-    errorLog(activationLogger, error, 'Error in HTTP GET /search when calling queries.getCardById');
+    errorLog(activationLogger, error, 'Error in HTTP GET /search when calling cardQueries.getCardById');
     return res.status(500).json('Server Error');
   }
 });
@@ -56,9 +56,9 @@ router.get('/search', verifyToken, cashierAndDeveloper, async (req, res) => {
 // ACTIVATE
 router.post('/activate', verifyToken, cashierAndDeveloper, (req, res) => {
   const { barcode, name: customer_name } = req.body;
-  pool.query(queries.getCardById, [barcode], (error, results) => {
+  pool.query(cardQueries.getCardById, [barcode], (error, results) => {
     if (error) {
-      errorLog(activationLogger, error, 'Error in HTTP POST /activate when calling queries.getCardById');
+      errorLog(activationLogger, error, 'Error in HTTP POST /activate when calling cardQueries.getCardById');
       return res.status(500).json('Server Error');
     }
 
@@ -71,9 +71,9 @@ router.post('/activate', verifyToken, cashierAndDeveloper, (req, res) => {
       });
     } else {
       const customer_id = v4();
-      pool.query(queries.cardActivate, [true, customer_name, customer_id, barcode], (error, cardActivateResults) => {
+      pool.query(cardQueries.cardActivate, [true, customer_name, customer_id, barcode], (error, cardActivateResults) => {
         if (error) {
-          errorLog(activationLogger, error, 'Error in HTTP POST /activate when calling queries.cardActivate');
+          errorLog(activationLogger, error, 'Error in HTTP POST /activate when calling cardQueries.cardActivate');
           return res.status(500).json('Server Error');
         }
 
