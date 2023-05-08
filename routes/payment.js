@@ -13,7 +13,7 @@ const { paymentLogger } = require('../config/logger/childLogger');
 const { allRoles } = require('./middlewares/userRole');
 
 // SEARCH
-router.get('/search', verifyToken, allRoles, (req, res) => {
+router.get('/search', verifyToken, allRoles, async (req, res) => {
   const { card: barcode } = req.query;
 
   // INITIAL PAGE
@@ -24,71 +24,92 @@ router.get('/search', verifyToken, allRoles, (req, res) => {
       subtitle: 'Payment',
       alert: '',
     });
-  } else {
-    // SEARCH FOR CARD
-    pool.query(queries.getCardById, [barcode], (error, results) => {
-      if (error) {
-        errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling queries.getCardById');
+  }
+
+  try {
+    const cards = await pool.query(queries.getCardById, [barcode]);
+
+    if (cards.rows.length === 0) {
+      return res.render('search', {
+        layout: 'layouts/main-layout',
+        title: 'Search',
+        subtitle: 'Payment',
+        alert: 'Card does NOT EXIST',
+      });
+    }
+
+    if (!cards.rows[0].is_active) {
+      return res.render('search', {
+        layout: 'layouts/main-layout',
+        title: 'Search',
+        subtitle: 'Payment',
+        alert: 'Card is NOT ACTIVE',
+      });
+    }
+
+    try {
+      let fnbsResults = await pool.query(fnbs.getFnbs, []);
+
+      for (let i = 0; i < fnbsResults.rows.length; i++) {
+        const matStockAmount = [];
+        for (let j = 0; j < fnbsResults.rows[i].raw_mat.length; j++) {
+          const stocksResults = await pool.query(stocks.getStockByName, [fnbsResults.rows[i].raw_mat[j]]);
+
+          if (!stocksResults) {
+            matStockAmount.push(null);
+          } else {
+            matStockAmount.push(stocksResults.rows[0].amount);
+          }
+        }
+        fnbsResults.rows[i].matStockAmount = matStockAmount;
+      }
+
+      // console.log(fnbsResults.rows[0].raw_mat);
+      // console.log(fnbsResults.rows[0].raw_amount);
+      // console.log(fnbsResults.rows[0].matStockAmount);
+
+      const foodFnb = fnbsResults.rows.filter((fnbResult) => fnbResult.kind === 'food');
+      const drinkFnb = fnbsResults.rows.filter((fnbResult) => fnbResult.kind === 'drink');
+
+      try {
+        const paymentResults = await pool.query(payments.getPaymentPaidByID, [cards.rows[0].customer_id, false]);
+
+        let sumPayment = 0;
+
+        paymentResults.rows.forEach((menu) => {
+          sumPayment += menu.payment;
+        });
+
+        try {
+          const ruleResults = await pool.query(rules.getRules, []);
+
+          return res.render('payment', {
+            layout: 'layouts/main-layout',
+            title: 'Payments',
+            subtitle: 'Payment',
+            alert: '',
+            data: cards.rows[0],
+            dataPayTemp: paymentResults.rows,
+            foods: foodFnb,
+            drinks: drinkFnb,
+            sumPayment: sumPayment,
+            rules: ruleResults.rows,
+          });
+        } catch (error) {
+          errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling rules.getRules');
+          return res.status(500).json('Server Error');
+        }
+      } catch (error) {
+        errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling payments.getPaymentPaidByID');
         return res.status(500).json('Server Error');
       }
-      if (results.rows.length === 0) {
-        return res.render('search', {
-          layout: 'layouts/main-layout',
-          title: 'Search',
-          subtitle: 'Payment',
-          alert: 'Card does NOT EXIST',
-        });
-      } else if (!results.rows[0].is_active) {
-        return res.render('search', {
-          layout: 'layouts/main-layout',
-          title: 'Search',
-          subtitle: 'Payment',
-          alert: 'Card is NOT ACTIVE',
-        });
-      } else {
-        pool.query(fnbs.getFnbs, [], (error, fnbResults) => {
-          if (error) {
-            errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling fnbs.getFnbs');
-            return res.status(500).json('Server Error');
-          }
-
-          const foodFnb = fnbResults.rows.filter((fnbResult) => fnbResult.kind === 'food');
-          const drinkFnb = fnbResults.rows.filter((fnbResult) => fnbResult.kind === 'drink');
-
-          pool.query(payments.getPaymentPaidByID, [results.rows[0].customer_id, false], (error, payment) => {
-            if (error) {
-              errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling payments.getPaymentPaidByID');
-              return res.status(500).json('Server Error');
-            }
-
-            let sumPayment = 0;
-            payment.rows.forEach((menu) => {
-              sumPayment += menu.payment;
-            });
-
-            pool.query(rules.getRules, [], (error, rules) => {
-              if (error) {
-                errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling rules.getRules');
-                return res.status(500).json('Server Error');
-              }
-
-              return res.render('payment', {
-                layout: 'layouts/main-layout',
-                title: 'Payments',
-                subtitle: 'Payment',
-                alert: '',
-                data: results.rows[0],
-                dataPayTemp: payment.rows,
-                foods: foodFnb,
-                drinks: drinkFnb,
-                sumPayment: sumPayment,
-                rules: rules.rows,
-              });
-            });
-          });
-        });
-      }
-    });
+    } catch (error) {
+      errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling fnbs.getFnbs');
+      return res.status(500).json('Server Error');
+    }
+  } catch (error) {
+    errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling queries.getCardById');
+    return res.status(500).json('Server Error');
   }
 });
 

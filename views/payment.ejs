@@ -126,12 +126,16 @@
           <div class="row">
             <% foods.forEach((elementFood) => { %>
 
-            <div class="col-lg-3 my-2">
+            <div class="col-lg-3 my-2 food-card">
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title mb-4"><%= elementFood.menu %></h5>
 
                   <form action="/payment/temp" method="post">
+                    <h6>
+                      Max. <% let foodCountArr = []; %><% elementFood.raw_amount.forEach((rawAmount, i) => { %> <% let dividedResult = elementFood.matStockAmount[i]/rawAmount; %> <% let dividedFloor = Math.floor(dividedResult); %> <%
+                      foodCountArr.push(dividedFloor) %> <% }); %> <% let minFoodCount = Math.min(...foodCountArr); %> <%= minFoodCount %>
+                    </h6>
                     <div class="mb-1">
                       <% rules.forEach((rule) => { %>
 
@@ -144,6 +148,9 @@
                       <input type="hidden" name="customerName" value="<%= data.customer_name %>" readonly />
                       <input type="hidden" name="customerId" value="<%= data.customer_id %>" readonly />
                       <input type="number" name="amount" id="amount" style="width: 50%" required />
+                      <% elementFood.raw_amount.forEach((rawAmount, i) => { %> <% if (elementFood.matStockAmount[i] - rawAmount < 0 ) { %>
+                      <p class="text-danger m-0"><%= elementFood.raw_mat[i] %> habis</p>
+                      <% } %> <% }); %>
                     </div>
 
                     <button class="btn btn-info float-end" type="submit">Add</button>
@@ -159,11 +166,15 @@
           <div class="row">
             <% drinks.forEach((elementDrink) => { %>
 
-            <div class="col-lg-3 my-2">
+            <div class="col-lg-3 my-2 drink-card">
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title"><%= elementDrink.menu %></h5>
                   <form action="/payment/temp" method="post">
+                    <h6>
+                      Max. <% let drinkCountArr = []; %><% elementDrink.raw_amount.forEach((rawAmount, i) => { %> <% let dividedResult = elementDrink.matStockAmount[i]/rawAmount; %> <% let dividedFloor = Math.floor(dividedResult); %> <%
+                      drinkCountArr.push(dividedFloor) %> <% }); %> <% let minDrinkCount = Math.min(...drinkCountArr); %> <%= minDrinkCount %>
+                    </h6>
                     <div class="mb-1">
                       <% rules.forEach((rule) => { %>
 
@@ -176,7 +187,11 @@
                       <input type="hidden" name="customerName" value="<%= data.customer_name %>" readonly />
                       <input type="hidden" name="customerId" value="<%= data.customer_id %>" readonly />
                       <input type="number" name="amount" id="amount" style="width: 50%" required />
+                      <% elementDrink.raw_amount.forEach((rawAmount, i) => { %> <% if (elementDrink.matStockAmount[i] - rawAmount < 0 ) { %>
+                      <p class="text-danger m-0"><%= elementDrink.raw_mat[i] %> habis</p>
+                      <% } %> <% }); %>
                     </div>
+
                     <button class="btn btn-info float-end" type="submit">Add</button>
                   </form>
                 </div>
@@ -257,3 +272,25 @@
     </div>
   </div>
 </div>
+<script>
+  const foodCard = document.querySelectorAll('.food-card');
+
+  for (let i = 0; i < foodCard.length; i++) {
+    let p = foodCard[i].querySelector('p');
+
+    if (p) {
+      let button = foodCard[i].querySelector('button');
+      button.setAttribute('disabled', 'disabled');
+    }
+  }
+
+  const drinkCard = document.querySelectorAll('.drink-card');
+  for (let i = 0; i < drinkCard.length; i++) {
+    let p = drinkCard[i].querySelector('p');
+
+    if (p) {
+      let button = drinkCard[i].querySelector('button');
+      button.setAttribute('disabled', 'disabled');
+    }
+  }
+</script>
