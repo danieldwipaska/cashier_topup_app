@@ -49,13 +49,28 @@ router.get('/search', verifyToken, cashierAndDeveloper, async (req, res) => {
           alert: 'Card is NOT A MEMBER CARD',
         });
 
-      return res.render('membership', {
-        layout: 'layouts/main-layout',
-        title: 'Membership',
-        subtitle: 'Membership',
-        alert: '',
-        data: cards.rows[0],
-      });
+      try {
+        const members = await pool.query(memberQueries.getMemberByBarcode, [cards.rows[0].barcode]);
+
+        if (members.rows.length)
+          return res.render('search', {
+            layout: 'layouts/main-layout',
+            title: 'Search',
+            subtitle: 'Membership',
+            alert: 'Card BELONGS TO OTHER Member',
+          });
+
+        return res.render('membership', {
+          layout: 'layouts/main-layout',
+          title: 'Membership',
+          subtitle: 'Membership',
+          alert: '',
+          data: cards.rows[0],
+        });
+      } catch (error) {
+        errorLog(memberLogger, error, 'Error in HTTP GET /search when calling memberQueries.getMemberByBarcode');
+        return res.status(500).json('Server Error');
+      }
     } catch (error) {
       errorLog(memberLogger, error, 'Error in HTTP GET /search when calling cardQueries.getCardById');
       return res.status(500).json('Server Error');
@@ -63,7 +78,7 @@ router.get('/search', verifyToken, cashierAndDeveloper, async (req, res) => {
   }
 });
 
-// GET ALL RULES
+// GET ALL MEMBER
 router.get('/list', verifyToken, cashierAndDeveloper, async (req, res) => {
   try {
     const members = await pool.query(memberQueries.getMembers, []);

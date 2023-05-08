@@ -115,7 +115,7 @@ a {
   animation-fill-mode: both;
 }
 
-.menu-button-cardlist {
+.menu-button-stocklist {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
@@ -123,7 +123,7 @@ a {
   animation-fill-mode: both;
 }
 
-.menu-button-paymentlist {
+.menu-button-cardlist {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
@@ -131,7 +131,7 @@ a {
   animation-fill-mode: both;
 }
 
-.menu-button-userlist {
+.menu-button-paymentlist {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
@@ -139,11 +139,27 @@ a {
   animation-fill-mode: both;
 }
 
-.menu-button-transaction {
+.menu-button-memberlist {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
   animation-delay: 0.5s;
+  animation-fill-mode: both;
+}
+
+.menu-button-rulelist {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.6s;
+  animation-fill-mode: both;
+}
+
+.menu-button-userlist {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.7s;
   animation-fill-mode: both;
 }
 
