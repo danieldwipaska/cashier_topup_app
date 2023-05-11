@@ -163,11 +163,19 @@ a {
   animation-fill-mode: both;
 }
 
+.menu-button-analysis {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.8s;
+  animation-fill-mode: both;
+}
+
 .menu-button-back {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
-  animation-delay: 0.6s;
+  animation-delay: 0.9s;
   animation-fill-mode: both;
 }
 

@@ -11,6 +11,8 @@ const { v4 } = require('uuid');
 const { errorLog, infoLog } = require('../config/logger/functions');
 const { paymentLogger } = require('../config/logger/childLogger');
 const { allRoles } = require('./middlewares/userRole');
+const fastcsv = require('fast-csv');
+const fs = require('fs');
 
 // SEARCH
 router.get('/search', verifyToken, allRoles, async (req, res) => {
@@ -404,5 +406,27 @@ router.get('/:invoice/delete', verifyToken, allRoles, (req, res) => {
 //     }
 //   });
 // });
+
+router.post('/download', async (req, res) => {
+  const { archiveFrom, archiveTo } = req.body;
+
+  const dateFrom = new Date(archiveFrom);
+  const dateTo = new Date(archiveTo);
+
+  // console.log(Date.parse(dateFrom));
+  // console.log(Date.parse(dateTo));
+
+  const payments = await pool.query(`SELECT * FROM payments WHERE updated_at >= $1 AND updated_at <= $2`, [dateFrom, dateTo]);
+  // console.log(payments.rows);
+
+  const ws = fs.createWriteStream('./public/files/payments_from_yyyy-mm-dd_to_yyyy-mm-dd.csv');
+
+  fastcsv
+    .write(payments.rows, { headers: true })
+    .on('finish', function () {
+      return res.redirect('/public/files/payments_from_yyyy-mm-dd_to_yyyy-mm-dd.csv');
+    })
+    .pipe(ws);
+});
 
 module.exports = router;

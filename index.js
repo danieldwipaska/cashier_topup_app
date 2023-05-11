@@ -20,6 +20,7 @@ const userRoute = require('./routes/user');
 const ruleRoute = require('./routes/rule');
 const stockRoute = require('./routes/stock');
 const memberRoute = require('./routes/member');
+const analysisRoute = require('./routes/analysis');
 
 const app = express();
 
@@ -50,6 +51,7 @@ app.use('/user', userRoute);
 app.use('/rule', ruleRoute);
 app.use('/stock', stockRoute);
 app.use('/member', memberRoute);
+app.use('/analysis', analysisRoute);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
