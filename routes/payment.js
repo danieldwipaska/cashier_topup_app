@@ -302,21 +302,32 @@ router.get('/invoice/:num', verifyToken, allRoles, (req, res) => {
 });
 
 // PAYMENT LIST
-router.get('/list', verifyToken, allRoles, (req, res) => {
-  pool.query(paymentQueries.getPaymentByPaidOff, [true], (error, results) => {
-    if (error) {
-      errorLog(paymentLogger, error, 'Error in HTTP GET /list when calling paymentQueries.getPaymentByPaidOff');
-      return res.status(500).json('Server Error');
-    }
+router.get('/list', verifyToken, allRoles, async (req, res) => {
+  let { page } = req.query;
+
+  if (!page) {
+    page = '1';
+  }
+
+  const pageInt = parseInt(page, 10);
+  const limit = 20;
+  const offset = (pageInt - 1) * limit;
+
+  try {
+    const payments = await pool.query(paymentQueries.getPaymentByPaidOff, [true, limit, offset]);
 
     return res.render('paymentList', {
       layout: 'layouts/main-layout',
       title: 'Payment List',
-      data: results.rows,
+      data: payments.rows,
       messages: '',
       alert: '',
+      page: page,
     });
-  });
+  } catch (error) {
+    errorLog(paymentLogger, error, 'Error in HTTP GET /list when calling paymentQueries.getPaymentByPaidOff');
+    return res.status(500).json('Server Error');
+  }
 });
 
 // DELETE PAYMENT

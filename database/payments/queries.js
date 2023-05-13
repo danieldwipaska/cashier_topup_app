@@ -4,7 +4,7 @@ const getPayments = 'SELECT * FROM payments';
 const getPaymentByCustomerId = 'SELECT * FROM payments WHERE customer_id = $1';
 const getPaymentByCustomerIdAndSort = 'SELECT * FROM payments WHERE customer_id = $1 AND sort = $2';
 const getPaymentById = 'SELECT * FROM payments WHERE id = $1';
-const getPaymentByPaidOff = 'SELECT * FROM payments WHERE paid_off = $1';
+const getPaymentByPaidOff = 'SELECT * FROM payments WHERE paid_off = $1 ORDER BY updated_at DESC LIMIT $2 OFFSET $3';
 const getPaymentsByInvoice = 'SELECT * FROM payments WHERE invoice_number = $1';
 const getPaymentPaidByID = 'SELECT * FROM payments WHERE customer_id = $1 AND paid_off = $2';
 const deletePaymentById = 'DELETE FROM payments WHERE id = $1;';
