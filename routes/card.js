@@ -14,10 +14,23 @@ router.get('/list', verifyToken, cashierAndDeveloper, (req, res) => {
       errorLog(cardLogger, error, 'Error in HTTP GET /list when calling cardQueries.getCards');
     }
 
+    let debtBalance = 0;
+    let debtDeposit = 0;
+
+    getCardsResults.rows.forEach((result) => {
+      debtBalance += result.balance;
+      debtDeposit += result.deposit;
+    });
+
+    let debtTotal = debtBalance + debtDeposit;
+
     return res.render('card', {
       layout: 'layouts/main-layout',
       title: 'Card List',
       data: getCardsResults.rows,
+      debtBalance,
+      debtDeposit,
+      debtTotal,
     });
   });
 });

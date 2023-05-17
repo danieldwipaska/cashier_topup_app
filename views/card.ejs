@@ -28,7 +28,7 @@
             <th scope="row"><%= element.id %></th>
             <td><%= element.barcode %></td>
             <td><%= Intl.NumberFormat('en-US').format(element.balance) %></td>
-            <td><%= element.deposit %></td>
+            <td><%= Intl.NumberFormat('en-US').format(element.deposit) %></td>
             <td><%= element.customer_name %></td>
             <td><%= element.customer_id %></td>
             <td><%= element.is_member %></td>
@@ -72,7 +72,7 @@
             <th scope="row"><%= element.id %></th>
             <td><%= element.barcode %></td>
             <td><%= Intl.NumberFormat('en-US').format(element.balance) %></td>
-            <td><%= element.deposit %></td>
+            <td><%= Intl.NumberFormat('en-US').format(element.deposit) %></td>
             <td><%= element.customer_name %></td>
             <td><%= element.customer_id %></td>
             <td><%= element.is_member %></td>
@@ -116,6 +116,37 @@
       </table>
     </div>
   </div>
+  <div class="row" style="font-size: small">
+    <div class="col-md-6"></div>
+    <div class="col-md-2">
+      <div class="card text-bg-light mb-3" style="max-width: 18rem">
+        <div class="card-header">Debt</div>
+        <div class="card-body">
+          <h5 class="card-title">Balance</h5>
+          <p class="card-text"><%= Intl.NumberFormat('en-US').format(debtBalance) %></p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="card text-bg-light mb-3" style="max-width: 18rem">
+        <div class="card-header">Debt</div>
+        <div class="card-body">
+          <h5 class="card-title">Deposit</h5>
+          <p class="card-text"><%= Intl.NumberFormat('en-US').format(debtDeposit) %></p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="card text-bg-warning mb-3" style="max-width: 18rem">
+        <div class="card-header">Debt</div>
+        <div class="card-body">
+          <h5 class="card-title">Total</h5>
+          <p class="card-text"><%= Intl.NumberFormat('en-US').format(debtTotal) %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="row my-5 multi-button">
     <div class="col-md-8 mx-auto text-center">
       <a class="button shadow" href="/advanced" role="button">Back</a>
