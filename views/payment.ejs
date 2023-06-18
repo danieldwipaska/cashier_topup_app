@@ -126,13 +126,14 @@
           <div class="row">
             <% foods.forEach((elementFood) => { %>
 
-            <div class="col-lg-3 my-2 food-card">
+            <div class="col-lg-3 my-2 food-card" style="font-size: small">
               <div class="card">
                 <div class="card-body">
-                  <h5 class="card-title mb-4"><%= elementFood.menu %></h5>
+                  <h5 class="card-title"><%= elementFood.menu %></h5>
+                  <h6 class="text-secondary mb-4">@IDR<%= Intl.NumberFormat('en-US').format(elementFood.price) %></h6>
 
                   <form action="/payment/temp" method="post">
-                    <h6>
+                    <h6 class="text-secondary">
                       Max. <% let foodCountArr = []; %><% elementFood.raw_amount.forEach((rawAmount, i) => { %> <% let dividedResult = elementFood.matStockAmount[i]/rawAmount; %> <% let dividedFloor = Math.floor(dividedResult); %> <%
                       foodCountArr.push(dividedFloor) %> <% }); %> <% let minFoodCount = Math.min(...foodCountArr); %> <%= minFoodCount %>
                     </h6>
@@ -148,6 +149,17 @@
                       <input type="hidden" name="customerName" value="<%= data.customer_name %>" readonly />
                       <input type="hidden" name="customerId" value="<%= data.customer_id %>" readonly />
                       <input type="number" name="amount" id="amount" style="width: 50%" required />
+                      <h6 class="text-secondary mt-3">Select Discount:</h6>
+                      <div class="form-check-discount">
+                        <% discounts.forEach((discount) => { %>
+                        <div class="form-check one-discount">
+                          <input class="form-check-input" type="checkbox" value="<%= discount.name %>" id="<%= elementFood.menu %><%= discount.name %>" name="<%= discount.name %>" />
+                          <label class="form-check-label" for="<%= elementFood.menu %><%= discount.name %>"> <%= discount.name %> </label>
+                        </div>
+
+                        <% }); %>
+                        <input class="discount-name" type="hidden" name="discountName" />
+                      </div>
                       <% elementFood.raw_amount.forEach((rawAmount, i) => { %> <% if (elementFood.matStockAmount[i] - rawAmount < 0 ) { %>
                       <p class="text-danger m-0"><%= elementFood.raw_mat[i] %> habis</p>
                       <% } %> <% }); %>
@@ -166,12 +178,13 @@
           <div class="row">
             <% drinks.forEach((elementDrink) => { %>
 
-            <div class="col-lg-3 my-2 drink-card">
+            <div class="col-lg-3 my-2 drink-card" style="font-size: small">
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title"><%= elementDrink.menu %></h5>
+                  <h6 class="text-secondary mb-4">@IDR<%= Intl.NumberFormat('en-US').format(elementDrink.price) %></h6>
                   <form action="/payment/temp" method="post">
-                    <h6>
+                    <h6 class="text-secondary">
                       Max. <% let drinkCountArr = []; %><% elementDrink.raw_amount.forEach((rawAmount, i) => { %> <% let dividedResult = elementDrink.matStockAmount[i]/rawAmount; %> <% let dividedFloor = Math.floor(dividedResult); %> <%
                       drinkCountArr.push(dividedFloor) %> <% }); %> <% let minDrinkCount = Math.min(...drinkCountArr); %> <%= minDrinkCount %>
                     </h6>
@@ -187,6 +200,17 @@
                       <input type="hidden" name="customerName" value="<%= data.customer_name %>" readonly />
                       <input type="hidden" name="customerId" value="<%= data.customer_id %>" readonly />
                       <input type="number" name="amount" id="amount" style="width: 50%" required />
+                      <h6 class="text-secondary mt-3">Select Discount:</h6>
+                      <div class="form-check-discount">
+                        <% discounts.forEach((discount) => { %>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" value="<%= discount.name %>" id="<%= elementDrink.menu %><%= discount.name %>" name="<%= discount.name %>" />
+                          <label class="form-check-label" for="<%= elementDrink.menu %><%= discount.name %>"> <%= discount.name %> </label>
+                        </div>
+
+                        <% }); %>
+                        <input class="discount-name" type="hidden" name="discountName" />
+                      </div>
                       <% elementDrink.raw_amount.forEach((rawAmount, i) => { %> <% if (elementDrink.matStockAmount[i] - rawAmount < 0 ) { %>
                       <p class="text-danger m-0"><%= elementDrink.raw_mat[i] %> habis</p>
                       <% } %> <% }); %>
@@ -292,5 +316,39 @@
       let button = drinkCard[i].querySelector('button');
       button.setAttribute('disabled', 'disabled');
     }
+  }
+
+  const discountCheckbox = document.querySelectorAll('.form-check-discount');
+
+  for (let i = 0; i < discountCheckbox.length; i++) {
+    const discountName = discountCheckbox[i].querySelector('.discount-name');
+    let discountNameContent = [];
+    discountCheckbox[i].addEventListener('click', (e) => {
+      if (e.target.value) {
+        let check = discountNameContent.find((element) => element === e.target.value);
+        if (check) {
+          discountNameContent = discountNameContent.filter((el) => el != e.target.value);
+
+          const oneDiscount = discountCheckbox[i].querySelectorAll('input');
+
+          oneDiscount.forEach((one) => {
+            if (one != e.target && one.getAttribute('type') != 'hidden') {
+              one.removeAttribute('disabled');
+            }
+          });
+        } else {
+          discountNameContent.push(e.target.value);
+
+          const oneDiscount = discountCheckbox[i].querySelectorAll('input');
+
+          oneDiscount.forEach((one) => {
+            if (one != e.target && one.getAttribute('type') != 'hidden') {
+              one.setAttribute('disabled', 'disabled');
+            }
+          });
+        }
+      }
+      discountName.value = discountNameContent.toString();
+    });
   }
 </script>

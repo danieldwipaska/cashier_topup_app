@@ -3,9 +3,10 @@ const router = express.Router();
 const pool = require('../db');
 const cardQueries = require('../database/cards/queries');
 const paymentQueries = require('../database/payments/queries');
-const ruleQueries = require('../database/rules/queries');
+const taxQueries = require('../database/taxes/queries');
 const fnbQueries = require('../database/fnbs/queries');
 const stockQueries = require('../database/stocks/queries');
+const discountQueries = require('../database/discounts/queries');
 const verifyToken = require('./middlewares/verifyToken');
 const { v4 } = require('uuid');
 const { errorLog, infoLog } = require('../config/logger/functions');
@@ -66,10 +67,6 @@ router.get('/search', verifyToken, allRoles, async (req, res) => {
         fnbsResults.rows[i].matStockAmount = matStockAmount;
       }
 
-      // console.log(fnbsResults.rows[0].raw_mat);
-      // console.log(fnbsResults.rows[0].raw_amount);
-      // console.log(fnbsResults.rows[0].matStockAmount);
-
       const foodFnb = fnbsResults.rows.filter((fnbResult) => fnbResult.kind === 'food');
       const drinkFnb = fnbsResults.rows.filter((fnbResult) => fnbResult.kind === 'drink');
 
@@ -83,22 +80,30 @@ router.get('/search', verifyToken, allRoles, async (req, res) => {
         });
 
         try {
-          const ruleResults = await pool.query(ruleQueries.getRules, []);
+          const ruleResults = await pool.query(taxQueries.getTaxes, []);
 
-          return res.render('payment', {
-            layout: 'layouts/main-layout',
-            title: 'Payments',
-            subtitle: 'Payment',
-            alert: '',
-            data: cards.rows[0],
-            dataPayTemp: paymentResults.rows,
-            foods: foodFnb,
-            drinks: drinkFnb,
-            sumPayment: sumPayment,
-            rules: ruleResults.rows,
-          });
+          try {
+            const discounts = await pool.query(discountQueries.getDiscounts, []);
+
+            return res.render('payment', {
+              layout: 'layouts/main-layout',
+              title: 'Payments',
+              subtitle: 'Payment',
+              alert: '',
+              data: cards.rows[0],
+              dataPayTemp: paymentResults.rows,
+              foods: foodFnb,
+              drinks: drinkFnb,
+              sumPayment: sumPayment,
+              rules: ruleResults.rows,
+              discounts: discounts.rows,
+            });
+          } catch (error) {
+            errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling discountQueries.getDiscounts');
+            return res.status(500).json('Server Error');
+          }
         } catch (error) {
-          errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling ruleQueries.getRules');
+          errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling taxQueries.getTaxes');
           return res.status(500).json('Server Error');
         }
       } catch (error) {
@@ -117,19 +122,49 @@ router.get('/search', verifyToken, allRoles, async (req, res) => {
 
 // ADD TEMPORARY PAYMENTS
 router.post('/temp', verifyToken, allRoles, async (req, res) => {
-  const { menu, price, barcode, customerName: customer_name, customerId: customer_id, amount, service, tax } = req.body;
+  const { menu, price, barcode, customerName: customer_name, customerId: customer_id, amount, service, tax, discountName } = req.body;
   const sort = 'pay';
+
+  const discount_name = discountName.split(',');
 
   if (amount <= 0) return res.status(400).json({ message: 'Total per item must not be 0 or less than 0' });
 
   const invoiceNumber = '';
   let totalPrice = price * amount;
+
+  // DISCOUNT
+
+  // if (discount_name.length > 1) return res.status(400).json('Cannot apply discount more than one');
+
+  if (discount_name[0] !== '') {
+    for (let i = 0; i < discount_name.length; i++) {
+      try {
+        const discounts = await pool.query(discountQueries.getDiscountByName, [discount_name[i]]);
+
+        if (!discounts.rows.length) return res.status(404).json(`Cannot find the discount "${discount_name[i]}"`);
+
+        if (!discounts.rows[0].percent || discounts.rows[0].percent === 0) {
+          totalPrice = totalPrice - discounts.rows[0].value;
+          if (totalPrice <= 0) return res.status(400).json('Total price is 0 or negative.');
+        } else {
+          totalPrice = totalPrice - (totalPrice * discounts.rows[0].percent) / 100;
+        }
+      } catch (error) {
+        errorLog(paymentLogger, error, 'Error in HTTP POST /temp when calling discounts.getDiscountByName');
+        return res.status(500).json('Server Error');
+      }
+    }
+  }
+
+  // SERVICE
   let payment = totalPrice + (totalPrice * 5) / 100;
+
+  // TAX
   payment = payment + (payment * 10) / 100;
 
   try {
     const id = v4();
-    await pool.query(paymentQueries.addPayment, [id, sort, barcode, customer_name, customer_id, payment, service, tax, menu, false, amount, totalPrice, invoiceNumber, null, req.validUser.name]);
+    await pool.query(paymentQueries.addPayment, [id, sort, barcode, customer_name, customer_id, payment, service, tax, discount_name, menu, false, amount, totalPrice, invoiceNumber, null, req.validUser.name]);
 
     // SEND LOG
     infoLog(paymentLogger, 'Temporary payment was successfully added', barcode, customer_name, customer_id, req.validUser.name);

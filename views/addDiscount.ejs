@@ -1,0 +1,40 @@
+<div class="container-md mt-1 mb-3">
+  <div class="row my-1">
+    <div class="col-md-9 mx-auto">
+      <h4>Add a Stock</h4>
+    </div>
+  </div>
+  <div class="row my-1">
+    <div class="col-md-9 mx-auto my-1 px-4">
+      <form action="/rule/discount" method="post">
+        <div class="row">
+          <div class="mb-1">
+            <label for="name" class="form-label text-secondary">Name</label>
+            <input type="text" class="form-control" id="name" name="name" autofocus="autofocus" required />
+          </div>
+
+          <div class="mb-1">
+            <label for="desc" class="form-label text-secondary">Description</label>
+            <input type="text" class="form-control" id="desc" name="desc" required />
+          </div>
+
+          <div class="mb-1 col-auto">
+            <label for="percent" class="form-label text-secondary">Percentage(%)</label>
+            <input type="number" class="form-control" id="percent" name="percent" />
+          </div>
+
+          <div class="mb-1 col-auto">
+            <label for="value" class="form-label text-secondary">Value(Rp)</label>
+            <input type="number" class="form-control" id="value" name="value" />
+          </div>
+        </div>
+        <div class="row my-5 multi-button">
+          <div class="col-md-8 mx-auto text-center">
+            <a class="button shadow" href="/rule/list" role="button">Back</a>
+            <button class="button shadow" type="submit">Add</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -13,6 +13,7 @@ const loginLogger = logger.child({ feature: 'Login' });
 const ruleLogger = logger.child({ feature: 'Rule List' });
 const stockLogger = logger.child({ feature: 'Stock List' });
 const memberLogger = logger.child({ feature: 'Member List' });
+const discountLogger = logger.child({ feature: 'Discount' });
 
 module.exports = {
   checkinLogger,
@@ -28,4 +29,5 @@ module.exports = {
   ruleLogger,
   stockLogger,
   memberLogger,
+  discountLogger,
 };

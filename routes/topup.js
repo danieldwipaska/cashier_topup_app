@@ -100,7 +100,7 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
           const invoiceNumber = v4();
           const sort = 'topup';
 
-          await pool.query(paymentQueries.addPayment, [id, sort, cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, balanceInt, null, null, '', true, 0, 0, invoiceNumber, resBalance, req.validUser.name]);
+          await pool.query(paymentQueries.addPayment, [id, sort, cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, balanceInt, null, null, null, '', true, 0, 0, invoiceNumber, resBalance, req.validUser.name]);
 
           // SEND LOG
           infoLog(topupLogger, 'Payment was successfully added and invoice number was successfully generated', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);

@@ -88,6 +88,7 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
             cards.rows[0].balance + cards.rows[0].deposit,
             null,
             null,
+            null,
             '',
             true,
             0,
