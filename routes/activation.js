@@ -54,41 +54,42 @@ router.get('/search', verifyToken, cashierAndDeveloper, async (req, res) => {
 });
 
 // ACTIVATE
-router.post('/activate', verifyToken, cashierAndDeveloper, (req, res) => {
+router.post('/activate', verifyToken, cashierAndDeveloper, async (req, res) => {
   const { barcode, name: customer_name } = req.body;
-  pool.query(cardQueries.getCardById, [barcode], (error, results) => {
-    if (error) {
-      errorLog(activationLogger, error, 'Error in HTTP POST /activate when calling cardQueries.getCardById');
-      return res.status(500).json('Server Error');
-    }
 
-    if (results.rows[0].is_active === true) {
+  try {
+    const cards = await pool.query(cardQueries.getCardById, [barcode]);
+
+    if (cards.rows[0].is_active === true) {
       return res.render('activation', {
         layout: 'layouts/main-layout',
         title: 'Activation',
         alert: 'Card is already active',
-        data: results.rows[0],
+        data: cards.rows[0],
       });
     } else {
       const customer_id = v4();
-      pool.query(cardQueries.cardActivate, [true, customer_name, customer_id, barcode], (error, cardActivateResults) => {
-        if (error) {
-          errorLog(activationLogger, error, 'Error in HTTP POST /activate when calling cardQueries.cardActivate');
-          return res.status(500).json('Server Error');
-        }
+
+      try {
+        await pool.query(cardQueries.cardActivate, [true, customer_name, customer_id, barcode]);
 
         // SEND LOG
-        infoLog(activationLogger, 'Card was successfully activated', results.rows[0].barcode, results.rows[0].customer_name, results.rows[0].customer_id, req.validUser.name);
+        infoLog(activationLogger, 'Card was successfully activated', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);
 
-        // RESPONSE
         return res.render('notificationSuccess', {
           layout: 'layouts/main-layout',
           title: 'Activation',
           message: 'Card has been activated successfully.',
         });
-      });
+      } catch (error) {
+        errorLog(activationLogger, error, 'Error in HTTP POST /activate when calling cardQueries.cardActivate');
+        return res.status(500).json('Server Error');
+      }
     }
-  });
+  } catch (error) {
+    errorLog(activationLogger, error, 'Error in HTTP POST /activate when calling cardQueries.getCardById');
+    return res.status(500).json('Server Error');
+  }
 });
 
 // // DEACTIVATE

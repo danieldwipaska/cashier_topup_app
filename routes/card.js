@@ -8,16 +8,14 @@ const { cardLogger } = require('../config/logger/childLogger');
 const { cashierAndDeveloper } = require('./middlewares/userRole');
 
 // GET ALL CARDS
-router.get('/list', verifyToken, cashierAndDeveloper, (req, res) => {
-  pool.query(cardQueries.getCards, [], (error, getCardsResults) => {
-    if (error) {
-      errorLog(cardLogger, error, 'Error in HTTP GET /list when calling cardQueries.getCards');
-    }
+router.get('/list', verifyToken, cashierAndDeveloper, async (req, res) => {
+  try {
+    const cards = await pool.query(cardQueries.getCards, []);
 
     let debtBalance = 0;
     let debtDeposit = 0;
 
-    getCardsResults.rows.forEach((result) => {
+    cards.rows.forEach((result) => {
       debtBalance += result.balance;
       debtDeposit += result.deposit;
     });
@@ -27,12 +25,14 @@ router.get('/list', verifyToken, cashierAndDeveloper, (req, res) => {
     return res.render('card', {
       layout: 'layouts/main-layout',
       title: 'Card List',
-      data: getCardsResults.rows,
+      data: cards.rows,
       debtBalance,
       debtDeposit,
       debtTotal,
     });
-  });
+  } catch (error) {
+    errorLog(cardLogger, error, 'Error in HTTP GET /list when calling cardQueries.getCards');
+  }
 });
 
 // DELETE CARD
