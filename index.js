@@ -12,13 +12,12 @@ const activationRoute = require('./routes/activation');
 const checkoutRoute = require('./routes/checkout');
 const topupRoute = require('./routes/topup');
 const paymentRoute = require('./routes/payment');
-const fnbRoutes = require('./routes/fnb');
+
 const authRoute = require('./routes/auth');
 const cardRoute = require('./routes/card');
 // const dineInCalcRoute = require('./routes/api/dineInCalc');
 const userRoute = require('./routes/user');
-const ruleRoute = require('./routes/rule');
-const stockRoute = require('./routes/stock');
+
 const memberRoute = require('./routes/member');
 const analysisRoute = require('./routes/analysis');
 
@@ -43,13 +42,12 @@ app.use('/activation', activationRoute);
 app.use('/checkout', checkoutRoute);
 app.use('/topup', topupRoute);
 app.use('/payment', paymentRoute);
-app.use('/fnb', fnbRoutes);
+
 app.use('/auth', authRoute);
 app.use('/card', cardRoute);
 // app.use('/api/dinein', dineInCalcRoute);
 app.use('/user', userRoute);
-app.use('/rule', ruleRoute);
-app.use('/stock', stockRoute);
+
 app.use('/member', memberRoute);
 app.use('/analysis', analysisRoute);
 

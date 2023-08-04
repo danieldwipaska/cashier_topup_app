@@ -1,19 +1,16 @@
 const addPayment =
-  'INSERT INTO payments (id, sort, barcode, customer_name, customer_id, payment, service, tax, discount_name, menu, paid_off, amount, total_price, invoice_number, res_balance, username, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, NOW(), NOW())';
-const getPayments = 'SELECT * FROM payments';
+  'INSERT INTO payments (id, action, barcode, customer_name, customer_id, payment, invoice_number, invoice_status, initial_balance, final_balance, served_by, collected_by, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), NOW())';
+const getPayments = 'SELECT * FROM payments ORDER BY updated_at DESC LIMIT $1 OFFSET $2';
 const getPaymentByCustomerId = 'SELECT * FROM payments WHERE customer_id = $1';
-const getPaymentByCustomerIdAndSort = 'SELECT * FROM payments WHERE customer_id = $1 AND sort = $2';
+const getPaymentByCustomerIdAndSort = 'SELECT * FROM payments WHERE customer_id = $1 AND invoice_status = $2';
 const getPaymentById = 'SELECT * FROM payments WHERE id = $1';
-const getPaymentByPaidOff = 'SELECT * FROM payments WHERE paid_off = $1 ORDER BY updated_at DESC LIMIT $2 OFFSET $3';
+const getPaidPayment = 'SELECT * FROM payments WHERE invoice_status = $1 ORDER BY updated_at DESC LIMIT $2 OFFSET $3';
 const getPaymentsByInvoice = 'SELECT * FROM payments WHERE invoice_number = $1';
 const getPaymentPaidByID = 'SELECT * FROM payments WHERE customer_id = $1 AND paid_off = $2';
 const deletePaymentById = 'DELETE FROM payments WHERE id = $1;';
 const deletePaymentByInvoice = 'DELETE FROM payments WHERE invoice_number = $1';
 const updatePaymentPaid = 'UPDATE payments SET paid_off = $1, invoice_number = $2, res_balance = $3, updated_at = NOW() WHERE customer_id = $4 AND paid_off = $5';
 const getInvoice = 'SELECT * FROM payments WHERE invoice_number = $1';
-// const checkEmailExists = 'SELECT s FROM students s WHERE s.email = $1';
-// const removeStudent = 'DELETE FROM students WHERE id = $1';
-// const updateBalance = 'UPDATE cards SET balance = $1, updated_at = NOW() WHERE barcode = $2 RETURNING *';
 
 module.exports = {
   addPayment,
@@ -21,7 +18,7 @@ module.exports = {
   getPaymentByCustomerId,
   getPaymentByCustomerIdAndSort,
   getPaymentById,
-  getPaymentByPaidOff,
+  getPaidPayment,
   getPaymentsByInvoice,
   getPaymentPaidByID,
   deletePaymentById,

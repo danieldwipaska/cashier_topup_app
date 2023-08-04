@@ -29,7 +29,7 @@ router.get('/search', verifyToken, cashierAndDeveloper, (req, res) => {
         errorLog(topupLogger, error, 'Error in HTTP GET /search when calling cardQueries.getCardById');
         return res.status(500).json('Server Error');
       }
-      if (results.rows.length === 0) {
+      if (!results.rows.length) {
         return res.render('search', {
           layout: 'layouts/main-layout',
           title: 'Search',
@@ -58,15 +58,19 @@ router.get('/search', verifyToken, cashierAndDeveloper, (req, res) => {
 
 // TOP-UP
 router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
-  const { barcode, name: customer_name, addBalance, deposit } = req.body;
+  const { barcode, addBalance, deposit, customerName: customer_name, customerId: customer_id } = req.body;
 
-  const balanceInt = parseInt(addBalance, 10);
+  const addBalanceInt = parseInt(addBalance, 10);
   let depositInt = parseInt(deposit, 10);
-  let depositCount = depositInt;
+
+  const invoice_number = v4();
+  const invoice_status = 'paid';
+  const served_by = 'Greeter';
+  const collected_by = req.validUser.name;
 
   try {
+    // CHECK WHETHER THE CARD EXISTS OR NOT
     const cards = await pool.query(cardQueries.getCardById, [barcode]);
-
     if (!cards.rows.length) return res.status(404).json('Card does not exist');
 
     // FOR NEW CARD
@@ -78,18 +82,26 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
         data: cards.rows[0],
       });
 
-    try {
-      const paymentResults = await pool.query(paymentQueries.getPaymentByCustomerIdAndSort, [cards.rows[0].customer_id, 'topup']);
+    if (cards.rows[0].customer_id && cards.rows[0].customer_id !== customer_id) return res.status(401).json('The Customer ID of The Card and of The Invoice do not match');
 
-      if (paymentResults.rows.length) {
-        depositCount = 0;
-      }
+    try {
+      // IF ADD-BALANCE LESS THAN DEPOSIT
+      if (addBalanceInt < depositInt) return res.status(401).json('Add-Balance should not be less than deposit, or should not be 0');
 
       try {
         // ADD NEW BALANCE
-        const resBalance = balanceInt + cards.rows[0].balance - depositCount;
+        let resBalance = cards.rows[0].balance;
 
-        const cardUpdated = await pool.query(cardQueries.updateBalance, [resBalance, depositInt, barcode]);
+        if (depositInt === 0) {
+          // If Customer has depositted
+          resBalance += addBalanceInt;
+          depositInt = cards.rows[0].deposit;
+        } else {
+          // if Not
+          resBalance += addBalanceInt - depositInt;
+        }
+
+        const cardUpdated = await pool.query(cardQueries.cardStatus, [true, customer_name, customer_id, resBalance, depositInt, barcode]);
 
         // SEND LOG
         infoLog(topupLogger, 'Balance was successfully updated', cardUpdated.rows[0].barcode, cardUpdated.rows[0].customer_name, cardUpdated.rows[0].customer_id, req.validUser.name);
@@ -97,10 +109,12 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
         try {
           // CREATE INVOICE
           const id = v4();
-          const invoiceNumber = v4();
-          const sort = 'topup';
+          const action = 'topup';
+          const payment = addBalanceInt;
+          const initial_balance = cards.rows[0].balance;
+          const final_balance = resBalance;
 
-          await pool.query(paymentQueries.addPayment, [id, sort, cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, balanceInt, null, null, null, '', true, 0, 0, invoiceNumber, resBalance, req.validUser.name]);
+          await pool.query(paymentQueries.addPayment, [id, action, barcode, customer_name, customer_id, payment, invoice_number, invoice_status, initial_balance, final_balance, served_by, collected_by]);
 
           // SEND LOG
           infoLog(topupLogger, 'Payment was successfully added and invoice number was successfully generated', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);
@@ -110,14 +124,15 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
             title: 'Top-Up Success',
             message: 'Card Top-Up succeed.',
             data: cardUpdated.rows[0],
-            invoiceNumber: invoiceNumber,
+            invoiceNumber: invoice_number,
+            isTopup: true,
           });
         } catch (error) {
           errorLog(topupLogger, error, 'Error in HTTP POST / when calling paymentQueries.addPayment');
           return res.status(500).json('Server Error');
         }
       } catch (error) {
-        errorLog(topupLogger, error, 'Error in HTTP POST / when calling cardQueries.updateBalance');
+        errorLog(topupLogger, error, 'Error in HTTP POST / when calling cardQueries.cardStatus');
         return res.status(500).json('Server Error');
       }
     } catch (error) {

@@ -10,31 +10,51 @@
   </div>
 </div>
 <% } %>
-
+<div class="container my-1">
+  <div class="row">
+    <div class="col-md-9 mx-auto">
+      <h3>Balance Check</h3>
+    </div>
+  </div>
+</div>
 <div class="container-md mt-1 mb-3">
   <div class="row my-1">
     <div class="col-md-9 mx-auto my-1 px-4">
-      <form action="/payment" method="post">
-        <div class="row mt-2">
-          <h3 class="mb-2">Card Details >>></h3>
+      <form action="/checkout" method="post">
+        <div class="row">
           <div class="mb-1">
-            <label for="barcode" class="form-label text-secondary">Barcode</label>
+            <label for="barcode" class="form-label text-secondary">Card</label>
             <input type="text" class="form-control" id="barcode" name="barcode" readonly value="<%= data.barcode %>" />
           </div>
 
-          <div class="mb-1 col-auto">
+          <div class="mb-1">
             <label for="customerName" class="form-label text-secondary">Name</label>
             <input type="text" class="form-control" id="customerName" name="customerName" value="<%= data.customer_name %>" readonly />
           </div>
 
           <div class="mb-1 col-auto">
-            <label for="customerId" class="form-label text-secondary">Customer ID</label>
+            <label for="customerId" class="form-label text-secondary">Costumer ID</label>
             <input type="text" class="form-control" id="customerId" name="customerId" value="<%= data.customer_id %>" readonly />
           </div>
 
-          <div class="mb-1">
+          <!-- <div class="mb-1 col-auto">
+                <label for="servedBy" class="form-label text-secondary">Served By</label>
+                <input type="text" class="form-control" id="servedBy" name="servedBy" required />
+              </div>
+    
+              <div class="mb-1 col-auto">
+                <label for="collectedBy" class="form-label text-secondary">Collected By</label>
+                <input type="text" class="form-control" id="collectedBy" name="collectedBy" required />
+              </div> -->
+
+          <div class="mb-1 col-auto">
             <label for="balance" class="form-label text-secondary">Balance</label>
             <input type="text" class="form-control" id="balance" name="balance" value="<%= Intl.NumberFormat('en-US').format(data.balance) %>" readonly />
+          </div>
+
+          <div class="mb-1 col-auto">
+            <label for="deposit" class="form-label text-secondary">Deposit</label>
+            <input type="text" class="form-control" id="deposit" name="deposit" value="<%= Intl.NumberFormat('en-US').format(data.deposit) %>" readonly />
           </div>
 
           <% if (data.is_member) { %>
@@ -58,43 +78,11 @@
             <input type="text" class="form-control bg-danger text-light" id="isActive" name="isActive" value="inactive" readonly />
           </div>
           <% } %>
-
-          <h3 class="mb-2 mt-4">Invoice Details >>></h3>
-          <div class="mb-1" id="notificationPopup"></div>
-
-          <div class="mb-1">
-            <label for="invoiceNumber" class="form-label text-secondary">Payment Number*</label>
-            <input type="text" class="form-control" id="invoiceNumber" name="invoiceNumber" required />
-          </div>
-
-          <div class="mb-1 col-auto">
-            <label for="invoiceStatus" class="form-label text-secondary">Payment Status*</label>
-            <input type="text" class="form-control" id="invoiceStatus" name="invoiceStatus" value="paid" readonly />
-          </div>
-
-          <div class="mb-1 col-auto">
-            <label for="servedBy" class="form-label text-secondary">Served By*</label>
-            <input type="text" class="form-control" id="servedBy" name="servedBy" required />
-          </div>
-
-          <div class="mb-1 col-auto">
-            <label for="collectedBy" class="form-label text-secondary">Collected By*</label>
-            <input type="text" class="form-control" id="collectedBy" name="collectedBy" required />
-          </div>
-
-          <div class="mb-1">
-            <label for="payment" class="form-label text-secondary">Payment (IDR)*</label>
-            <input type="number" class="form-control" id="payment" name="payment" required />
-          </div>
         </div>
-        <div class="row my-4">
-          <h3>Moka POS >>></h3>
-          <div class="mb-1 d-grid gap-2 moka-data"></div>
-        </div>
-        <div class="row my-3 multi-button">
+        <div class="row my-5 multi-button">
           <div class="col-lg-8 mx-auto text-center">
-            <a class="button shadow my-3" href="/payment/search" role="button">Back</a>
-            <button class="button shadow my-3" type="submit">Pay Now!</button>
+            <a class="button shadow my-3" href="/card/search" role="button">Back</a>
+
             <a class="button shadow my-3" href="/" role="button">Menu</a>
           </div>
         </div>
@@ -102,19 +90,3 @@
     </div>
   </div>
 </div>
-<script src="/public/script/mokaInvoices.js"></script>
-<script src="/public/script/copyMokaInvoices.js"></script>
-<!-- <script>
-  async function getFact() {
-    try {
-      const response = await axios.get('https://catfact.ninja/fact');
-      const mokaData = document.querySelector('.moka-data');
-      mokaData.innerHTML = response.data.fact;
-    } catch (error) {
-      const mokaData = document.querySelector('.moka-data');
-      mokaData.innerHTML = `${error}`;
-    }
-  }
-
-  getFact();
-</script> -->

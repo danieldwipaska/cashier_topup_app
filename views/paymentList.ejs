@@ -45,17 +45,15 @@
       <table class="table" style="font-size: small">
         <thead>
           <tr class="table-warning">
-            <th scope="col">Crew</th>
-            <th scope="col">Sort</th>
+            <th scope="col">Served By</th>
+            <th scope="col">Collected By</th>
+            <th scope="col">Type</th>
             <th scope="col">Invoice</th>
             <th scope="col">Barcode</th>
             <th scope="col">Customer Name</th>
             <th scope="col">Customer Id</th>
             <th scope="col">Payment(IDR)</th>
-            <th scope="col">Menu</th>
-            <th scope="col">Amount</th>
-            <th scope="col">Menu Price(IDR)</th>
-            <th scope="col">Paid Off</th>
+            <th scope="col">Status</th>
             <th scope="col">Time</th>
             <th scope="col">Act</th>
           </tr>
@@ -63,20 +61,18 @@
         <tbody>
           <% data.forEach((element,i) => { %> <% if (i % 2 === 0) { %>
           <tr class="table-info">
-            <th scope="row"><%= element.username %></th>
-            <td><%= element.sort %></td>
+            <th scope="row"><%= element.served_by %></th>
+            <td><%= element.collected_by %></td>
+            <td><%= element.action %></td>
             <td><%= element.invoice_number %></td>
             <td><%= element.barcode %></td>
             <td><%= element.customer_name %></td>
             <td><%= element.customer_id %></td>
             <td><%= Intl.NumberFormat('en-US').format(element.payment) %></td>
-            <td><%= element.menu %></td>
-            <td><%= element.amount %></td>
-            <td><%= element.total_price %></td>
-            <td><%= element.paid_off %></td>
+            <td><%= element.invoice_status %></td>
             <td><%= element.updated_at.toLocaleString() %></td>
             <td>
-              <a class="confirm-button" href="/payment/<%= element.invoice_number %>/delete" role="button" title="delete" data-confirm="Are you sure to delete this item?">
+              <a class="confirm-button" href="/payment/<%= element.id %>/delete" role="button" title="delete" data-confirm="Are you sure to delete this item?">
                 <svg width="25px" height="25px" viewBox="0 0 32 32" enable-background="new 0 0 32 32" id="Filled_Line" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                   <path d="M28,10H4V8c0-0.552,0.448-1,1-1h22c0.552,0,1,0.448,1,1V10z" fill="#F9ED69" id="XMLID_884_" />
                   <path d="M8,7H5C4.448,7,4,7.448,4,8v2h3V8C7,7.448,7.448,7,8,7z" fill="#BBB24F" id="XMLID_394_" />
@@ -169,20 +165,18 @@
           </tr>
           <% } else { %>
           <tr class="table-light">
-            <th scope="row"><%= element.username %></th>
-            <td><%= element.sort %></td>
+            <th scope="row"><%= element.served_by %></th>
+            <td><%= element.collected_by %></td>
+            <td><%= element.action %></td>
             <td><%= element.invoice_number %></td>
             <td><%= element.barcode %></td>
             <td><%= element.customer_name %></td>
             <td><%= element.customer_id %></td>
             <td><%= Intl.NumberFormat('en-US').format(element.payment) %></td>
-            <td><%= element.menu %></td>
-            <td><%= element.amount %></td>
-            <td><%= element.total_price %></td>
-            <td><%= element.paid_off %></td>
+            <td><%= element.invoice_status %></td>
             <td><%= element.updated_at.toLocaleString() %></td>
             <td>
-              <a class="confirm-button" href="/payment/<%= element.invoice_number %>/delete" role="button" title="delete" data-confirm="Are you sure to delete this item?">
+              <a class="confirm-button" href="/payment/<%= element.id %>/delete" role="button" title="delete" data-confirm="Are you sure to delete this item?">
                 <svg width="25px" height="25px" viewBox="0 0 32 32" enable-background="new 0 0 32 32" id="Filled_Line" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                   <path d="M28,10H4V8c0-0.552,0.448-1,1-1h22c0.552,0,1,0.448,1,1V10z" fill="#F9ED69" id="XMLID_884_" />
                   <path d="M8,7H5C4.448,7,4,7.448,4,8v2h3V8C7,7.448,7.448,7,8,7z" fill="#BBB24F" id="XMLID_394_" />

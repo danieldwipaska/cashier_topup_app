@@ -27,30 +27,35 @@
             <input type="text" class="form-control" id="barcode" name="barcode" readonly value="<%= data.barcode %>" />
           </div>
 
-          <div class="mb-1">
+          <!-- <div class="mb-1">
             <label for="name" class="form-label text-secondary">Name</label>
-            <input type="text" class="form-control" id="name" name="name" autofocus="autofocus" required />
-          </div>
+            <input type="text" class="form-control" id="name" name="name" value="" readonly />
+          </div> -->
 
-          <div class="mb-1">
+          <!-- <div class="mb-1">
             <label for="balance" class="form-label text-secondary">Balance</label>
-            <input type="text" class="form-control" id="balance" name="balance" value="<%= Intl.NumberFormat('en-US').format(data.balance) %>" readonly />
-          </div>
+            <input type="text" class="form-control" id="balance" name="balance" value="0" readonly />
+          </div> -->
 
+          <% if (data.is_member) { %>
           <div class="mb-1 col-auto">
             <label for="isMember" class="form-label text-secondary">Member Status</label>
-            <input type="text" class="form-control" id="isMember" name="isMember" value="<%= data.is_member %>" readonly />
+            <input type="text" class="form-control bg-success text-light" id="isMember" name="isMember" value="yes" readonly />
           </div>
-
-          <% if (data.is_active === true) { %>
+          <% } else { %>
+          <div class="mb-1 col-auto">
+            <label for="isMember" class="form-label text-secondary">Member Status</label>
+            <input type="text" class="form-control bg-danger text-light" id="isMember" name="isMember" value="no" readonly />
+          </div>
+          <% } %> <% if (data.is_active) { %>
           <div class="mb-1 col-auto">
             <label for="isActive" class="form-label text-secondary">Activation</label>
-            <input type="text" class="form-control bg-success text-light" id="isActive" name="isActive" value="<%= data.is_active %>" readonly />
+            <input type="text" class="form-control bg-success text-light" id="isActive" name="isActive" value="active" readonly />
           </div>
           <% } else { %>
           <div class="mb-1 col-auto">
             <label for="isActive" class="form-label text-secondary">Activation</label>
-            <input type="text" class="form-control bg-danger text-light" id="isActive" name="isActive" value="<%= data.is_active %>" readonly />
+            <input type="text" class="form-control bg-danger text-light" id="isActive" name="isActive" value="inactive" readonly />
           </div>
           <% } %>
         </div>
@@ -58,7 +63,7 @@
           <div class="col-lg-8 mx-auto text-center">
             <a class="button shadow my-3" href="/activation/search" role="button">Back</a>
             <span class="mx-1">
-              <% if (data.is_active === false) { %>
+              <% if (!data.is_active) { %>
 
               <button class="button shadow my-3" type="submit">Activate</button>
 

@@ -63,4 +63,50 @@ router.get('/:id/delete', verifyToken, cashierAndDeveloper, async (req, res) => 
   }
 });
 
+// BALANCE CHECK
+router.get('/search', verifyToken, cashierAndDeveloper, (req, res) => {
+  const { card: barcode } = req.query;
+
+  // INITIAL PAGE
+  if (!barcode) {
+    return res.render('search', {
+      layout: 'layouts/main-layout',
+      title: 'Search',
+      subtitle: 'Balance Check',
+      alert: '',
+    });
+  } else {
+    // SEARCH FOR CARD
+    pool.query(cardQueries.getCardById, [barcode], (error, results) => {
+      if (error) {
+        errorLog(topupLogger, error, 'Error in HTTP GET /search when calling cardQueries.getCardById');
+        return res.status(500).json('Server Error');
+      }
+      if (!results.rows.length) {
+        return res.render('search', {
+          layout: 'layouts/main-layout',
+          title: 'Search',
+          subtitle: 'Balance Check',
+          alert: 'Card does not exist',
+        });
+      } else if (!results.rows[0].is_active) {
+        return res.render('search', {
+          layout: 'layouts/main-layout',
+          title: 'Search',
+          subtitle: 'Balance Check',
+          alert: 'Card is NOT ACTIVE',
+        });
+      } else {
+        return res.render('balanceCheck', {
+          layout: 'layouts/main-layout',
+          title: 'Card',
+          subtitle: 'Balance Check',
+          alert: '',
+          data: results.rows[0],
+        });
+      }
+    });
+  }
+});
+
 module.exports = router;

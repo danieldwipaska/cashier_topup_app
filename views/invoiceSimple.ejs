@@ -2,27 +2,24 @@
   <div class="row">
     <div class="col mx-auto">
       <div class="card">
-        <div class="card-body mx-4">
+        <div class="card-body">
           <div class="container">
-            <p class="my-5 mx-5 text-center" style="font-size: 30px">Bill</p>
+            <p class="mt-5 mb-0 text-center">Bahari Resto and Bar</p>
+            <p class="text-center mt-0" style="font-size: 7px">Jalan Kawi No. 8a, Malang Jatim, Kota Malang, Jawa Timur, 65119</p>
             <div class="row">
               <table class="table table-sm table-borderless" style="width: 100%">
                 <tbody>
                   <tr>
-                    <td style="width: 30%">Customer</td>
-                    <td><%= data[0].customer_name %></td>
+                    <td style="width: 30%; font-size: 8px">Customer</td>
+                    <td style="font-size: 8px"><%= data[0].customer_name %></td>
                   </tr>
                   <tr>
-                    <td>Invoice</td>
-                    <td class="text-muted"><em><%= data[0].invoice_number %></em></td>
+                    <td style="font-size: 8px">Invoice</td>
+                    <td class="text-muted" style="font-size: 8px"><em><%= data[0].invoice_number %></em></td>
                   </tr>
                   <tr>
-                    <td>Date</td>
-                    <td><%= data[0].created_at %></td>
-                  </tr>
-                  <tr>
-                    <td>Admin/Bartender</td>
-                    <td><%= data[0].username %></td>
+                    <td style="font-size: 8px">Date</td>
+                    <td style="font-size: 8px"><%= data[0].created_at %></td>
                   </tr>
                 </tbody>
               </table>
@@ -30,26 +27,13 @@
             </div>
             <% data.forEach(element => { %>
             <div class="row">
-              <% if (!element.menu) { %>
               <div class="col-xl-8">
-                <p class="m-0">Top-Up</p>
+                <p class="m-0" style="font-size: 8px">Top-Up</p>
               </div>
-              <div class="col-xl-2">
-                <p class="m-0">x 1</p>
-              </div>
-              <% } else { %>
-              <div class="col-xl-8">
-                <p class="m-0"><%= element.menu %></p>
-              </div>
-              <div class="col-xl-2">
-                <p class="m-0">x <%= element.amount %></p>
-              </div>
-              <% } %>
 
-              <div class="col-xl-2">
-                <p class="float-end number-format-id"><%= Intl.NumberFormat('en-US').format(element.payment) %></p>
+              <div class="col-xl-4">
+                <p class="float-end number-format-id" style="font-size: 8px"><%= Intl.NumberFormat('en-US').format(element.payment) %></p>
               </div>
-              <hr />
             </div>
 
             <% }); %>
@@ -57,18 +41,18 @@
             <hr style="border: 2px solid black" />
             <div class="row text-black">
               <div class="col-xl-12">
-                <p class="float-end fw-bold"><span>Total: </span><span class="number-format-id"><%= Intl.NumberFormat('en-US').format(paymentSum) %></span></p>
+                <p class="float-end fw-bold" style="font-size: 8px"><span>Total: </span><span class="number-format-id"><%= Intl.NumberFormat('en-US').format(paymentSum) %></span></p>
               </div>
             </div>
             <div class="row text-black">
               <div class="col-xl-12">
-                <p class="float-end"><span>Balance: </span><span class="number-format-id"><%= Intl.NumberFormat('en-US').format(data[0].res_balance) %></span></p>
+                <p class="float-end" style="font-size: 8px"><span>Balance: </span><span class="number-format-id"><%= Intl.NumberFormat('en-US').format(data[0].final_balance) %></span></p>
               </div>
               <hr style="border: 2px solid black" />
             </div>
             <div class="text-center" style="margin-top: 90px">
-              <a role="button" onclick="window.print()"><u class="text-info">Print</u></a>
-              <p>Terima kasih atas kunjungan anda.</p>
+              <a role="button" onclick="window.print()"><u class="text-info" style="font-size: 8px">Print</u></a>
+              <p style="font-size: 8px">Terima kasih atas kunjungan anda.</p>
             </div>
           </div>
         </div>
@@ -76,3 +60,8 @@
     </div>
   </div>
 </div>
+<style>
+  @page {
+    size: 80mm 160mm;
+  }
+</style>

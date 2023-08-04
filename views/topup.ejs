@@ -22,48 +22,70 @@
     <div class="col-md-9 mx-auto my-1 px-4">
       <form action="/topup" method="post">
         <div class="row">
+          <h3 class="mb-2">Card Details >>></h3>
+          <% if (data.is_member) { %>
           <div class="mb-1 col-auto">
             <label for="isMember" class="form-label text-secondary">Member Status</label>
-            <input type="text" class="form-control" id="isMember" name="isMember" value="<%= data.is_member %>" readonly />
+            <input type="text" class="form-control bg-success text-light" id="isMember" name="isMember" value="yes" readonly />
           </div>
-
-          <div class="mb-1">
-            <label for="barcode" class="form-label text-secondary">Card</label>
-            <input type="text" class="form-control" id="barcode" name="barcode" readonly value="<%= data.barcode %>" />
+          <% } else { %>
+          <div class="mb-1 col-auto">
+            <label for="isMember" class="form-label text-secondary">Member Status</label>
+            <input type="text" class="form-control bg-danger text-light" id="isMember" name="isMember" value="no" readonly />
           </div>
-
-          <div class="mb-2">
-            <label for="name" class="form-label text-secondary">Name</label>
-            <input type="text" class="form-control customer-name-input" id="name" name="name" value="<%= data.customer_name %>" readonly />
-          </div>
-
-          <div class="mb-1">
-            <label for="balance" class="form-label text-secondary">Balance</label>
-            <input type="text" class="form-control" id="balance" name="balance" value="<%= Intl.NumberFormat('en-US').format(data.balance) %>" readonly />
-          </div>
-
-          <div class="mb-1">
-            <label for="addBalance" class="form-label text-secondary">Add Balance</label>
-            <input type="text" class="form-control" id="addBalance" name="addBalance" data-type="currency" autofocus="autofocus" required />
-          </div>
-
-          <div class="mb-1">
-            <label for="deposit" class="form-label text-secondary">Deposit</label>
-            <input type="text" class="form-control" id="deposit" name="deposit" data-type="currency" value="10000" required />
-          </div>
-
-          <% if (data.is_active) { %>
+          <% } %> <% if (data.is_active) { %>
           <div class="mb-1 col-auto">
             <label for="isActive" class="form-label text-secondary">Activation</label>
-            <input type="text" class="form-control bg-success text-light" id="isActive" name="isActive" value="<%= data.is_active %>" readonly />
+            <input type="text" class="form-control bg-success text-light" id="isActive" name="isActive" value="active" readonly />
           </div>
           <% } else { %>
           <div class="mb-1 col-auto">
             <label for="isActive" class="form-label text-secondary">Activation</label>
-            <input type="text" class="form-control bg-danger text-light" id="isActive" name="isActive" value="<%= data.is_active %>" readonly />
+            <input type="text" class="form-control bg-danger text-light" id="isActive" name="isActive" value="inactive" readonly />
           </div>
           <% } %>
+
+          <div class="mb-1">
+            <label for="barcode" class="form-label text-secondary">Barcode</label>
+            <input type="text" class="form-control" id="barcode" name="barcode" readonly value="<%= data.barcode %>" />
+          </div>
+
+          <div class="mb-2 col-auto">
+            <label for="customerName" class="form-label text-secondary">Name*</label>
+            <input type="text" class="form-control customer-name-input" id="customerName" name="customerName" value="<%= data.customer_name %>" placeholder="ex. John Dalton" required />
+          </div>
+
+          <div class="mb-2 col-auto">
+            <label for="customerId" class="form-label text-secondary">ID (Phone Number)*</label>
+            <input type="text" class="form-control customer-name-input" id="customerId" name="customerId" value="<%= data.customer_id %>" placeholder="ex. 08123456789" required />
+          </div>
+
+          <div class="mb-1 col-auto">
+            <label for="balance" class="form-label text-secondary">Balance</label>
+            <input type="text" class="form-control" id="balance" name="balance" value="<%= Intl.NumberFormat('en-US').format(data.balance) %>" readonly />
+          </div>
+
+          <% if (data.deposit) { %>
+          <div class="mb-1 col-auto">
+            <label for="deposit" class="form-label text-secondary">Add Deposit</label>
+            <input type="number" class="form-control" id="deposit" name="deposit" value="0" readonly />
+          </div>
+          <% } else { %>
+          <div class="mb-1 col-auto">
+            <label for="deposit" class="form-label text-secondary">Add Deposit</label>
+            <input type="number" class="form-control" id="deposit" name="deposit" value="10000" required />
+          </div>
+          <% } %>
+
+          <div class="mb-1 col-auto">
+            <label for="addBalance" class="form-label text-secondary">Add Balance*</label>
+            <input type="number" class="form-control" id="addBalance" name="addBalance" required />
+          </div>
         </div>
+        <!-- <div class="row my-4">
+          <h3>Moka POS >>></h3>
+          <div class="mb-1 d-grid gap-2 moka-data"></div>
+        </div> -->
         <div class="row my-5 multi-button">
           <div class="col-lg-8 mx-auto text-center">
             <a class="button shadow my-3" href="/topup/search" role="button">Back</a>
@@ -77,6 +99,9 @@
     </div>
   </div>
 </div>
+<!-- <script src="/public/script/mokaInvoices.js"></script>
+<script src="/public/script/copyMokaInvoices.js"></script> -->
+
 <!-- <script>
   const memberInput = document.querySelector('.member-input');
   const memberArea = document.querySelector('.member-area');

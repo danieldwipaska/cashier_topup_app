@@ -1,3 +1,4 @@
+<% if (isTopup) { %>
 <div class="container-md">
   <div class="row">
     <div class="col-md-8 mx-auto">
@@ -66,7 +67,7 @@
     </div>
   </div>
 </div>
-<%- include('notificationSuccess') %>
+<% } %> <%- include('notificationSuccess') %>
 <div class="container-md my-2">
   <div class="row">
     <div class="col-md-8 mx-auto">

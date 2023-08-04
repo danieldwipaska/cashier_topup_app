@@ -3,6 +3,7 @@ const router = express.Router();
 const pool = require('../db');
 const cardQueries = require('../database/cards/queries');
 const paymentQueries = require('../database/payments/queries');
+const tokenQueries = require('../database/tokens/queries');
 const taxQueries = require('../database/taxes/queries');
 const fnbQueries = require('../database/fnbs/queries');
 const stockQueries = require('../database/stocks/queries');
@@ -50,265 +51,66 @@ router.get('/search', verifyToken, allRoles, async (req, res) => {
       });
     }
 
-    try {
-      let fnbsResults = await pool.query(fnbQueries.getFnbs, []);
-
-      for (let i = 0; i < fnbsResults.rows.length; i++) {
-        const matStockAmount = [];
-        for (let j = 0; j < fnbsResults.rows[i].raw_mat.length; j++) {
-          const stocksResults = await pool.query(stockQueries.getStockByName, [fnbsResults.rows[i].raw_mat[j]]);
-
-          if (!stocksResults) {
-            matStockAmount.push(null);
-          } else {
-            matStockAmount.push(stocksResults.rows[0].amount);
-          }
-        }
-        fnbsResults.rows[i].matStockAmount = matStockAmount;
-      }
-
-      const foodFnb = fnbsResults.rows.filter((fnbResult) => fnbResult.kind === 'food');
-      const drinkFnb = fnbsResults.rows.filter((fnbResult) => fnbResult.kind === 'drink');
-
-      try {
-        const paymentResults = await pool.query(paymentQueries.getPaymentPaidByID, [cards.rows[0].customer_id, false]);
-
-        let sumPayment = 0;
-
-        paymentResults.rows.forEach((menu) => {
-          sumPayment += menu.payment;
-        });
-
-        try {
-          const ruleResults = await pool.query(taxQueries.getTaxes, []);
-
-          try {
-            const discounts = await pool.query(discountQueries.getDiscounts, []);
-
-            return res.render('payment', {
-              layout: 'layouts/main-layout',
-              title: 'Payments',
-              subtitle: 'Payment',
-              alert: '',
-              data: cards.rows[0],
-              dataPayTemp: paymentResults.rows,
-              foods: foodFnb,
-              drinks: drinkFnb,
-              sumPayment: sumPayment,
-              rules: ruleResults.rows,
-              discounts: discounts.rows,
-            });
-          } catch (error) {
-            errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling discountQueries.getDiscounts');
-            return res.status(500).json('Server Error');
-          }
-        } catch (error) {
-          errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling taxQueries.getTaxes');
-          return res.status(500).json('Server Error');
-        }
-      } catch (error) {
-        errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling paymentQueries.getPaymentPaidByID');
-        return res.status(500).json('Server Error');
-      }
-    } catch (error) {
-      errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling fnbQueries.getFnbs');
-      return res.status(500).json('Server Error');
-    }
+    return res.render('payment', {
+      layout: 'layouts/main-layout',
+      title: 'Payments',
+      subtitle: 'Payment',
+      alert: '',
+      data: cards.rows[0],
+    });
   } catch (error) {
     errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling cardQueries.getCardById');
     return res.status(500).json('Server Error');
   }
 });
 
-// ADD TEMPORARY PAYMENTS
-router.post('/temp', verifyToken, allRoles, async (req, res) => {
-  const { menu, price, barcode, customerName: customer_name, customerId: customer_id, amount, service, tax, discountName } = req.body;
-  const sort = 'pay';
-
-  const discount_name = discountName.split(',');
-
-  if (amount <= 0) return res.status(400).json({ message: 'Total per item must not be 0 or less than 0' });
-
-  const invoiceNumber = '';
-  let totalPrice = price * amount;
-
-  // DISCOUNT
-
-  // if (discount_name.length > 1) return res.status(400).json('Cannot apply discount more than one');
-
-  if (discount_name[0] !== '') {
-    for (let i = 0; i < discount_name.length; i++) {
-      try {
-        const discounts = await pool.query(discountQueries.getDiscountByName, [discount_name[i]]);
-
-        if (!discounts.rows.length) return res.status(404).json(`Cannot find the discount "${discount_name[i]}"`);
-
-        if (!discounts.rows[0].percent || discounts.rows[0].percent === 0) {
-          totalPrice = totalPrice - discounts.rows[0].value;
-          if (totalPrice <= 0) return res.status(400).json('Total price is 0 or negative.');
-        } else {
-          totalPrice = totalPrice - (totalPrice * discounts.rows[0].percent) / 100;
-        }
-      } catch (error) {
-        errorLog(paymentLogger, error, 'Error in HTTP POST /temp when calling discounts.getDiscountByName');
-        return res.status(500).json('Server Error');
-      }
-    }
-  }
-
-  // SERVICE
-  let payment = totalPrice + (totalPrice * 5) / 100;
-
-  // TAX
-  payment = payment + (payment * 10) / 100;
+// PAYMENTS
+router.post('/', verifyToken, allRoles, async (req, res) => {
+  const { barcode, customerName: customer_name, customerId: customer_id, payment, invoiceNumber: invoice_number, invoiceStatus: invoice_status, servedBy: served_by, collectedBy: collected_by } = req.body;
 
   try {
-    const id = v4();
-    await pool.query(paymentQueries.addPayment, [id, sort, barcode, customer_name, customer_id, payment, service, tax, discount_name, menu, false, amount, totalPrice, invoiceNumber, null, req.validUser.name]);
+    const cards = await pool.query(cardQueries.getCardById, [barcode]);
+    if (!cards.rows.length) return res.status(404).json('Card Not Found');
 
-    // SEND LOG
-    infoLog(paymentLogger, 'Temporary payment was successfully added', barcode, customer_name, customer_id, req.validUser.name);
-
-    // UPDATE THE STOCKS
-    try {
-      const fnbsResults = await pool.query(fnbQueries.getFnbByMenu, [menu]);
-
-      // fnbsResults.rows[0].raw_mat <--- array
-      // fnbsResults.rows[0].raw_amount <--- array
-
-      for (let i = 0; i < fnbsResults.rows[0].raw_mat.length; i++) {
-        let stocksResults = await pool.query(stockQueries.getStockByName, [fnbsResults.rows[0].raw_mat[i]]);
-
-        let newStock = stocksResults.rows[0].amount - fnbsResults.rows[0].raw_amount[i] * amount;
-
-        if (newStock < 0) return res.status(400).json(`Stock ${fnbsResults.rows[0].raw_mat[i]} is not enough`);
-
-        await pool.query(stockQueries.updateStockByName, [newStock, fnbsResults.rows[0].raw_mat[i]]);
-      }
-
-      return res.redirect(`/payment/search?card=${barcode}`);
-    } catch (error) {
-      errorLog(paymentLogger, error, 'Error in HTTP POST /temp when calling fnbQueries.getFnbByMenu');
-      return res.status(500).json('Server Error');
-    }
-  } catch (error) {
-    errorLog(paymentLogger, error, 'Error in HTTP POST /temp when calling paymentQueries.addPayment');
-    return res.status(500).json('Server Error');
-  }
-});
-
-// DELETE TEMPORARY PAYMENTS
-router.get('/temp/:id/delete', verifyToken, allRoles, async (req, res) => {
-  const { id } = req.params;
-
-  // GET A PAYMENT BY ID
-  try {
-    const paymentResults = await pool.query(paymentQueries.getPaymentById, [id]);
-
-    if (!paymentResults.rows.length) return res.status(404).json('Payment not found');
+    if (cards.rows[0].customer_id !== customer_id) return res.status(401).json('The Card Does Not Belong To The Customer');
 
     try {
-      await pool.query(paymentQueries.deletePaymentById, [id]);
+      const deposit = cards.rows[0].deposit;
+      const initial_balance = cards.rows[0].balance;
 
-      // SEND LOG
-      infoLog(paymentLogger, 'Temporary Payment was successfully deleted', paymentResults.rows[0].barcode, paymentResults.rows[0].customer_name, paymentResults.rows[0].customer_id, req.validUser.name);
+      const final_balance = initial_balance - payment;
+      if (final_balance < 0) return res.status(401).json('Balance Not Enough');
+
+      const updatedCards = await pool.query(cardQueries.updateBalance, [final_balance, deposit, barcode]);
 
       try {
-        const fnbsResults = await pool.query(fnbQueries.getFnbByMenu, [paymentResults.rows[0].menu]);
+        const id = v4();
+        const action = 'pay';
 
-        for (let i = 0; i < fnbsResults.rows[0].raw_mat.length; i++) {
-          let stocksResults = await pool.query(stockQueries.getStockByName, [fnbsResults.rows[0].raw_mat[i]]);
+        const payments = await pool.query(paymentQueries.addPayment, [id, action, barcode, customer_name, customer_id, payment, invoice_number, invoice_status, initial_balance, final_balance, served_by, collected_by]);
 
-          let newStock = stocksResults.rows[0].amount + fnbsResults.rows[0].raw_amount[i] * paymentResults.rows[0].amount;
+        // SEND LOG
+        infoLog(paymentLogger, 'Payment was successfully added and invoice number was successfully generated', updatedCards.rows[0].barcode, updatedCards.rows[0].customer_name, updatedCards.rows[0].customer_id, req.validUser.name);
 
-          if (newStock < 0) return res.status(400).json(`Stock ${fnbsResults.rows[0].raw_mat[i]} is not enough`);
-
-          await pool.query(stockQueries.updateStockByName, [newStock, fnbsResults.rows[0].raw_mat[i]]);
-        }
-
-        return res.redirect(`/payment/search?card=${paymentResults.rows[0].barcode}`);
+        return res.render('notificationSuccessWithBalance', {
+          layout: 'layouts/main-layout',
+          title: 'Payment Success',
+          message: 'Card Payment succeed.',
+          data: updatedCards.rows[0],
+          invoiceNumber: invoice_number,
+        });
       } catch (error) {
-        errorLog(paymentLogger, error, 'Error in HTTP GET /temp/:id/delete when calling fnbQueries.getFnbByMenu');
+        errorLog(paymentLogger, error, 'Error in HTTP POST / when calling paymentQueries.addPayment');
         return res.status(500).json('Server Error');
       }
     } catch (error) {
-      errorLog(paymentLogger, error, 'Error in HTTP GET /temp/:id/delete when calling paymentQueries.deletePaymentById');
+      errorLog(paymentLogger, error, 'Error in HTTP POST / when calling cardQueries.updateBalance');
       return res.status(500).json('Server Error');
     }
   } catch (error) {
-    errorLog(paymentLogger, error, 'Error in HTTP GET /temp/:id/delete when calling paymentQueries.getPaymentById');
+    errorLog(paymentLogger, error, 'Error in HTTP POST / when calling cardQueries.getCardById');
     return res.status(500).json('Server Error');
   }
-});
-
-// UPDATE PAYMENTS INTO PAID OFF
-router.post('/', verifyToken, allRoles, (req, res) => {
-  const { barcode, payment, customerId: customer_id } = req.body;
-
-  pool.query(cardQueries.getCardById, [barcode], (error, getCardResults) => {
-    if (error) {
-      errorLog(paymentLogger, error, 'Error in HTTP POST / when calling cardQueries.getCardById');
-      return res.status(500).json('Server Error');
-    }
-
-    const resBalance = getCardResults.rows[0].balance - payment;
-
-    if (!getCardResults.rows.length) {
-      return res.status(404).json('Card does not exist');
-    } else if (resBalance < 0) {
-      return res.status(400).json({ message: 'Saldo tidak mencukupi' });
-    } else {
-      pool.query(paymentQueries.getPaymentPaidByID, [customer_id, false], (error, getPaymentResults) => {
-        if (error) {
-          errorLog(paymentLogger, error, 'Error in HTTP POST / when calling paymentQueries.getPaymentPaidByID');
-          return res.status(500).json('Server Error');
-        }
-
-        if (!getPaymentResults.rows.length) {
-          return res.status(404).json('Payment Not Found');
-        } else {
-          // UPDATE BALANCE
-          pool.query(cardQueries.updateBalance, [resBalance, getCardResults.rows[0].deposit, getCardResults.rows[0].barcode], (error, updateBalanceResults) => {
-            if (error) {
-              errorLog(paymentLogger, error, 'Error in HTTP POST / when calling cardQueries.updateBalance');
-              return res.status(500).json('Server Error');
-            }
-
-            // SEND LOG
-            infoLog(paymentLogger, 'Balance was successfully updated', updateBalanceResults.rows[0].barcode, updateBalanceResults.rows[0].customer_name, updateBalanceResults.rows[0].customer_id, req.validUser.name);
-
-            // UPDATE PAID OFF AND GENERATE INVOICE
-            const invoiceNumber = v4();
-            pool.query(paymentQueries.updatePaymentPaid, [true, invoiceNumber, resBalance, customer_id, false], (error, updatePaymentResults) => {
-              if (error) {
-                errorLog(paymentLogger, error, 'Error in HTTP POST / when calling paymentQueries.updatePaymentPaid');
-                return res.status(500).json('Server Error');
-              }
-
-              // SEND LOG
-              infoLog(
-                paymentLogger,
-                'Paid Off was successfully updated into true and Invoice was successfully generated',
-                getPaymentResults.rows[0].barcode,
-                getPaymentResults.rows[0].customer_name,
-                getPaymentResults.rows[0].customer_id,
-                req.validUser.name
-              );
-
-              // RESPONSE
-              return res.render('notificationSuccessWithBalance', {
-                layout: 'layouts/main-layout',
-                title: 'Payment Success',
-                message: 'Payment succeed.',
-                data: updateBalanceResults.rows[0],
-                invoiceNumber: invoiceNumber,
-              });
-            });
-          });
-        }
-      });
-    }
-  });
 });
 
 // GET INVOICE
@@ -349,7 +151,7 @@ router.get('/list', verifyToken, allRoles, async (req, res) => {
   const offset = (pageInt - 1) * limit;
 
   try {
-    const payments = await pool.query(paymentQueries.getPaymentByPaidOff, [true, limit, offset]);
+    const payments = await pool.query(paymentQueries.getPayments, [limit, offset]);
 
     return res.render('paymentList', {
       layout: 'layouts/main-layout',
@@ -366,10 +168,10 @@ router.get('/list', verifyToken, allRoles, async (req, res) => {
 });
 
 // DELETE PAYMENT
-router.get('/:invoice/delete', verifyToken, allRoles, (req, res) => {
-  const { invoice } = req.params;
+router.get('/:id/delete', verifyToken, allRoles, (req, res) => {
+  const { id } = req.params;
 
-  pool.query(paymentQueries.getPaymentsByInvoice, [invoice], (error, getResults) => {
+  pool.query(paymentQueries.getPaymentById, [id], (error, getResults) => {
     if (error) {
       errorLog(paymentLogger, error, 'Error in HTTP GET /:invoice/delete when calling paymentQueries.getPaymentsByInvoice');
       return res.status(500).json('Server Error');
@@ -378,7 +180,7 @@ router.get('/:invoice/delete', verifyToken, allRoles, (req, res) => {
     if (getResults.rows.length === 0) {
       res.status(404).json('Payment Not Found');
     } else {
-      pool.query(paymentQueries.deletePaymentByInvoice, [invoice], (error, deleteResults) => {
+      pool.query(paymentQueries.deletePaymentById, [id], (error, deleteResults) => {
         if (error) {
           errorLog(paymentLogger, error, 'Error in HTTP GET /:invoice/delete when calling paymentQueries.deletePaymentByInvoice');
           return res.status(500).json('Server Error');
@@ -392,6 +194,88 @@ router.get('/:invoice/delete', verifyToken, allRoles, (req, res) => {
     }
   });
 });
+
+// router.get('/token', async (req, res) => {
+//   let dataCollection = [];
+
+//   // getMokaInvoices();
+
+//   const clientId = '6d72c3e6b7dc3ddbb6e162feb275f0d298ead57c070ccc1a0de07a5ddea514cb';
+//   const clientSecret = '0643375a7d36cfaffd6f78a438fb96015922b9e741ac3d08d5aca3c139ae7036';
+//   let accessToken = null;
+//   let accessTokenExpiresAt = 0;
+//   let refreshToken = '';
+
+//   async function getNewAccessToken() {
+//     try {
+//       const response = await axios.post('https://api.mokapos.com/oauth/token', {
+//         grant_type: 'refresh_token',
+//         client_id: clientId,
+//         client_secret: clientSecret,
+//         refresh_token: refreshToken,
+//       });
+
+//       const newAccessToken = response.data.access_token;
+//       const newExpiresIn = response.data.expires_in;
+
+//       // Update the access token and its expiration time
+//       accessToken = newAccessToken;
+//       accessTokenExpiresAt = Date.now() + newExpiresIn * 1000;
+
+//       // Optionally, update the refresh token if the server provides a new one.
+//       const newRefreshToken = response.data.refresh_token;
+//       if (newRefreshToken) {
+//         // Store the newRefreshToken securely for future use.
+//         refreshToken = newRefreshToken;
+//       }
+
+//       return newAccessToken;
+//     } catch (error) {
+//       // Handle error (e.g., invalid refresh token, server errors, etc.).
+//       console.error('Error refreshing access token:', error.message);
+//       throw error;
+//     }
+//   }
+
+//   async function makeAuthenticatedRequest() {
+//     if (!accessToken || shouldRefreshToken()) {
+//       // Get a new access token if not available or about to expire
+//       try {
+//         accessToken = await getNewAccessToken();
+//       } catch (error) {
+//         // Handle token refresh errors here
+//         return;
+//       }
+//     }
+
+//     // Make the actual API request with the access token
+//     try {
+//       const response = await axios.get('https://api.mokapos.com/v3/outlets/852790/reports/get_latest_transactions?per_page=10', {
+//         headers: {
+//           Authorization: `Bearer ${accessToken}`,
+//         },
+//       });
+//       // Process the response
+//       const mokaData = document.querySelector('.moka-data');
+
+//       let dataString = '';
+
+//       response.data.data.payments.forEach((element, i) => {
+//         dataString += `<button type="button" class="btn btn-light shadow text-start p-3" id="${i}">${element.payment_no}&emsp;&emsp;${element.customer_name}</button>`;
+
+//         dataCollection.push(element);
+//       });
+
+//       mokaData.innerHTML = dataString;
+//     } catch (error) {
+//       // Handle API request errors here
+//     }
+//   }
+
+//   await makeAuthenticatedRequest();
+//   // Periodically check for token expiration and make authenticated requests
+
+// });
 
 // // TOP-UP
 // router.post('/', verifyToken, (req, res) => {
