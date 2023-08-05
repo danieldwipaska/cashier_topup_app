@@ -73,14 +73,14 @@ async function getPaymentData() {
   try {
     const tokens = await pool.query(tokenQueries.getLatestToken, []);
 
+    const now = Date.now();
+
     if (!tokens.rows.length) {
       await getFirstAuth();
-    } else {
-      const now = Date.now();
+    }
 
-      if (tokens.rows[0].expires_at - now < 5 * 60 * 1000) {
-        await getNewAccessToken(tokens.rows[0].refresh_token);
-      }
+    if (tokens.rows[0].expires_at - now < 5 * 60 * 1000) {
+      await getNewAccessToken(tokens.rows[0].refresh_token);
     }
 
     const data = await getPaymentDataFromMoka(tokens.rows[0].access_token);

@@ -1,0 +1,3 @@
+id,action,barcode,customer_name,customer_id,payment,invoice_number,invoice_status,initial_balance,final_balance,served_by,collected_by,created_at,updated_at
+83fad9d4-5624-49d5-85ff-1499b414df76,topup,11111111,Daniel Kamasi,085172160300,1000000,81c2d28f-e79d-4418-b750-07c0b4bd3ba0,paid,0,980000,Greeter,danieldwipaska,Fri Aug 04 2023 10:03:23 GMT+0700 (Western Indonesia Time),Fri Aug 04 2023 10:03:23 GMT+0700 (Western Indonesia Time)
+41696994-5cb8-4d11-9345-6704d3ad3715,topup,0008359455,Putra Wijaya,089828473989,1500000,03499c0f-8c58-499a-8282-a48ecfb7461d,paid,0,1490000,Greeter,danieldwipaska,Fri Aug 04 2023 19:37:40 GMT+0700 (Western Indonesia Time),Fri Aug 04 2023 19:37:40 GMT+0700 (Western Indonesia Time)
