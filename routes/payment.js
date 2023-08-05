@@ -98,6 +98,7 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
           message: 'Card Payment succeed.',
           data: updatedCards.rows[0],
           invoiceNumber: invoice_number,
+          isTopup: '',
         });
       } catch (error) {
         errorLog(paymentLogger, error, 'Error in HTTP POST / when calling paymentQueries.addPayment');

@@ -61,6 +61,8 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
   const { barcode, addBalance, deposit, customerName: customer_name, customerId: customer_id } = req.body;
 
   const addBalanceInt = parseInt(addBalance, 10);
+  if (addBalanceInt > 10000000) return res.status(400).json('Maximum Top-up allowed is IDR10,000,000');
+
   let depositInt = parseInt(deposit, 10);
 
   const invoice_number = v4();
