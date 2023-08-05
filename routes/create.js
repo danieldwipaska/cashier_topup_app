@@ -1,32 +1,39 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-const queries = require('../database/cards/queries');
+const cardQueries = require('../database/cards/queries');
 const { v4 } = require('uuid');
+const verifyToken = require('./middlewares/verifyToken');
+const { createLogger } = require('../config/logger/childLogger');
+const { infoLog, errorLog } = require('../config/logger/functions');
+const { cashierAndDeveloper } = require('./middlewares/userRole');
 
 // CREATE MENU
-router.get('/search', (req, res) => {
+router.get('/search', verifyToken, cashierAndDeveloper, (req, res) => {
   const barcode = req.query.card;
 
   if (!barcode) {
-    res.render('search', {
+    return res.render('search', {
       layout: 'layouts/main-layout',
       title: 'Search',
       subtitle: 'Create a Card',
       alert: '',
     });
   } else {
-    pool.query(queries.getCardById, [barcode], (error, results) => {
-      if (error) return console.log(error);
+    pool.query(cardQueries.getCardById, [barcode], (error, results) => {
+      if (error) {
+        errorLog(createLogger, error, 'Error in HTTP GET /search when calling cardQueries.getCardById');
+        return res.status(500).json('Server Error');
+      }
       if (results.rows.length) {
-        res.render('search', {
+        return res.render('search', {
           layout: 'layouts/main-layout',
           title: 'Search',
           subtitle: 'Create a Card',
           alert: 'Card is already added',
         });
       } else {
-        res.render('createCard', {
+        return res.render('createCard', {
           layout: 'layouts/main-layout',
           title: 'Create Card',
           data: barcode,
@@ -37,21 +44,37 @@ router.get('/search', (req, res) => {
 });
 
 //ADD CARD
-router.post('/', (req, res) => {
+router.post('/', verifyToken, cashierAndDeveloper, (req, res) => {
   const id = v4();
-  const { barcode } = req.body;
+  const { barcode, isMember } = req.body;
   const balance = 0;
   const customer_name = '';
-  const is_member = false;
-  const is_active = true;
-  const dine_in = false;
+  const customer_id = '';
+  const is_active = false;
+  const deposit = 0;
+  let is_member = isMember;
 
-  pool.query(queries.addCard, [id, barcode, balance, customer_name, is_member, is_active, dine_in], (error, results) => {
-    if (error) return console.log(error);
-    res.render('notificationSuccess', {
+  if (is_member === 'true') {
+    is_member = true;
+  } else if (is_member === 'false') {
+    is_member = false;
+  }
+
+  pool.query(cardQueries.addCard, [id, barcode, balance, deposit, customer_name, customer_id, is_member, is_active], (error, results) => {
+    if (error) {
+      errorLog(createLogger, error, 'Error in HTTP POST / when calling cardQueries.addCard');
+      return res.status(500).json('Server Error');
+    }
+
+    // SEND LOG
+    infoLog(createLogger, 'Card was successfully created', barcode, customer_name, customer_id, req.validUser.name);
+
+    // RESPONSE
+    return res.render('notificationSuccess', {
       layout: 'layouts/main-layout',
       title: 'Notification',
-      messsage: 'Card has been added successfully',
+      message: 'Card has been added successfully',
+      data: results.rows[0],
     });
   });
 });

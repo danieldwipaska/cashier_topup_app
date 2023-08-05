@@ -1,14 +1,21 @@
 const express = require('express');
+const { v4 } = require('uuid');
+const { checkoutLogger } = require('../config/logger/childLogger');
+const { errorLog, infoLog } = require('../config/logger/functions');
 const router = express.Router();
-const queries = require('../database/cards/queries');
+const cardQueries = require('../database/cards/queries');
+const paymentQueries = require('../database/payments/queries');
+const memberQueries = require('../database/members/queries');
 const pool = require('../db');
+const { cashierAndDeveloper } = require('./middlewares/userRole');
+const verifyToken = require('./middlewares/verifyToken');
 
 // Status MENU
-router.get('/search', (req, res) => {
+router.get('/search', verifyToken, cashierAndDeveloper, (req, res) => {
   const { card: barcode } = req.query;
 
   if (!barcode) {
-    res.render('search', {
+    return res.render('search', {
       layout: 'layouts/main-layout',
       title: 'Search',
       subtitle: 'Check-Out Status',
@@ -16,17 +23,21 @@ router.get('/search', (req, res) => {
     });
   } else {
     //SEARCH FOR CARD
-    pool.query(queries.getCardById, [barcode], (error, results) => {
-      if (error) return console.log(error);
+    pool.query(cardQueries.getCardById, [barcode], (error, results) => {
+      if (error) {
+        errorLog(checkoutLogger, error, 'Error in HTTP GET /search when calling cardQueries.getCardById');
+        return res.status(500).json('Server Error');
+      }
+
       if (results.rows.length === 0) {
-        res.render('search', {
+        return res.render('search', {
           layout: 'layouts/main-layout',
           title: 'Search',
           subtitle: 'Check-Out Status',
           alert: 'Card does not exists',
         });
       } else {
-        res.render('checkout', {
+        return res.render('checkout', {
           layout: 'layouts/main-layout',
           title: 'Check-Out Status',
           data: results.rows[0],
@@ -38,33 +49,97 @@ router.get('/search', (req, res) => {
 });
 
 // CHECK-OUT
-router.post('/', (req, res) => {
-  const { barcode } = req.body;
+router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
+  const { barcode, customerName: customer_name, customerId: customer_id } = req.body;
+
+  const served_by = 'Greeter';
+  const collected_by = req.validUser.name;
 
   // SEARCH FOR CARD
-  pool.query(queries.getCardById, [barcode], (error, results) => {
-    if (error) return console.log(error);
+  try {
+    const cards = await pool.query(cardQueries.getCardById, [barcode]);
 
-    // IF CARD IS ALREADY CHECK-OUT
-    if (results.rows[0].dine_in === false) {
-      res.render('checkout', {
+    if (!cards.rows.length) {
+      // IF CARD DOES NOT EXIST
+      return res.status(404).json('Card does not exist');
+    } else if (cards.rows[0].is_active === false) {
+      // IF CARD IS ALREADY CHECKOUT
+      return res.render('checkout', {
         layout: 'layouts/main-layout',
         title: 'Check-Out Status',
-        alert: 'Card is already check-out',
-        data: results.rows[0],
+        alert: 'Card is NOT ACTIVE yet',
+        data: cards.rows[0],
       });
     } else {
-      // IF CARD NOT CHECK-OUT YET
-      pool.query(queries.cardStatus, [false, '', barcode], (error, results) => {
-        if (error) return console.log(error);
-        res.render('notificationSuccess', {
-          layout: 'layouts/main-layout',
-          title: 'Check-Out',
-          message: 'Card has been checked out successfully.',
-        });
-      });
+      const initial_balance = cards.rows[0].balance;
+      const final_balance = 0;
+
+      // UPDATE CARD
+      try {
+        await pool.query(cardQueries.cardStatus, [false, null, null, 0, 0, cards.rows[0].barcode]);
+
+        infoLog(checkoutLogger, 'Card is_active was successfully updated into false', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);
+
+        try {
+          // ADD PAYMENT
+          const id = v4();
+          const action = 'checkout';
+          const payment = cards.rows[0].balance + cards.rows[0].deposit;
+          const invoice_number = v4();
+          const invoice_status = 'paid';
+
+          await pool.query(paymentQueries.addPayment, [id, action, barcode, customer_name, customer_id, payment, invoice_number, invoice_status, initial_balance, final_balance, served_by, collected_by]);
+
+          // SEND LOG
+          infoLog(checkoutLogger, 'Payment was successfully added and invoice number was successfully generated', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);
+
+          // if (cards.rows[0].is_member) {
+          //   // UPDATE MEMBER BARCODE & IS_ACTIVE
+          //   try {
+          //     const members = await pool.query(memberQueries.getMemberByCustomerId, [cards.rows[0].customer_id]);
+
+          //     try {
+          //       await pool.query(memberQueries.updateMemberByCustomerId, [
+          //         members.rows[0].fullname,
+          //         null,
+          //         members.rows[0].birth_date,
+          //         members.rows[0].phone_number,
+          //         false,
+          //         members.rows[0].address,
+          //         members.rows[0].email,
+          //         members.rows[0].instagram,
+          //         members.rows[0].facebook,
+          //         members.rows[0].twitter,
+          //         members.rows[0].customer_id,
+          //       ]);
+          //     } catch (error) {
+          //       errorLog(checkoutLogger, error, 'Error in HTTP POST / when calling memberQueries.updateMemberByCustomerId');
+          //       return res.status(500).json('Server Error');
+          //     }
+          //   } catch (error) {
+          //     errorLog(checkoutLogger, error, 'Error in HTTP POST / when calling memberQueries.getMemberByCustomerId');
+          //     return res.status(500).json('Server Error');
+          //   }
+          // }
+
+          return res.render('notificationSuccess', {
+            layout: 'layouts/main-layout',
+            title: 'Check-Out',
+            message: 'Card has been checked out successfully.',
+          });
+        } catch (error) {
+          errorLog(checkoutLogger, error, 'Error in HTTP POST / when calling paymentQueries.addPayment');
+          return res.status(500).json('Server Error');
+        }
+      } catch (error) {
+        errorLog(checkoutLogger, error, 'Error in HTTP POST / when calling cardQueries.cardStatus');
+        return res.status(500).json('Server Error');
+      }
     }
-  });
+  } catch (error) {
+    errorLog(checkoutLogger, error, 'Error in HTTP POST / when calling cardQueries.getCardById');
+    return res.status(500).json('Server Error');
+  }
 });
 
 module.exports = router;

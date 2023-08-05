@@ -1,89 +1,92 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-const queries = require('../database/cards/queries');
+const cardQueries = require('../database/cards/queries');
+const verifyToken = require('./middlewares/verifyToken');
+const { errorLog, infoLog } = require('../config/logger/functions');
+const { activationLogger } = require('../config/logger/childLogger');
+const { cashierAndDeveloper } = require('./middlewares/userRole');
 
 // ACTIVATION MENU
-router.get('/search', (req, res) => {
+router.get('/search', verifyToken, cashierAndDeveloper, async (req, res) => {
   const barcode = req.query.card;
 
   if (!barcode) {
-    res.render('search', {
+    return res.render('search', {
       layout: 'layouts/main-layout',
       title: 'Search',
       subtitle: 'Activation/Deactivation',
       alert: '',
     });
-  } else {
-    pool.query(queries.getCardById, [barcode], (error, results) => {
-      if (error) return console.log(error);
-      if (results.rows.length === 0) {
-        res.render('search', {
-          layout: 'layouts/main-layout',
-          title: 'Search',
-          subtitle: 'Activation/Deactivation',
-          alert: 'Card does not exists',
-        });
-      } else {
-        res.render('activation', {
-          layout: 'layouts/main-layout',
-          title: 'Activation',
-          data: results.rows[0],
-          alert: '',
-        });
-      }
+  }
+
+  try {
+    const cards = await pool.query(cardQueries.getCardById, [barcode]);
+
+    if (cards.rows.length === 0) {
+      return res.render('search', {
+        layout: 'layouts/main-layout',
+        title: 'Search',
+        subtitle: 'Activation/Deactivation',
+        alert: 'Card does not exists',
+      });
+    }
+
+    if (cards.rows[0].is_active)
+      return res.render('search', {
+        layout: 'layouts/main-layout',
+        title: 'Search',
+        subtitle: 'Activation/Deactivation',
+        alert: 'Card is already ACTIVE',
+      });
+
+    return res.render('activation', {
+      layout: 'layouts/main-layout',
+      title: 'Activation',
+      data: cards.rows[0],
+      alert: '',
     });
+  } catch (error) {
+    errorLog(activationLogger, error, 'Error in HTTP GET /search when calling cardQueries.getCardById');
+    return res.status(500).json('Server Error');
   }
 });
 
 // ACTIVATE
-router.post('/activate', (req, res) => {
+router.post('/activate', verifyToken, cashierAndDeveloper, async (req, res) => {
   const { barcode } = req.body;
-  pool.query(queries.getCardById, [barcode], (error, results) => {
-    if (error) return console.log(error);
-    if (results.rows[0].is_active === true) {
-      res.render('activation', {
+
+  try {
+    const cards = await pool.query(cardQueries.getCardById, [barcode]);
+
+    if (cards.rows[0].is_active === true) {
+      return res.render('activation', {
         layout: 'layouts/main-layout',
         title: 'Activation',
         alert: 'Card is already active',
-        data: results.rows[0],
+        data: cards.rows[0],
       });
     } else {
-      pool.query(queries.cardActivation, [true, barcode], (error, results) => {
-        if (error) return console.log(error);
-        res.render('notificationSuccess', {
+      try {
+        await pool.query(cardQueries.cardActivate, [true, barcode]);
+
+        // SEND LOG
+        infoLog(activationLogger, 'Card was successfully activated', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);
+
+        return res.render('notificationSuccess', {
           layout: 'layouts/main-layout',
           title: 'Activation',
           message: 'Card has been activated successfully.',
         });
-      });
+      } catch (error) {
+        errorLog(activationLogger, error, 'Error in HTTP POST /activate when calling cardQueries.cardActivate');
+        return res.status(500).json('Server Error');
+      }
     }
-  });
-});
-
-// DEACTIVATE
-router.post('/deactivate', (req, res) => {
-  const { barcode } = req.body;
-  pool.query(queries.getCardById, [barcode], (error, results) => {
-    if (error) return console.log(error);
-    if (results.rows[0].is_active === false) {
-      res.render('activation', {
-        layout: 'layouts/main-layout',
-        title: 'Activation',
-        alert: 'Card is already non-active',
-        data: results.rows[0],
-      });
-    } else {
-      pool.query(queries.cardActivation, [false, barcode], (error, results) => {
-        if (error) return console.log(error);
-        res.render('notificationSuccess', {
-          layout: 'layouts/main-layout',
-          title: 'Activation',
-          message: 'Card has been deactivated successfully.',
-        });
-      });
-    }
-  });
+  } catch (error) {
+    errorLog(activationLogger, error, 'Error in HTTP POST /activate when calling cardQueries.getCardById');
+    return res.status(500).json('Server Error');
+  }
 });
 
 module.exports = router;

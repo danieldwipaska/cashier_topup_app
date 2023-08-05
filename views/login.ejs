@@ -1,0 +1,32 @@
+<div class="login-box">
+  <h2>BAHARI</h2>
+  <% if (alert) { %>
+
+  <div class="row">
+    <div class="col-md mx-auto">
+      <div class="alert alert-dismissible alert-danger fade show mb-3">
+        <button type="button" class="btn-close" data-mdb-toggle="animation" data-mdb-animation="slide-right" data-mdb-animation-start="onLoad" data-bs-dismiss="alert"></button>
+        <strong>Oh no!</strong> <%= alert %>
+      </div>
+    </div>
+  </div>
+
+  <% } %>
+  <form method="post" action="/auth/login">
+    <div class="user-box">
+      <input type="text" name="username" required />
+      <label>Username</label>
+    </div>
+    <div class="user-box">
+      <input type="password" name="password" required />
+      <label>Password</label>
+    </div>
+    <button class="border-0 btn-white btn" type="submit">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      Log in
+    </button>
+  </form>
+</div>

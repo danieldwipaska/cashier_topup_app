@@ -1,0 +1,86 @@
+<% if (alert) { %>
+<div class="container-md my-1">
+  <div class="row">
+    <div class="col-md-8 mx-auto">
+      <div class="alert alert-dismissible alert-warning fade show mb-3">
+        <button type="button" class="btn-close" data-mdb-toggle="animation" data-mdb-animation="slide-right" data-mdb-animation-start="onLoad" data-bs-dismiss="alert"></button>
+        <strong>Oh no!</strong> <%= alert %>
+      </div>
+    </div>
+  </div>
+</div>
+<% } %>
+<div class="container my-1">
+  <div class="row">
+    <div class="col-md-9 mx-auto">
+      <h3>Membership</h3>
+    </div>
+  </div>
+</div>
+<div class="container-md mt-1 mb-3">
+  <div class="row my-1">
+    <div class="col-md-9 mx-auto my-1 px-4">
+      <form action="/member" method="post">
+        <div class="row">
+          <div class="mb-1 mt-2">
+            <label for="barcode" class="form-label text-secondary">Barcode</label>
+            <input type="text" class="form-control" id="barcode" name="barcode" value="<%= data.barcode %>" readonly />
+          </div>
+          <div class="mb-1">
+            <label for="fullname" class="form-label text-secondary">Fullname</label>
+            <input type="text" class="form-control" id="fullname" name="fullname" value="<%= data.customer_name %>" autofocus="autofocus" required />
+          </div>
+
+          <div class="mb-1">
+            <label for="identityNumber" class="form-label text-secondary">Identity Card Number</label>
+            <input type="text" class="form-control" id="identityNumber" name="identityNumber" required />
+          </div>
+
+          <div class="mb-1">
+            <label for="birthDate" class="form-label text-secondary">Date of Birth</label>
+            <input type="date" class="form-control" id="birthDate" name="birthDate" required />
+          </div>
+
+          <div class="mb-1">
+            <label for="phoneNumber" class="form-label text-secondary">Phone Number</label>
+            <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" required />
+          </div>
+
+          <div class="mb-1">
+            <label for="address" class="form-label text-secondary">Address</label>
+            <input type="text" class="form-control" id="address" name="address" />
+          </div>
+
+          <div class="mb-1">
+            <label for="email" class="form-label text-secondary">Email</label>
+            <input type="text" class="form-control" id="email" name="email" />
+          </div>
+
+          <div class="mb-1">
+            <label for="instagram" class="form-label text-secondary">Instagram</label>
+            <input type="text" class="form-control" id="instagram" name="instagram" />
+          </div>
+
+          <div class="mb-1">
+            <label for="facebook" class="form-label text-secondary">Facebook</label>
+            <input type="text" class="form-control" id="facebook" name="facebook" />
+          </div>
+
+          <div class="mb-1">
+            <label for="twitter" class="form-label text-secondary">Twitter</label>
+            <input type="text" class="form-control" id="twitter" name="twitter" />
+          </div>
+        </div>
+        <div class="row my-5 multi-button">
+          <div class="col-lg-8 mx-auto text-center">
+            <a class="button shadow my-3" href="/member/search" role="button">Back</a>
+
+            <button class="button shadow my-3" type="submit">Add Member</button>
+
+            <a class="button shadow my-3" href="/" role="button">Menu</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
