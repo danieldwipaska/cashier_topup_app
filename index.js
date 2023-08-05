@@ -2,6 +2,7 @@ const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -32,6 +33,7 @@ app.use(cookieParser());
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(`${__dirname}/public`)); // make files able to access
 app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use(cors());
 // app.use(cors());
 
 //ROUTES
