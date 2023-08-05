@@ -12,7 +12,7 @@ const verifyToken = require('./middlewares/verifyToken');
 const { v4 } = require('uuid');
 const { errorLog, infoLog } = require('../config/logger/functions');
 const { paymentLogger } = require('../config/logger/childLogger');
-const { allRoles } = require('./middlewares/userRole');
+const { allRoles, cashierAndDeveloper } = require('./middlewares/userRole');
 const fastcsv = require('fast-csv');
 const fs = require('fs');
 
@@ -169,7 +169,7 @@ router.get('/list', verifyToken, allRoles, async (req, res) => {
 });
 
 // DELETE PAYMENT
-router.get('/:id/delete', verifyToken, allRoles, (req, res) => {
+router.get('/:id/delete', verifyToken, cashierAndDeveloper, (req, res) => {
   const { id } = req.params;
 
   pool.query(paymentQueries.getPaymentById, [id], (error, getResults) => {

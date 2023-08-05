@@ -5,10 +5,10 @@ const cardQueries = require('../database/cards/queries');
 const verifyToken = require('./middlewares/verifyToken');
 const { errorLog, infoLog } = require('../config/logger/functions');
 const { cardLogger } = require('../config/logger/childLogger');
-const { cashierAndDeveloper } = require('./middlewares/userRole');
+const { cashierAndDeveloper, allRoles } = require('./middlewares/userRole');
 
 // GET ALL CARDS
-router.get('/list', verifyToken, cashierAndDeveloper, async (req, res) => {
+router.get('/list', verifyToken, allRoles, async (req, res) => {
   try {
     const cards = await pool.query(cardQueries.getCards, []);
 
@@ -64,7 +64,7 @@ router.get('/:id/delete', verifyToken, cashierAndDeveloper, async (req, res) => 
 });
 
 // BALANCE CHECK
-router.get('/search', verifyToken, cashierAndDeveloper, (req, res) => {
+router.get('/search', verifyToken, allRoles, (req, res) => {
   const { card: barcode } = req.query;
 
   // INITIAL PAGE
