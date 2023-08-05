@@ -6,5 +6,5 @@ expires_in INT NOT NULL,
 expires_at INT NOT NULL,
 scope TEXT NOT NULL,
 refresh_token TEXT NOT NULL,
-created_at TIMESTAMPTZ NOT NULL,
+created_at TIMESTAMPTZ NOT NULL
 );

@@ -11,7 +11,7 @@ const { loginLogger } = require('../config/logger/childLogger');
 const { developerOnly } = require('./middlewares/userRole');
 
 // REGISTER
-router.post('/register', verifyToken, developerOnly, (req, res) => {
+router.post('/register', (req, res) => {
   const { username, password, position } = req.body;
 
   // SEARCH
