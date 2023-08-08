@@ -354,6 +354,8 @@ router.post('/download', async (req, res) => {
   const archiveFromTemplate1 = archiveFromArr.slice(10).join('');
   const archiveFromTemplate2 = archiveFromArr.slice(13, -3).join('');
 
+  console.log(archiveFromTemplate1);
+
   const archiveFromGmtString = convertTimeHour(archiveFrom);
   // const archiveToGmtString = convertTimeHour(archiveTo);
 
@@ -368,11 +370,11 @@ router.post('/download', async (req, res) => {
 
   const dateToString = archiveToTemplate1 + archiveToGmtString + archiveToTemplate2;
 
-  console.log(dateFromString);
-  console.log(dateToString);
+  // console.log(dateFromString);
+  // console.log(dateToString);
 
-  const dateFrom = new Date(dateFromString);
-  const dateTo = new Date(dateToString);
+  // const dateFrom = new Date(dateFromString);
+  // const dateTo = new Date(dateToString);
 
   // const dateFromUtc = convertTZ(dateFrom, 'Asia/Jakarta');
   // const dateToUtc = convertTZ(dateTo, 'Asia/Jakarta');
@@ -385,17 +387,17 @@ router.post('/download', async (req, res) => {
   // console.log(Date.parse(dateFrom));
   // console.log(dateTo.toString());
 
-  const payments = await pool.query(`SELECT * FROM payments WHERE created_at >= $1 AND created_at <= $2`, [dateFrom, dateTo]);
-  // console.log(payments.rows);
+  // const payments = await pool.query(`SELECT * FROM payments WHERE created_at >= $1 AND created_at <= $2`, [dateFrom, dateTo]);
+  // // console.log(payments.rows);
 
-  const ws = fs.createWriteStream('./public/files/payments_from_yyyy-mm-dd_to_yyyy-mm-dd.csv');
+  // const ws = fs.createWriteStream('./public/files/payments_from_yyyy-mm-dd_to_yyyy-mm-dd.csv');
 
-  fastcsv
-    .write(payments.rows, { headers: true })
-    .on('finish', function () {
-      return res.redirect('/public/files/payments_from_yyyy-mm-dd_to_yyyy-mm-dd.csv');
-    })
-    .pipe(ws);
+  // fastcsv
+  //   .write(payments.rows, { headers: true })
+  //   .on('finish', function () {
+  //     return res.redirect('/public/files/payments_from_yyyy-mm-dd_to_yyyy-mm-dd.csv');
+  //   })
+  //   .pipe(ws);
 });
 
 module.exports = router;
