@@ -349,21 +349,26 @@ router.get('/:id/delete', verifyToken, cashierAndDeveloper, (req, res) => {
 router.post('/download', async (req, res) => {
   const { archiveFrom, archiveTo } = req.body;
 
+  console.log(archiveFrom);
+  console.log(typeof archiveFrom);
+  console.log(archiveTo);
+  console.log(typeof archiveTo);
+
   const dateFrom = new Date(archiveFrom);
   const dateTo = new Date(archiveTo);
 
-  const dateFromUtc = convertTZ(dateFrom, 'Asia/Jakarta');
-  const dateToUtc = convertTZ(dateTo, 'Asia/Jakarta');
+  // const dateFromUtc = convertTZ(dateFrom, 'Asia/Jakarta');
+  // const dateToUtc = convertTZ(dateTo, 'Asia/Jakarta');
 
   // console.log(Date.parse(dateFrom));
   // console.log(Date.parse(dateTo));
-  console.log(Date.parse(dateFromUtc));
+  // console.log(Date.parse(dateFromUtc));
   // console.log(dateToUtc.toString());
 
-  console.log(Date.parse(dateFrom));
+  // console.log(Date.parse(dateFrom));
   // console.log(dateTo.toString());
 
-  const payments = await pool.query(`SELECT * FROM payments WHERE created_at >= $1 AND created_at <= $2`, [dateFromUtc, dateToUtc]);
+  const payments = await pool.query(`SELECT * FROM payments WHERE created_at >= $1 AND created_at <= $2`, [dateFrom, dateTo]);
   // console.log(payments.rows);
 
   const ws = fs.createWriteStream('./public/files/payments_from_yyyy-mm-dd_to_yyyy-mm-dd.csv');
