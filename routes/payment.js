@@ -382,6 +382,14 @@ router.post('/download', async (req, res) => {
     const payments = await pool.query(`SELECT * FROM payments WHERE created_at >= $1 AND created_at <= $2`, [dateFrom, dateTo]);
     // console.log(payments.rows);
 
+    payments.rows.forEach((payment) => {
+      const createdDate = convertTZ(payment.created_at, 'Asia/Jakarta');
+      const updatedDate = convertTZ(payment.updated_at, 'Asia/Jakarta');
+
+      payment.created_at = createdDate.toLocaleString();
+      payment.updated_at = updatedDate.toLocaleString();
+    });
+
     const ws = fs.createWriteStream('./public/files/payments_from_yyyy-mm-dd_to_yyyy-mm-dd.csv');
 
     fastcsv
