@@ -16,6 +16,7 @@ const { allRoles, cashierAndDeveloper } = require('./middlewares/userRole');
 const fastcsv = require('fast-csv');
 const fs = require('fs');
 const { convertTZ } = require('./functions/convertDateTimezone');
+const { convertTimeHour } = require('./functions/convertTimeString');
 
 // SEARCH
 router.get('/search', verifyToken, allRoles, async (req, res) => {
@@ -349,13 +350,26 @@ router.get('/:id/delete', verifyToken, cashierAndDeveloper, (req, res) => {
 router.post('/download', async (req, res) => {
   const { archiveFrom, archiveTo } = req.body;
 
-  console.log(archiveFrom);
-  console.log(typeof archiveFrom);
-  console.log(archiveTo);
-  console.log(typeof archiveTo);
+  const archiveFromArr = archiveFrom.split('');
+  const archiveFromTemplate1 = archiveFromArr.slice(10).join('');
+  const archiveFromTemplate2 = archiveFromArr.slice(13, -3).join('');
 
-  const dateFrom = new Date(archiveFrom);
-  const dateTo = new Date(archiveTo);
+  const archiveFromGmtString = convertTimeHour(archiveFrom);
+  // const archiveToGmtString = convertTimeHour(archiveTo);
+
+  const dateFromString = archiveFromTemplate1 + archiveFromGmtString + archiveFromTemplate2;
+
+  const archiveToArr = archiveTo.split('');
+  const archiveToTemplate1 = archiveToArr.slice(10).join('');
+  const archiveToTemplate2 = archiveToArr.slice(13, -3).join('');
+
+  const archiveToGmtString = convertTimeHour(archiveTo);
+  // const archiveToGmtString = convertTimeHour(archiveTo);
+
+  const dateToString = archiveToTemplate1 + archiveToGmtString + archiveToTemplate2;
+
+  const dateFrom = new Date(dateFromString);
+  const dateTo = new Date(dateToString);
 
   // const dateFromUtc = convertTZ(dateFrom, 'Asia/Jakarta');
   // const dateToUtc = convertTZ(dateTo, 'Asia/Jakarta');
