@@ -352,13 +352,13 @@ router.post('/download', async (req, res) => {
   const dateFrom = new Date(archiveFrom);
   const dateTo = new Date(archiveTo);
 
-  const dateFromUtc = convertTZ(dateFrom, 'Asia/Jakarta');
-  const dateToUtc = convertTZ(dateTo, 'Asia/Jakarta');
+  const dateFromUtc = convertTZ(dateFrom, 'Etc/UTC');
+  const dateToUtc = convertTZ(dateTo, 'Etc/UTC');
 
   // console.log(Date.parse(dateFrom));
   // console.log(Date.parse(dateTo));
 
-  const payments = await pool.query(`SELECT * FROM payments WHERE updated_at >= $1 AND updated_at <= $2`, [dateFromUtc, dateToUtc]);
+  const payments = await pool.query(`SELECT * FROM payments WHERE created_at >= $1 AND created_at <= $2`, [dateFromUtc, dateToUtc]);
   // console.log(payments.rows);
 
   const ws = fs.createWriteStream('./public/files/payments_from_yyyy-mm-dd_to_yyyy-mm-dd.csv');
