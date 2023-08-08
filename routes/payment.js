@@ -355,11 +355,7 @@ router.post('/download', async (req, res) => {
   const archiveFromTemplate1 = archiveFromArr.slice(0, 11).join('');
   const archiveFromTemplate2 = archiveFromArr.slice(13, 16).join('');
 
-  // console.log(archiveFromTemplate1);
-  // console.log(archiveFromArr);
-
   const archiveFromGmtString = convertTimeHour(archiveFrom);
-  // const archiveToGmtString = convertTimeHour(archiveTo);
 
   const dateFromString = archiveFromTemplate1 + archiveFromGmtString + archiveFromTemplate2;
 
@@ -368,38 +364,38 @@ router.post('/download', async (req, res) => {
   const archiveToTemplate2 = archiveToArr.slice(13, 16).join('');
 
   const archiveToGmtString = convertTimeHour(archiveTo);
-  // const archiveToGmtString = convertTimeHour(archiveTo);
 
   const dateToString = archiveToTemplate1 + archiveToGmtString + archiveToTemplate2;
 
-  console.log(dateFromString);
-  console.log(dateToString);
+  try {
+    const dateFrom = new Date(dateFromString);
+    const dateTo = new Date(dateToString);
 
-  // const dateFrom = new Date(dateFromString);
-  // const dateTo = new Date(dateToString);
+    // const dateFromUtc = convertTZ(dateFrom, 'Asia/Jakarta');
+    // const dateToUtc = convertTZ(dateTo, 'Asia/Jakarta');
 
-  // const dateFromUtc = convertTZ(dateFrom, 'Asia/Jakarta');
-  // const dateToUtc = convertTZ(dateTo, 'Asia/Jakarta');
+    // console.log(Date.parse(dateFrom));
+    // console.log(Date.parse(dateTo));
+    // console.log(Date.parse(dateFromUtc));
+    // console.log(dateToUtc.toString());
 
-  // console.log(Date.parse(dateFrom));
-  // console.log(Date.parse(dateTo));
-  // console.log(Date.parse(dateFromUtc));
-  // console.log(dateToUtc.toString());
+    // console.log(Date.parse(dateFrom));
+    // console.log(dateTo.toString());
 
-  // console.log(Date.parse(dateFrom));
-  // console.log(dateTo.toString());
+    const payments = await pool.query(`SELECT * FROM payments WHERE created_at >= $1 AND created_at <= $2`, [dateFrom, dateTo]);
+    // console.log(payments.rows);
 
-  // const payments = await pool.query(`SELECT * FROM payments WHERE created_at >= $1 AND created_at <= $2`, [dateFrom, dateTo]);
-  // // console.log(payments.rows);
+    const ws = fs.createWriteStream('./public/files/payments_from_yyyy-mm-dd_to_yyyy-mm-dd.csv');
 
-  // const ws = fs.createWriteStream('./public/files/payments_from_yyyy-mm-dd_to_yyyy-mm-dd.csv');
-
-  // fastcsv
-  //   .write(payments.rows, { headers: true })
-  //   .on('finish', function () {
-  //     return res.redirect('/public/files/payments_from_yyyy-mm-dd_to_yyyy-mm-dd.csv');
-  //   })
-  //   .pipe(ws);
+    fastcsv
+      .write(payments.rows, { headers: true })
+      .on('finish', function () {
+        return res.redirect('/public/files/payments_from_yyyy-mm-dd_to_yyyy-mm-dd.csv');
+      })
+      .pipe(ws);
+  } catch (error) {
+    return res.status(500).json('server error');
+  }
 });
 
 module.exports = router;
