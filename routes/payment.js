@@ -368,6 +368,9 @@ router.post('/download', async (req, res) => {
 
   const dateToString = archiveToTemplate1 + archiveToGmtString + archiveToTemplate2;
 
+  console.log(dateFromString);
+  console.log(dateToString);
+
   const dateFrom = new Date(dateFromString);
   const dateTo = new Date(dateToString);
 
