@@ -8,6 +8,7 @@ const { memberLogger } = require('../config/logger/childLogger');
 const { errorLog, infoLog } = require('../config/logger/functions');
 const { cashierAndDeveloper, allRoles } = require('./middlewares/userRole');
 const { v4 } = require('uuid');
+const { convertTZ } = require('./functions/convertDateTimezone');
 
 // SEARCH
 router.get('/search', verifyToken, cashierAndDeveloper, async (req, res) => {
@@ -125,7 +126,10 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
 
           // UPDATE CARD CUSTOMER_NAME & CUSTOMER_ID
           try {
-            await pool.query(cardQueries.updateCardById, [fullname, members.rows[0].customer_id, barcode]);
+            const date = new Date();
+            const dateNow = convertTZ(date, 'Asia/Jakarta');
+
+            await pool.query(cardQueries.updateCardById, [fullname, members.rows[0].customer_id, dateNow, barcode]);
 
             // SEND LOG
             infoLog(memberLogger, 'Card was successfully updated', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);
@@ -156,7 +160,10 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
 
         // UPDATE CARD CUSTOMER_NAME
         try {
-          await pool.query(cardQueries.updateCardById, [fullname, cards.rows[0].customer_id, barcode]);
+          const date = new Date();
+          const dateNow = convertTZ(date, 'Asia/Jakarta');
+
+          await pool.query(cardQueries.updateCardById, [fullname, cards.rows[0].customer_id, dateNow, barcode]);
 
           // SEND LOG
           infoLog(memberLogger, 'Card was successfully updated', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);

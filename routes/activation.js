@@ -6,6 +6,7 @@ const verifyToken = require('./middlewares/verifyToken');
 const { errorLog, infoLog } = require('../config/logger/functions');
 const { activationLogger } = require('../config/logger/childLogger');
 const { cashierAndDeveloper } = require('./middlewares/userRole');
+const { convertTZ } = require('./functions/convertDateTimezone');
 
 // ACTIVATION MENU
 router.get('/search', verifyToken, cashierAndDeveloper, async (req, res) => {
@@ -68,7 +69,10 @@ router.post('/activate', verifyToken, cashierAndDeveloper, async (req, res) => {
       });
     } else {
       try {
-        await pool.query(cardQueries.cardActivate, [true, barcode]);
+        const date = new Date();
+        const dateNow = convertTZ(date, 'Asia/Jakarta');
+
+        await pool.query(cardQueries.cardActivate, [true, dateNow, barcode]);
 
         // SEND LOG
         infoLog(activationLogger, 'Card was successfully activated', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);

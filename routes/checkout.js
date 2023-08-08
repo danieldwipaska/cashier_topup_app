@@ -9,6 +9,7 @@ const memberQueries = require('../database/members/queries');
 const pool = require('../db');
 const { cashierAndDeveloper } = require('./middlewares/userRole');
 const verifyToken = require('./middlewares/verifyToken');
+const { convertTZ } = require('./functions/convertDateTimezone');
 
 // Status MENU
 router.get('/search', verifyToken, cashierAndDeveloper, (req, res) => {
@@ -73,10 +74,12 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
     } else {
       const initial_balance = cards.rows[0].balance;
       const final_balance = 0;
+      const date = new Date();
+      const dateNow = convertTZ(date, 'Asia/Jakarta');
 
       // UPDATE CARD
       try {
-        await pool.query(cardQueries.cardStatus, [false, null, null, 0, 0, cards.rows[0].barcode]);
+        await pool.query(cardQueries.cardStatus, [false, null, null, 0, 0, dateNow, cards.rows[0].barcode]);
 
         infoLog(checkoutLogger, 'Card is_active was successfully updated into false', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);
 
@@ -88,7 +91,7 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
           const invoice_number = v4();
           const invoice_status = 'paid';
 
-          await pool.query(paymentQueries.addPayment, [id, action, barcode, customer_name, customer_id, payment, invoice_number, invoice_status, initial_balance, final_balance, served_by, collected_by]);
+          await pool.query(paymentQueries.addPayment, [id, action, barcode, customer_name, customer_id, payment, invoice_number, invoice_status, initial_balance, final_balance, served_by, collected_by, dateNow, dateNow]);
 
           // SEND LOG
           infoLog(checkoutLogger, 'Payment was successfully added and invoice number was successfully generated', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);

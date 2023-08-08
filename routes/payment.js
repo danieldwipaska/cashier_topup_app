@@ -15,6 +15,7 @@ const { paymentLogger } = require('../config/logger/childLogger');
 const { allRoles, cashierAndDeveloper } = require('./middlewares/userRole');
 const fastcsv = require('fast-csv');
 const fs = require('fs');
+const { convertTZ } = require('./functions/convertDateTimezone');
 
 // SEARCH
 router.get('/search', verifyToken, allRoles, async (req, res) => {
@@ -81,13 +82,16 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
       const final_balance = initial_balance - payment;
       if (final_balance < 0) return res.status(401).json('Balance Not Enough');
 
-      const updatedCards = await pool.query(cardQueries.updateBalance, [final_balance, deposit, barcode]);
+      const date = new Date();
+      const dateNow = convertTZ(date, 'Asia/Jakarta');
+
+      const updatedCards = await pool.query(cardQueries.updateBalance, [final_balance, deposit, dateNow, barcode]);
 
       try {
         const id = v4();
         const action = 'pay';
 
-        const payments = await pool.query(paymentQueries.addPayment, [id, action, barcode, customer_name, customer_id, payment, invoice_number, invoice_status, initial_balance, final_balance, served_by, collected_by]);
+        const payments = await pool.query(paymentQueries.addPayment, [id, action, barcode, customer_name, customer_id, payment, invoice_number, invoice_status, initial_balance, final_balance, served_by, collected_by, dateNow, dateNow]);
 
         // SEND LOG
         infoLog(paymentLogger, 'Payment was successfully added and invoice number was successfully generated', updatedCards.rows[0].barcode, updatedCards.rows[0].customer_name, updatedCards.rows[0].customer_id, req.validUser.name);
@@ -153,6 +157,14 @@ router.get('/list', verifyToken, allRoles, async (req, res) => {
 
   try {
     const payments = await pool.query(paymentQueries.getPayments, [limit, offset]);
+
+    // const paymentsJakartaTime = payments.rows.map((payment) => {
+    //   payment.created_at = convertTZ(payment.created_at, 'Asia/Jakarta');
+    //   return payment;
+    // });
+
+    // console.log(payments.rows[0]);
+    // console.log(paymentsJakartaTime[0]);
 
     return res.render('paymentList', {
       layout: 'layouts/main-layout',

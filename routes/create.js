@@ -7,6 +7,7 @@ const verifyToken = require('./middlewares/verifyToken');
 const { createLogger } = require('../config/logger/childLogger');
 const { infoLog, errorLog } = require('../config/logger/functions');
 const { cashierAndDeveloper } = require('./middlewares/userRole');
+const { convertTZ } = require('./functions/convertDateTimezone');
 
 // CREATE MENU
 router.get('/search', verifyToken, cashierAndDeveloper, (req, res) => {
@@ -60,7 +61,10 @@ router.post('/', verifyToken, cashierAndDeveloper, (req, res) => {
     is_member = false;
   }
 
-  pool.query(cardQueries.addCard, [id, barcode, balance, deposit, customer_name, customer_id, is_member, is_active], (error, results) => {
+  const date = new Date();
+  const dateNow = convertTZ(date, 'Asia/Jakarta');
+
+  pool.query(cardQueries.addCard, [id, barcode, balance, deposit, customer_name, customer_id, is_member, is_active, dateNow, dateNow], (error, results) => {
     if (error) {
       errorLog(createLogger, error, 'Error in HTTP POST / when calling cardQueries.addCard');
       return res.status(500).json('Server Error');
