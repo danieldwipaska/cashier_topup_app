@@ -353,7 +353,7 @@ router.post('/download', async (req, res) => {
   const dateTo = new Date(archiveTo);
 
   const dateFromUtc = convertTZ(dateFrom, 'Etc/UTC');
-  const dateToUtc = convertTZ(dateFrom, 'Etc/UTC');
+  const dateToUtc = convertTZ(dateTo, 'Etc/UTC');
 
   // console.log(Date.parse(dateFrom));
   // console.log(Date.parse(dateTo));
