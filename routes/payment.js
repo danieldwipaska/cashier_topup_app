@@ -368,8 +368,8 @@ router.post('/download', async (req, res) => {
     const dateFrom = new Date(dateFromString);
     const dateTo = new Date(dateToString);
 
-    console.log(dateFrom);
-    console.log(dateTo);
+    // console.log(dateFrom);
+    // console.log(dateTo);
 
     // const dateFromUtc = convertTZ(dateFrom, 'Asia/Jakarta');
     // const dateToUtc = convertTZ(dateTo, 'Asia/Jakarta');
