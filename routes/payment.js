@@ -357,6 +357,8 @@ router.post('/download', async (req, res) => {
 
   // console.log(Date.parse(dateFrom));
   // console.log(Date.parse(dateTo));
+  console.log(dateFromUtc.toString());
+  console.log(dateToUtc.toString());
 
   const payments = await pool.query(`SELECT * FROM payments WHERE created_at >= $1 AND created_at <= $2`, [dateFromUtc, dateToUtc]);
   // console.log(payments.rows);
