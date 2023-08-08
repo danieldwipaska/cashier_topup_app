@@ -158,13 +158,9 @@ router.get('/list', verifyToken, allRoles, async (req, res) => {
   try {
     const payments = await pool.query(paymentQueries.getPayments, [limit, offset]);
 
-    // const paymentsJakartaTime = payments.rows.map((payment) => {
-    //   payment.created_at = convertTZ(payment.created_at, 'Asia/Jakarta');
-    //   return payment;
-    // });
-
-    // console.log(payments.rows[0]);
-    // console.log(paymentsJakartaTime[0]);
+    payments.rows.forEach((payment) => {
+      payment.created_at = convertTZ(payment.created_at, 'Asia/Jakarta');
+    });
 
     return res.render('paymentList', {
       layout: 'layouts/main-layout',
