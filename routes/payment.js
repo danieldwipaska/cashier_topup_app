@@ -352,11 +352,11 @@ router.post('/download', async (req, res) => {
 
   const archiveFromArr = archiveFrom.split('');
 
-  const archiveFromTemplate1 = archiveFromArr.slice(10).join('');
+  const archiveFromTemplate1 = archiveFromArr.slice(0, 11).join('');
   const archiveFromTemplate2 = archiveFromArr.slice(13, -3).join('');
 
-  console.log(archiveFromTemplate1);
-  console.log(archiveFromArr);
+  // console.log(archiveFromTemplate1);
+  // console.log(archiveFromArr);
 
   const archiveFromGmtString = convertTimeHour(archiveFrom);
   // const archiveToGmtString = convertTimeHour(archiveTo);
@@ -364,7 +364,7 @@ router.post('/download', async (req, res) => {
   const dateFromString = archiveFromTemplate1 + archiveFromGmtString + archiveFromTemplate2;
 
   const archiveToArr = archiveTo.split('');
-  const archiveToTemplate1 = archiveToArr.slice(10).join('');
+  const archiveToTemplate1 = archiveToArr.slice(0, 11).join('');
   const archiveToTemplate2 = archiveToArr.slice(13, -3).join('');
 
   const archiveToGmtString = convertTimeHour(archiveTo);
@@ -372,8 +372,8 @@ router.post('/download', async (req, res) => {
 
   const dateToString = archiveToTemplate1 + archiveToGmtString + archiveToTemplate2;
 
-  // console.log(dateFromString);
-  // console.log(dateToString);
+  console.log(dateFromString);
+  console.log(dateToString);
 
   // const dateFrom = new Date(dateFromString);
   // const dateTo = new Date(dateToString);
