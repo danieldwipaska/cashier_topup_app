@@ -353,7 +353,7 @@ router.post('/download', async (req, res) => {
   const archiveFromArr = archiveFrom.split('');
 
   const archiveFromTemplate1 = archiveFromArr.slice(0, 11).join('');
-  const archiveFromTemplate2 = archiveFromArr.slice(13, 15).join('');
+  const archiveFromTemplate2 = archiveFromArr.slice(13, 16).join('');
 
   // console.log(archiveFromTemplate1);
   // console.log(archiveFromArr);
@@ -365,7 +365,7 @@ router.post('/download', async (req, res) => {
 
   const archiveToArr = archiveTo.split('');
   const archiveToTemplate1 = archiveToArr.slice(0, 11).join('');
-  const archiveToTemplate2 = archiveToArr.slice(13, 15).join('');
+  const archiveToTemplate2 = archiveToArr.slice(13, 16).join('');
 
   const archiveToGmtString = convertTimeHour(archiveTo);
   // const archiveToGmtString = convertTimeHour(archiveTo);
