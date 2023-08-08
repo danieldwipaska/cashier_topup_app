@@ -352,16 +352,16 @@ router.post('/download', async (req, res) => {
   const dateFrom = new Date(archiveFrom);
   const dateTo = new Date(archiveTo);
 
-  // const dateFromUtc = convertTZ(dateFrom, 'Etc/UTC');
-  // const dateToUtc = convertTZ(dateTo, 'Etc/UTC');
+  const dateFromUtc = convertTZ(dateFrom, 'Etc/UTC');
+  const dateToUtc = convertTZ(dateTo, 'Etc/UTC');
 
   // console.log(Date.parse(dateFrom));
   // console.log(Date.parse(dateTo));
-  // console.log(dateFromUtc.toString());
-  // console.log(dateToUtc.toString());
+  console.log(dateFromUtc);
+  console.log(dateToUtc);
 
-  console.log(dateFrom.toString());
-  console.log(dateTo.toString());
+  console.log(dateFrom);
+  console.log(dateTo);
 
   const payments = await pool.query(`SELECT * FROM payments WHERE created_at >= $1 AND created_at <= $2`, [dateFrom, dateTo]);
   // console.log(payments.rows);
