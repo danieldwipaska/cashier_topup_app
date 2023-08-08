@@ -126,10 +126,7 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
 
           // UPDATE CARD CUSTOMER_NAME & CUSTOMER_ID
           try {
-            const date = new Date();
-            const dateNow = convertTZ(date, 'Asia/Jakarta');
-
-            await pool.query(cardQueries.updateCardById, [fullname, members.rows[0].customer_id, dateNow, barcode]);
+            await pool.query(cardQueries.updateCardById, [fullname, members.rows[0].customer_id, barcode]);
 
             // SEND LOG
             infoLog(memberLogger, 'Card was successfully updated', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);
@@ -160,10 +157,7 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
 
         // UPDATE CARD CUSTOMER_NAME
         try {
-          const date = new Date();
-          const dateNow = convertTZ(date, 'Asia/Jakarta');
-
-          await pool.query(cardQueries.updateCardById, [fullname, cards.rows[0].customer_id, dateNow, barcode]);
+          await pool.query(cardQueries.updateCardById, [fullname, cards.rows[0].customer_id, barcode]);
 
           // SEND LOG
           infoLog(memberLogger, 'Card was successfully updated', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);

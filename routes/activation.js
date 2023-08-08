@@ -69,10 +69,10 @@ router.post('/activate', verifyToken, cashierAndDeveloper, async (req, res) => {
       });
     } else {
       try {
-        const date = new Date();
-        const dateNow = convertTZ(date, 'Asia/Jakarta');
+        // const date = new Date();
+        // const dateNow = convertTZ(date, 'Asia/Jakarta');
 
-        await pool.query(cardQueries.cardActivate, [true, dateNow, barcode]);
+        await pool.query(cardQueries.cardActivate, [true, barcode]);
 
         // SEND LOG
         infoLog(activationLogger, 'Card was successfully activated', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);

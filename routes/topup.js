@@ -104,10 +104,7 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
           resBalance += addBalanceInt - depositInt;
         }
 
-        const date = new Date();
-        const dateNow = convertTZ(date, 'Asia/Jakarta');
-
-        const cardUpdated = await pool.query(cardQueries.cardStatus, [true, customer_name, customer_id, resBalance, depositInt, dateNow, barcode]);
+        const cardUpdated = await pool.query(cardQueries.cardStatus, [true, customer_name, customer_id, resBalance, depositInt, barcode]);
 
         // SEND LOG
         infoLog(topupLogger, 'Balance was successfully updated', cardUpdated.rows[0].barcode, cardUpdated.rows[0].customer_name, cardUpdated.rows[0].customer_id, req.validUser.name);
@@ -120,7 +117,7 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
           const initial_balance = cards.rows[0].balance;
           const final_balance = resBalance;
 
-          await pool.query(paymentQueries.addPayment, [id, action, barcode, customer_name, customer_id, payment, invoice_number, invoice_status, initial_balance, final_balance, served_by, collected_by, dateNow, dateNow]);
+          await pool.query(paymentQueries.addPayment, [id, action, barcode, customer_name, customer_id, payment, invoice_number, invoice_status, initial_balance, final_balance, served_by, collected_by]);
 
           // SEND LOG
           infoLog(topupLogger, 'Payment was successfully added and invoice number was successfully generated', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);
