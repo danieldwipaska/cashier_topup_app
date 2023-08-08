@@ -351,10 +351,12 @@ router.post('/download', async (req, res) => {
   const { archiveFrom, archiveTo } = req.body;
 
   const archiveFromArr = archiveFrom.split('');
+
   const archiveFromTemplate1 = archiveFromArr.slice(10).join('');
   const archiveFromTemplate2 = archiveFromArr.slice(13, -3).join('');
 
   console.log(archiveFromTemplate1);
+  console.log(archiveFromArr);
 
   const archiveFromGmtString = convertTimeHour(archiveFrom);
   // const archiveToGmtString = convertTimeHour(archiveTo);
