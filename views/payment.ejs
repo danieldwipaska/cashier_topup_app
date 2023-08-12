@@ -74,7 +74,19 @@
 
           <div class="mb-1 col-auto">
             <label for="servedBy" class="form-label text-secondary">Served By*</label>
-            <input type="text" class="form-control" id="servedBy" name="servedBy" required />
+            <select type="text" class="form-select bg-info bg-opacity-50" id="servedBy" name="servedBy" required>
+              <option selected>Select Server</option>
+              <option value="Agil">Agil</option>
+              <option value="Gabriel">Gabriel</option>
+              <option value="Viktor">Viktor</option>
+              <option value="Ika">Ika</option>
+              <option value="Andika">Andika</option>
+              <option value="Azhar">Azhar</option>
+              <option value="Rudy">Rudy</option>
+              <option value="Heny">Heny</option>
+              <option value="Greeter">Greeter</option>
+              <option value="Others">Others...</option>
+            </select>
           </div>
 
           <div class="mb-1 col-auto">
@@ -89,7 +101,7 @@
         </div>
         <div class="row my-4">
           <h3>Moka POS >>></h3>
-          <div class="mb-1 d-grid gap-2 moka-data"></div>
+          <div class="mb-1 d-grid gap-2 moka-data overflow-auto" style="max-height: 300px"></div>
         </div>
         <div class="row my-3 multi-button">
           <div class="col-lg-8 mx-auto text-center">

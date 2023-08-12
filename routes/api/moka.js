@@ -1,12 +1,10 @@
 const { default: axios } = require('axios');
-const express = require('express');
+
 const { errorLog, infoLog } = require('../../config/logger/functions');
 const { mokaLogger } = require('../../config/logger/childLogger');
 const pool = require('../../db');
 const tokenQueries = require('../../database/tokens/queries');
 const { v4 } = require('uuid');
-
-const router = express.Router();
 
 async function getFirstAuth() {
   //GET FIRST ACCESS TOKEN AND REFRESH TOKEN
@@ -23,7 +21,7 @@ async function getFirstAuth() {
       const token_id = v4();
       const accessTokenExpiresAt = Date.now() + response.data.expires_in * 1000;
 
-      await pool.query(tokenQueries.addToken, [token_id, response.data.access_token, response.data.token_type, response.data.expires_in, accessTokenExpiresAt, response.data.scope, response.data.refresh_token, response.data.created_at]);
+      await pool.query(tokenQueries.addToken, [token_id, response.data.access_token, response.data.token_type, response.data.expires_in, accessTokenExpiresAt, response.data.scope, response.data.refresh_token]);
     } catch (error) {
       errorLog(mokaLogger, error, 'Error in function getFirstAuth when calling tokenQueries.addToken');
     }
@@ -46,7 +44,7 @@ async function getNewAccessToken(refreshToken) {
     try {
       const accessTokenExpiresAt = Date.now() + response.data.expires_in * 1000;
 
-      await pool.query(tokenQueries.updateToken, [response.data.access_token, response.data.expires_in, accessTokenExpiresAt, response.data.refresh_token, response.data.created_at, 'bearer']);
+      await pool.query(tokenQueries.updateToken, [response.data.access_token, response.data.expires_in, accessTokenExpiresAt, response.data.refresh_token, 'bearer']);
     } catch (error) {
       errorLog(mokaLogger, error, 'Error in function getNewAccessToken() when calling tokenQueries.updateToken');
     }
@@ -89,3 +87,7 @@ async function getPaymentData() {
     errorLog(mokaLogger, error, 'Error in function getPaymentData() when calling tokenQueries.getLatestToken');
   }
 }
+
+module.exports = {
+  getPaymentData,
+};

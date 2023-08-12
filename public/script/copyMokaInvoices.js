@@ -2,15 +2,13 @@ const mokaData = document.querySelector('.moka-data');
 
 mokaData.addEventListener('click', (event) => {
   const invoiceNumber = document.querySelector('#invoiceNumber');
-  const servedBy = document.querySelector('#servedBy');
   const collectedBy = document.querySelector('#collectedBy');
   const payment = document.querySelector('#payment');
   const notification = document.querySelector('#notificationPopup');
 
   invoiceNumber.value = dataCollection[event.target.id].payment_no;
-  servedBy.value = dataCollection[event.target.id].checkouts[0].sales_type_name;
   collectedBy.value = dataCollection[event.target.id].collected_by;
-  payment.value = dataCollection[event.target.id].subtotal;
+  payment.value = dataCollection[event.target.id].total_collected;
 
   mokaData.childNodes.forEach((e) => {
     e.classList.remove('border');
