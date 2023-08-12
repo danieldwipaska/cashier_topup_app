@@ -6,6 +6,7 @@ const verifyToken = require('./middlewares/verifyToken');
 const { errorLog, infoLog } = require('../config/logger/functions');
 const { cardLogger } = require('../config/logger/childLogger');
 const { cashierAndDeveloper, allRoles } = require('./middlewares/userRole');
+const { convertTZ } = require('./functions/convertDateTimezone');
 
 // GET ALL CARDS
 router.get('/list', verifyToken, allRoles, async (req, res) => {
@@ -18,6 +19,7 @@ router.get('/list', verifyToken, allRoles, async (req, res) => {
     cards.rows.forEach((result) => {
       debtBalance += result.balance;
       debtDeposit += result.deposit;
+      result.updated_at = convertTZ(result.updated_at, 'Asia/Jakarta');
     });
 
     let debtTotal = debtBalance + debtDeposit;

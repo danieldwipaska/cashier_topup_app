@@ -16,6 +16,7 @@
             <th scope="col">Deposit</th>
             <th scope="col">Customer Name</th>
             <th scope="col">ID (Phone Number)</th>
+            <th scope="col">Updated At</th>
             <th scope="col">Member</th>
             <th scope="col">Activation</th>
             <th scope="col">Act</th>
@@ -29,6 +30,7 @@
             <td><%= Intl.NumberFormat('en-US').format(element.deposit) %></td>
             <td><%= element.customer_name %></td>
             <td><%= element.customer_id %></td>
+            <td><%= element.updated_at.toLocaleString() %></td>
             <% if(element.is_member) { %>
             <td class="text-success">yes</td>
             <% } else { %>
@@ -80,6 +82,7 @@
             <td><%= Intl.NumberFormat('en-US').format(element.deposit) %></td>
             <td><%= element.customer_name %></td>
             <td><%= element.customer_id %></td>
+            <td><%= element.updated_at.toLocaleString() %></td>
             <% if(element.is_member) { %>
             <td class="text-success">yes</td>
             <% } else { %>
