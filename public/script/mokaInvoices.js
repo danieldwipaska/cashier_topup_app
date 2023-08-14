@@ -8,7 +8,7 @@ async function getMokaInvoices() {
 </div>`;
 
   try {
-    const response = await axios.get('http://localhost:3000/thirdparty/moka');
+    const response = await axios.get('https://baharimalangirishpub-app.com/thirdparty/moka');
 
     let dataString = '';
 
