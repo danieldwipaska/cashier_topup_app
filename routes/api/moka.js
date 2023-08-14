@@ -17,6 +17,8 @@ async function getFirstAuth() {
       redirect_uri: 'https://www.google.com',
     });
 
+    console.log('FirstAuth received');
+
     try {
       const token_id = v4();
       const accessTokenExpiresAt = Date.now() + response.data.expires_in * 1000;
@@ -70,6 +72,8 @@ async function getPaymentDataFromMoka(accessToken) {
 async function getPaymentData() {
   try {
     const tokens = await pool.query(tokenQueries.getLatestToken, []);
+
+    console.log('Token received');
 
     const now = Date.now();
 
