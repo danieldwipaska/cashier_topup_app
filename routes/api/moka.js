@@ -74,8 +74,6 @@ async function getPaymentData() {
   try {
     const tokens = await pool.query(tokenQueries.getLatestToken, []);
 
-    console.log('Token received');
-
     const now = Date.now();
 
     if (!tokens.rows.length) {

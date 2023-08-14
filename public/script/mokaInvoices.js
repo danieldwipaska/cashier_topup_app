@@ -12,9 +12,7 @@ async function getMokaInvoices() {
 
     let dataString = '';
 
-    console.log(response);
-
-    response.data.payments.forEach((element, i) => {
+    response.data.data.payments.forEach((element, i) => {
       const date = new Date(element.created_at);
       const dateString = date.toLocaleString();
       dataString += `<button type="button" class="btn btn-light shadow text-start p-3" id="${i}"><small>${dateString}</small>&emsp;&emsp;<strong>${element.payment_no}</strong>&emsp;&emsp;Customer: <strong>${
