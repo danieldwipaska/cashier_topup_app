@@ -12,7 +12,7 @@ async function getMokaInvoices() {
 
     let dataString = '';
 
-    console.log(response.data);
+    console.log(response);
 
     response.data.payments.forEach((element, i) => {
       const date = new Date(element.created_at);
