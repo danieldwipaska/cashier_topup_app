@@ -8,6 +8,8 @@ const { v4 } = require('uuid');
 
 async function getFirstAuth() {
   //GET FIRST ACCESS TOKEN AND REFRESH TOKEN
+  console.log(process.env.MOKA_CLIENT_ID);
+
   try {
     const response = await axios.post('https://api.mokapos.com/oauth/token', {
       client_id: process.env.MOKA_CLIENT_ID,
@@ -16,8 +18,6 @@ async function getFirstAuth() {
       grant_type: 'authorization_code',
       redirect_uri: 'https://www.google.com',
     });
-
-    console.log('FirstAuth received');
 
     try {
       const token_id = v4();
