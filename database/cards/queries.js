@@ -1,5 +1,5 @@
 const addCard = 'INSERT INTO cards (id, barcode, balance, deposit, customer_name, customer_id, is_member, is_active, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW()) RETURNING *'; //change
-const getCards = 'SELECT * FROM cards';
+const getCards = 'SELECT * FROM cards ORDER BY updated_at DESC';
 const getCardById = 'SELECT * FROM cards WHERE barcode = $1';
 const getCardByCardId = 'SELECT * FROM cards WHERE id = $1';
 // const checkEmailExists = 'SELECT s FROM students s WHERE s.email = $1';
