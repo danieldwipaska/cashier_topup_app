@@ -6,32 +6,32 @@ const pool = require('../../db');
 const tokenQueries = require('../../database/tokens/queries');
 const { v4 } = require('uuid');
 
-async function getFirstAuth() {
-  //GET FIRST ACCESS TOKEN AND REFRESH TOKEN
+// async function getFirstAuth() {
+//   //GET FIRST ACCESS TOKEN AND REFRESH TOKEN
 
-  try {
-    const response = await axios.post('https://api.mokapos.com/oauth/token', {
-      client_id: process.env.MOKA_CLIENT_ID,
-      client_secret: process.env.MOKA_CLIENT_SECRET_ID,
-      code: process.env.MOKA_CODE,
-      grant_type: 'authorization_code',
-      redirect_uri: 'https://www.google.com',
-    });
+//   try {
+//     const response = await axios.post('https://api.mokapos.com/oauth/token', {
+//       client_id: process.env.MOKA_CLIENT_ID,
+//       client_secret: process.env.MOKA_CLIENT_SECRET_ID,
+//       code: process.env.MOKA_CODE,
+//       grant_type: 'authorization_code',
+//       redirect_uri: 'https://www.google.com',
+//     });
 
-    console.log(response);
+//     console.log(response);
 
-    try {
-      const token_id = v4();
-      const accessTokenExpiresAt = Date.now() + response.data.expires_in * 1000;
+//     try {
+//       const token_id = v4();
+//       const accessTokenExpiresAt = Date.now() + response.data.expires_in * 1000;
 
-      await pool.query(tokenQueries.addToken, [token_id, response.data.access_token, response.data.token_type, response.data.expires_in, accessTokenExpiresAt, response.data.scope, response.data.refresh_token]);
-    } catch (error) {
-      errorLog(mokaLogger, error, 'Error in function getFirstAuth when calling tokenQueries.addToken');
-    }
-  } catch (error) {
-    errorLog(mokaLogger, error, 'Error in function getFirstAuth() when calling axios');
-  }
-}
+//       await pool.query(tokenQueries.addToken, [token_id, response.data.access_token, response.data.token_type, response.data.expires_in, accessTokenExpiresAt, response.data.scope, response.data.refresh_token]);
+//     } catch (error) {
+//       errorLog(mokaLogger, error, 'Error in function getFirstAuth when calling tokenQueries.addToken');
+//     }
+//   } catch (error) {
+//     errorLog(mokaLogger, error, 'Error in function getFirstAuth() when calling axios');
+//   }
+// }
 
 async function getNewAccessToken(refreshToken) {
   try {
@@ -76,11 +76,11 @@ async function getPaymentData() {
 
     const now = Date.now();
 
-    if (!tokens.rows.length) {
-      await getFirstAuth();
-    }
+    // if (!tokens.rows.length) {
+    //   await getFirstAuth();
+    // }
 
-    if (tokens.rows[0].expires_at - now < 5 * 60 * 1000) {
+    if (tokens.rows[0].expires_at - now < 60 * 60 * 1000) {
       await getNewAccessToken(tokens.rows[0].refresh_token);
     }
 
