@@ -20,15 +20,15 @@ mokaData.addEventListener('click', (event) => {
   event.target.classList.add('border-3');
   event.target.classList.add('border-dark');
 
-  notification.innerHTML = `<div class="toast align-items-center" role="alert" aria-live="assertive" aria-atomic="true">
-  <div class="d-flex">
-    <div class="toast-body text-success">
-      Invoice Applied!
-    </div>
-    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-  </div>
-</div>`;
-  setTimeout(() => {
-    notification.innerHTML = null;
-  }, 5000);
+  //   notification.innerHTML = `<div class="toast align-items-center" role="alert" aria-live="assertive" aria-atomic="true">
+  //   <div class="d-flex">
+  //     <div class="toast-body text-success">
+  //       Invoice Applied!
+  //     </div>
+  //     <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+  //   </div>
+  // </div>`;
+  //   setTimeout(() => {
+  //     notification.innerHTML = null;
+  //   }, 5000);
 });
