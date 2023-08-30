@@ -15,9 +15,9 @@ async function getMokaInvoices() {
     response.data.data.payments.forEach((element, i) => {
       const date = new Date(element.created_at);
       const dateString = date.toLocaleString();
-      dataString += `<button type="button" class="btn btn-light shadow text-start p-3" id="${i}"><small>${dateString}</small>&emsp;&emsp;<strong>${element.payment_no}</strong>&emsp;&emsp;Customer: <strong>${
-        element.customer_name
-      }</strong>&emsp;&emsp;IDR${Intl.NumberFormat('en-US').format(element.total_collected)} &emsp;&emsp;Served By: <strong>${element.checkouts[0].sales_type_name}</strong></button>`;
+      dataString += `<button type="button" class="btn btn-light shadow text-start p-3" id="${i}"><small>${dateString}</small>&emsp;&emsp;${element.payment_no}&emsp;&emsp;Customer: ${element.customer_name}&emsp;&emsp;IDR${Intl.NumberFormat(
+        'en-US'
+      ).format(element.total_collected)} &emsp;&emsp;Served By: ${element.checkouts[0].sales_type_name}</button>`;
 
       dataCollection.push(element);
     });
