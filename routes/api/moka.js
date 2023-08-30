@@ -45,6 +45,7 @@ async function getNewAccessToken(refreshToken) {
     });
 
     try {
+      console.log(response);
       const accessTokenExpiresAt = Date.now() + response.data.expires_in * 1000;
 
       await pool.query(tokenQueries.updateToken, [response.data.access_token, response.data.expires_in, accessTokenExpiresAt, response.data.refresh_token, 'bearer']);
