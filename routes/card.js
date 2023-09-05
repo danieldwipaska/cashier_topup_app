@@ -146,7 +146,7 @@ router.post('/download', async (req, res) => {
     // console.log(dateFrom);
     // console.log(dateTo);
 
-    const cards = await pool.query(`SELECT * FROM cards WHERE updated_at >= $1 AND updated_at <= $2`, [dateFrom, dateTo]);
+    const cards = await pool.query(`SELECT * FROM cards WHERE updated_at >= $1 AND updated_at <= $2 ORDER BY updated_at ASC`, [dateFrom, dateTo]);
     // console.log(cards.rows);
 
     cards.rows.forEach((card) => {
