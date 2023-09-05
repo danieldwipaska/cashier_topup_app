@@ -7,6 +7,9 @@ const { errorLog, infoLog } = require('../config/logger/functions');
 const { cardLogger } = require('../config/logger/childLogger');
 const { cashierAndDeveloper, allRoles } = require('./middlewares/userRole');
 const { convertTZ } = require('./functions/convertDateTimezone');
+const { convertTimeHour } = require('./functions/convertTimeString');
+const fastcsv = require('fast-csv');
+const fs = require('fs');
 
 // GET ALL CARDS
 router.get('/list', verifyToken, allRoles, async (req, res) => {
@@ -108,6 +111,62 @@ router.get('/search', verifyToken, allRoles, (req, res) => {
         });
       }
     });
+  }
+});
+
+// DOWNLOAD
+router.post('/download', async (req, res) => {
+  const { archiveFrom, archiveTo } = req.body;
+  // console.log('hitted');
+
+  // ARCHIVEFROM PROCCESSING
+  const archiveFromArr = archiveFrom.split('');
+
+  const archiveFromTemplate1 = archiveFromArr.slice(0, 11).join('');
+  const archiveFromTemplate2 = archiveFromArr.slice(13, 16).join('');
+
+  const archiveFromGmtString = convertTimeHour(archiveFrom);
+
+  const dateFromString = archiveFromTemplate1 + archiveFromGmtString + archiveFromTemplate2;
+
+  // ARCHIVETO PROCESSING
+  const archiveToArr = archiveTo.split('');
+  const archiveToTemplate1 = archiveToArr.slice(0, 11).join('');
+  const archiveToTemplate2 = archiveToArr.slice(13, 16).join('');
+
+  const archiveToGmtString = convertTimeHour(archiveTo);
+
+  const dateToString = archiveToTemplate1 + archiveToGmtString + archiveToTemplate2;
+
+  try {
+    // console.log(dateFromString);
+    // console.log(dateToString);
+    const dateFrom = new Date(dateFromString);
+    const dateTo = new Date(dateToString);
+    // console.log(dateFrom);
+    // console.log(dateTo);
+
+    const cards = await pool.query(`SELECT * FROM cards WHERE updated_at >= $1 AND updated_at <= $2`, [dateFrom, dateTo]);
+    // console.log(cards.rows);
+
+    cards.rows.forEach((card) => {
+      const createdDate = convertTZ(card.created_at, 'Asia/Jakarta');
+      const updatedDate = convertTZ(card.updated_at, 'Asia/Jakarta');
+
+      card.created_at = createdDate.toLocaleString();
+      card.updated_at = updatedDate.toLocaleString();
+    });
+
+    const ws = fs.createWriteStream('./public/files/cards_from_yyyy-mm-dd_to_yyyy-mm-dd.csv');
+
+    fastcsv
+      .write(cards.rows, { headers: true })
+      .on('finish', function () {
+        return res.redirect('/public/files/cards_from_yyyy-mm-dd_to_yyyy-mm-dd.csv');
+      })
+      .pipe(ws);
+  } catch (error) {
+    return res.status(500).json('server error');
   }
 });
 

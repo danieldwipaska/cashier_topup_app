@@ -1,0 +1,5 @@
+id,barcode,balance,deposit,customer_name,customer_id,is_member,is_active,created_at,updated_at
+8b4faff7-068a-41a9-8394-817729b1dacc,11111111,865000,5000,Christian,085172160300,false,true,"8/5/2023, 12:45:41 PM","8/8/2023, 9:16:57 AM"
+82bea838-54c0-4898-9bbb-86fe828fd652,33333333,0,0,,,false,false,"8/8/2023, 9:41:23 AM","8/8/2023, 9:45:12 AM"
+916c12b9-3270-4820-8583-a900ddf288e7,44444444,0,0,,,false,false,"8/8/2023, 10:13:20 AM","8/8/2023, 10:15:04 AM"
+0e5fd243-9ea2-4677-90a9-a25d6a574b21,22222222,1204000,5000,Max Ant,085172160307,false,true,"8/5/2023, 1:02:19 PM","8/14/2023, 9:49:16 AM"

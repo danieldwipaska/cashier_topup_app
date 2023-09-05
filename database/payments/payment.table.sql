@@ -15,3 +15,6 @@ collected_by VARCHAR(50),
 created_at TIMESTAMPTZ NOT NULL,
 updated_at TIMESTAMPTZ NOT NULL
 );
+
+ALTER TABLE payments ADD COLUMN payment_method VARCHAR(50);
+ALTER TABLE payments ADD COLUMN notes TEXT;

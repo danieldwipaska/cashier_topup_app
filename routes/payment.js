@@ -347,6 +347,7 @@ router.get('/:id/delete', verifyToken, cashierAndDeveloper, (req, res) => {
 router.post('/download', async (req, res) => {
   const { archiveFrom, archiveTo } = req.body;
 
+  // ARCHIVEFROM PROCCESSING
   const archiveFromArr = archiveFrom.split('');
 
   const archiveFromTemplate1 = archiveFromArr.slice(0, 11).join('');
@@ -356,6 +357,7 @@ router.post('/download', async (req, res) => {
 
   const dateFromString = archiveFromTemplate1 + archiveFromGmtString + archiveFromTemplate2;
 
+  // ARCHIVETO PROCESSING
   const archiveToArr = archiveTo.split('');
   const archiveToTemplate1 = archiveToArr.slice(0, 11).join('');
   const archiveToTemplate2 = archiveToArr.slice(13, 16).join('');
@@ -367,20 +369,6 @@ router.post('/download', async (req, res) => {
   try {
     const dateFrom = new Date(dateFromString);
     const dateTo = new Date(dateToString);
-
-    // console.log(dateFrom);
-    // console.log(dateTo);
-
-    // const dateFromUtc = convertTZ(dateFrom, 'Asia/Jakarta');
-    // const dateToUtc = convertTZ(dateTo, 'Asia/Jakarta');
-
-    // console.log(Date.parse(dateFrom));
-    // console.log(Date.parse(dateTo));
-    // console.log(Date.parse(dateFromUtc));
-    // console.log(dateToUtc.toString());
-
-    // console.log(Date.parse(dateFrom));
-    // console.log(dateTo.toString());
 
     const payments = await pool.query(`SELECT * FROM payments WHERE created_at >= $1 AND created_at <= $2`, [dateFrom, dateTo]);
     // console.log(payments.rows);
