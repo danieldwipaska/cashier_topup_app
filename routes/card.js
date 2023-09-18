@@ -19,10 +19,15 @@ router.get('/list', verifyToken, allRoles, async (req, res) => {
     let debtBalance = 0;
     let debtDeposit = 0;
 
+    let totalActiveCard = 0;
+
     cards.rows.forEach((result) => {
       debtBalance += result.balance;
       debtDeposit += result.deposit;
       result.updated_at = convertTZ(result.updated_at, 'Asia/Jakarta');
+      if (result.is_active) {
+        totalActiveCard += 1;
+      }
     });
 
     let debtTotal = debtBalance + debtDeposit;
@@ -34,6 +39,7 @@ router.get('/list', verifyToken, allRoles, async (req, res) => {
       debtBalance,
       debtDeposit,
       debtTotal,
+      totalActiveCard,
     });
   } catch (error) {
     errorLog(cardLogger, error, 'Error in HTTP GET /list when calling cardQueries.getCards');

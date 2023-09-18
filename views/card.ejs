@@ -29,6 +29,7 @@
       <table class="table table-sm" style="font-size: small">
         <thead>
           <tr class="table-warning">
+            <th scope="col">No</th>
             <th scope="col">Barcode</th>
             <th scope="col">Balance(IDR)</th>
             <th scope="col">Deposit</th>
@@ -43,6 +44,7 @@
         <tbody>
           <% data.forEach((element,i) => { %> <% if (i % 2 === 0) { %>
           <tr class="table-info">
+            <td><%= i + 1 %></td>
             <td><%= element.barcode %></td>
             <td><%= Intl.NumberFormat('en-US').format(element.balance) %></td>
             <td><%= Intl.NumberFormat('en-US').format(element.deposit) %></td>
@@ -95,6 +97,7 @@
           </tr>
           <% } else { %>
           <tr class="table-light">
+            <td><%= i + 1 %></td>
             <td><%= element.barcode %></td>
             <td><%= Intl.NumberFormat('en-US').format(element.balance) %></td>
             <td><%= Intl.NumberFormat('en-US').format(element.deposit) %></td>
@@ -149,6 +152,15 @@
       </table>
     </div>
   </div>
+  <div class="row" style="font-size: small">
+    <div class="col-md-6"></div>
+    <div class="col-md-2"></div>
+    <div class="col-md-2"></div>
+    <div class="col-md-2">
+      <div><span class="text-success fs-4"><%= totalActiveCard %></span><span> Active Card(s)</span></div>
+    </div>
+  </div>
+  <br />
   <div class="row" style="font-size: small">
     <div class="col-md-6"></div>
     <div class="col-md-2">
