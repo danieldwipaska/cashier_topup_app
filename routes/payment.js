@@ -3,6 +3,7 @@ const router = express.Router();
 const pool = require('../db');
 const cardQueries = require('../database/cards/queries');
 const paymentQueries = require('../database/payments/queries');
+const crewQueries = require('../database/crews/queries');
 const tokenQueries = require('../database/tokens/queries');
 const taxQueries = require('../database/taxes/queries');
 const fnbQueries = require('../database/fnbs/queries');
@@ -68,7 +69,7 @@ router.get('/search', verifyToken, allRoles, async (req, res) => {
 
 // PAYMENTS
 router.post('/', verifyToken, allRoles, async (req, res) => {
-  const { barcode, customerName: customer_name, customerId: customer_id, payment, invoiceNumber: invoice_number, invoiceStatus: invoice_status, servedBy: served_by, collectedBy: collected_by } = req.body;
+  const { barcode, customerName: customer_name, customerId: customer_id, payment, invoiceNumber: invoice_number, invoiceStatus: invoice_status, serverCode, collectedBy: collected_by, notes } = req.body;
 
   try {
     const cards = await pool.query(cardQueries.getCardById, [barcode]);
@@ -76,38 +77,69 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
 
     if (cards.rows[0].customer_id !== customer_id) return res.status(401).json('The Card Does Not Belong To The Customer');
 
+    const deposit = cards.rows[0].deposit;
+    const initial_balance = cards.rows[0].balance;
+
+    const final_balance = initial_balance - payment;
+    if (final_balance < 0) return res.status(401).json('Balance Not Enough');
+
     try {
-      const deposit = cards.rows[0].deposit;
-      const initial_balance = cards.rows[0].balance;
+      const crew = await pool.query(crewQueries.getCrewByCode, [serverCode]);
+      if (!crew.rows.length)
+        return res.render('notificationError', {
+          layout: 'layouts/main-layout',
+          title: 'Payment Error',
+          message: 'Kode Server SALAH.',
+        });
 
-      const final_balance = initial_balance - payment;
-      if (final_balance < 0) return res.status(401).json('Balance Not Enough');
-
-      const updatedCards = await pool.query(cardQueries.updateBalance, [final_balance, deposit, barcode]);
+      if (crew.rows.length >= 2) return res.status(500).json('SERVER ERROR');
 
       try {
-        const id = v4();
-        const action = 'pay';
+        const updatedCards = await pool.query(cardQueries.updateBalance, [final_balance, deposit, barcode]);
 
-        const payments = await pool.query(paymentQueries.addPayment, [id, action, barcode, customer_name, customer_id, payment, invoice_number, invoice_status, initial_balance, final_balance, served_by, collected_by]);
+        try {
+          const id = v4();
+          const action = 'pay';
+          const payment_method = 'None';
 
-        // SEND LOG
-        infoLog(paymentLogger, 'Payment was successfully added and invoice number was successfully generated', updatedCards.rows[0].barcode, updatedCards.rows[0].customer_name, updatedCards.rows[0].customer_id, req.validUser.name);
+          const payments = await pool.query(paymentQueries.addPayment, [
+            id,
+            action,
+            barcode,
+            customer_name,
+            customer_id,
+            payment,
+            invoice_number,
+            invoice_status,
+            initial_balance,
+            final_balance,
+            crew.rows[0].name,
+            collected_by,
+            payment_method,
+            notes,
+          ]);
 
-        return res.render('notificationSuccessWithBalance', {
-          layout: 'layouts/main-layout',
-          title: 'Payment Success',
-          message: 'Card Payment succeed.',
-          data: updatedCards.rows[0],
-          invoiceNumber: invoice_number,
-          isTopup: '',
-        });
+          // SEND LOG
+          infoLog(paymentLogger, 'Payment was successfully added and invoice number was successfully generated', updatedCards.rows[0].barcode, updatedCards.rows[0].customer_name, updatedCards.rows[0].customer_id, req.validUser.name);
+
+          return res.render('notificationSuccessWithBalance', {
+            layout: 'layouts/main-layout',
+            title: 'Payment Success',
+            message: 'Card Payment succeed.',
+            data: updatedCards.rows[0],
+            invoiceNumber: invoice_number,
+            isTopup: '',
+          });
+        } catch (error) {
+          errorLog(paymentLogger, error, 'Error in HTTP POST / when calling paymentQueries.addPayment');
+          return res.status(500).json('Server Error');
+        }
       } catch (error) {
-        errorLog(paymentLogger, error, 'Error in HTTP POST / when calling paymentQueries.addPayment');
+        errorLog(paymentLogger, error, 'Error in HTTP POST / when calling cardQueries.updateBalance');
         return res.status(500).json('Server Error');
       }
     } catch (error) {
-      errorLog(paymentLogger, error, 'Error in HTTP POST / when calling cardQueries.updateBalance');
+      errorLog(paymentLogger, error, 'Error in HTTP POST / when calling crewQueries');
       return res.status(500).json('Server Error');
     }
   } catch (error) {

@@ -59,7 +59,7 @@ router.get('/search', verifyToken, cashierAndDeveloper, (req, res) => {
 
 // TOP-UP
 router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
-  const { barcode, addBalance, deposit, customerName: customer_name, customerId: customer_id } = req.body;
+  const { barcode, addBalance, deposit, customerName: customer_name, customerId: customer_id, paymentMethod: payment_method, notes } = req.body;
 
   const addBalanceInt = parseInt(addBalance, 10);
   if (addBalanceInt > 10000000) return res.status(400).json('Maximum Top-up allowed is IDR10,000,000');
@@ -117,7 +117,7 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
           const initial_balance = cards.rows[0].balance;
           const final_balance = resBalance;
 
-          await pool.query(paymentQueries.addPayment, [id, action, barcode, customer_name, customer_id, payment, invoice_number, invoice_status, initial_balance, final_balance, served_by, collected_by]);
+          await pool.query(paymentQueries.addPayment, [id, action, barcode, customer_name, customer_id, payment, invoice_number, invoice_status, initial_balance, final_balance, served_by, collected_by, payment_method, notes]);
 
           // SEND LOG
           infoLog(topupLogger, 'Payment was successfully added and invoice number was successfully generated', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);

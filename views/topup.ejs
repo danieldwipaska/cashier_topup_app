@@ -22,64 +22,108 @@
     <div class="col-md-9 mx-auto my-1 px-4">
       <form action="/topup" method="post">
         <div class="row">
-          <h3 class="mb-2">Card Details >>></h3>
-          <% if (data.is_member) { %>
-          <div class="mb-1 col-auto">
-            <label for="isMember" class="form-label text-secondary">Member Status</label>
-            <input type="text" class="form-control bg-success text-light" id="isMember" name="isMember" value="yes" readonly />
-          </div>
-          <% } else { %>
-          <div class="mb-1 col-auto">
-            <label for="isMember" class="form-label text-secondary">Member Status</label>
-            <input type="text" class="form-control bg-danger text-light" id="isMember" name="isMember" value="no" readonly />
-          </div>
-          <% } %> <% if (data.is_active) { %>
-          <div class="mb-1 col-auto">
-            <label for="isActive" class="form-label text-secondary">Activation</label>
-            <input type="text" class="form-control bg-success text-light" id="isActive" name="isActive" value="active" readonly />
-          </div>
-          <% } else { %>
-          <div class="mb-1 col-auto">
-            <label for="isActive" class="form-label text-secondary">Activation</label>
-            <input type="text" class="form-control bg-danger text-light" id="isActive" name="isActive" value="inactive" readonly />
-          </div>
-          <% } %>
+          <div class="px-3 pb-3">
+            <div class="row pb-2 rounded-3 shadow-sm blurred-box">
+              <h3 class="mb-2 py-3 px-3 mx-0 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Card Details</strong></h3>
+              <% if (data.is_member) { %>
+              <div class="mb-1 col-auto">
+                <label for="isMember" class="form-label text-secondary">Member Status</label>
+                <input type="text" class="form-control text-success fw-bolder" id="isMember" name="isMember" value="yes" readonly />
+              </div>
+              <% } else { %>
+              <div class="mb-1 col-auto">
+                <label for="isMember" class="form-label text-secondary">Member Status</label>
+                <input type="text" class="form-control text-danger fw-bolder" id="isMember" name="isMember" value="no" readonly />
+              </div>
+              <% } %> <% if (data.is_active) { %>
+              <div class="mb-1 col-auto">
+                <label for="isActive" class="form-label text-secondary">Activation</label>
+                <input type="text" class="form-control text-success fw-bolder" id="isActive" name="isActive" value="active" readonly />
+              </div>
+              <% } else { %>
+              <div class="mb-1 col-auto">
+                <label for="isActive" class="form-label text-secondary">Activation</label>
+                <input type="text" class="form-control text-danger fw-bolder" id="isActive" name="isActive" value="inactive" readonly />
+              </div>
+              <% } %>
 
-          <div class="mb-1">
-            <label for="barcode" class="form-label text-secondary">Barcode</label>
-            <input type="text" class="form-control" id="barcode" name="barcode" readonly value="<%= data.barcode %>" />
-          </div>
+              <div class="mb-1">
+                <label for="barcode" class="form-label text-secondary">Barcode</label>
+                <input type="text" class="form-control" id="barcode" name="barcode" readonly value="<%= data.barcode %>" />
+              </div>
 
-          <div class="mb-2 col-auto">
-            <label for="customerName" class="form-label text-secondary">Name*</label>
-            <input type="text" class="form-control customer-name-input" id="customerName" name="customerName" value="<%= data.customer_name %>" placeholder="ex. John Dalton" required />
-          </div>
+              <div class="mb-2 col-auto">
+                <label for="customerName" class="form-label text-secondary">Name*</label>
+                <input type="text" class="form-control customer-name-input" id="customerName" name="customerName" value="<%= data.customer_name %>" placeholder="ex. John Dalton" required />
+              </div>
 
-          <div class="mb-2 col-auto">
-            <label for="customerId" class="form-label text-secondary">ID (Phone Number)*</label>
-            <input type="text" class="form-control customer-name-input" id="customerId" name="customerId" value="<%= data.customer_id %>" placeholder="ex. 08123456789" required />
-          </div>
+              <div class="mb-2 col-auto">
+                <label for="customerId" class="form-label text-secondary">ID (Phone Number)*</label>
+                <input type="text" class="form-control customer-name-input" id="customerId" name="customerId" value="<%= data.customer_id %>" placeholder="ex. 08123456789" required />
+              </div>
 
-          <div class="mb-1 col-auto">
-            <label for="balance" class="form-label text-secondary">Balance</label>
-            <input type="text" class="form-control" id="balance" name="balance" value="<%= Intl.NumberFormat('en-US').format(data.balance) %>" readonly />
-          </div>
+              <div class="mb-1 col-auto">
+                <label for="balance" class="form-label text-secondary">Balance</label>
+                <input type="text" class="form-control" id="balance" name="balance" value="<%= Intl.NumberFormat('en-US').format(data.balance) %>" readonly />
+              </div>
 
-          <% if (data.deposit) { %>
-          <div class="mb-1 col-auto">
-            <label for="deposit" class="form-label text-secondary">Add Deposit</label>
-            <input type="number" class="form-control" id="deposit" name="deposit" value="0" readonly />
-          </div>
-          <% } else { %>
-          <div class="mb-1 col-auto">
-            <label for="deposit" class="form-label text-secondary">Add Deposit</label>
-            <input type="number" class="form-control" id="deposit" name="deposit" value="5000" required />
-          </div>
-          <% } %>
+              <% if (data.deposit) { %>
+              <div class="mb-1 col-auto">
+                <label for="deposit" class="form-label text-secondary">Add Deposit</label>
+                <input type="number" class="form-control" id="deposit" name="deposit" value="0" readonly />
+              </div>
+              <% } else { %>
+              <div class="mb-1 col-auto">
+                <label for="deposit" class="form-label text-secondary">Add Deposit</label>
+                <input type="number" class="form-control" id="deposit" name="deposit" value="5000" required />
+              </div>
+              <% } %>
 
-          <div class="mb-1 col-auto">
-            <label for="addBalance" class="form-label text-secondary">Add Balance*</label>
-            <input type="number" class="form-control" id="addBalance" name="addBalance" required />
+              <div class="mb-1 col-auto">
+                <label for="addBalance" class="form-label text-secondary">Add Balance*</label>
+                <input type="number" class="form-control" id="addBalance" name="addBalance" required />
+              </div>
+            </div>
+            <div class="row">
+              <div class="px-0 mt-4 pb-3 rounded-3 shadow-sm col-auto blurred-box">
+                <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Payment Method</strong></h3>
+                <!-- <div class="mb-1" id="notificationPopup"></div> -->
+
+                <div class="mb-1 px-3">
+                  <label for="paymentMethod" class="form-label text-secondary">Method</label>
+                  <select class="form-select" id="paymentMethod" name="paymentMethod" aria-label="Default select example">
+                    <option selected>None</option>
+                    <option value="Cash">Cash</option>
+                    <option value="Transfer BCA">Transfer BCA</option>
+                    <option value="Transfer MANDIRI">Transfer MANDIRI</option>
+                    <option value="EDC BCA">EDC BCA</option>
+                    <option value="EDC MANDIRI">EDC MANDIRI</option>
+                    <option value="QRIS BCA">QRIS BCA</option>
+                    <option value="QRIS MANDIRI">QRIS MANDIRI</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                <div class="mb-1 px-3">
+                  <!-- <label for="collectedBy" class="form-label text-secondary">Collected By*</label> -->
+                  <input type="hidden" class="form-control" id="collectedBy" name="collectedBy" value="Kasir Bahari" required />
+                </div>
+              </div>
+              <div class="px-0 mt-4 mx-4 pb-3 rounded-3 shadow-sm col-auto blurred-box">
+                <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)">Note (optional)</h3>
+                <!-- <div class="mb-1" id="notificationPopup"></div> -->
+
+                <div class="mb-1 px-3">
+                  <label for="notes" class="form-label text-secondary">Note</label>
+                  <input type="text" class="form-control" id="notes" name="notes" placeholder="Kosongkan bila tidak perlu" />
+                </div>
+
+                <div class="mb-1 px-3">
+                  <!-- <label for="collectedBy" class="form-label text-secondary">Collected By*</label> -->
+                  <input type="hidden" class="form-control" id="collectedBy" name="collectedBy" value="Kasir Bahari" required />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <!-- <div class="row my-4">

@@ -46,9 +46,9 @@
         <thead>
           <tr class="table-warning">
             <th scope="col">Served By</th>
-            <th scope="col">Collected By</th>
             <th scope="col">Type</th>
             <th scope="col">Invoice</th>
+            <th scope="col">Method</th>
             <th scope="col">Barcode</th>
             <th scope="col">Customer Name</th>
             <th scope="col">Customer Id</th>
@@ -62,9 +62,9 @@
           <% data.forEach((element,i) => { %> <% if (i % 2 === 0) { %>
           <tr class="table-info">
             <th scope="row"><%= element.served_by %></th>
-            <td><%= element.collected_by %></td>
             <td><%= element.action %></td>
             <td><%= element.invoice_number %></td>
+            <td><%= element.payment_method %></td>
             <td><%= element.barcode %></td>
             <td><%= element.customer_name %></td>
             <td><%= element.customer_id %></td>
@@ -166,9 +166,9 @@
           <% } else { %>
           <tr class="table-light">
             <th scope="row"><%= element.served_by %></th>
-            <td><%= element.collected_by %></td>
             <td><%= element.action %></td>
             <td><%= element.invoice_number %></td>
+            <td><%= element.payment_method %></td>
             <td><%= element.barcode %></td>
             <td><%= element.customer_name %></td>
             <td><%= element.customer_id %></td>

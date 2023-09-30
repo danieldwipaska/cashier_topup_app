@@ -51,7 +51,7 @@ router.get('/search', verifyToken, cashierAndDeveloper, (req, res) => {
 
 // CHECK-OUT
 router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
-  const { barcode, customerName: customer_name, customerId: customer_id } = req.body;
+  const { barcode, customerName: customer_name, customerId: customer_id, paymentMethod: payment_method, notes } = req.body;
 
   const served_by = 'Greeter';
   const collected_by = req.validUser.name;
@@ -89,7 +89,7 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
           const invoice_number = v4();
           const invoice_status = 'paid';
 
-          await pool.query(paymentQueries.addPayment, [id, action, barcode, customer_name, customer_id, payment, invoice_number, invoice_status, initial_balance, final_balance, served_by, collected_by]);
+          await pool.query(paymentQueries.addPayment, [id, action, barcode, customer_name, customer_id, payment, invoice_number, invoice_status, initial_balance, final_balance, served_by, collected_by, payment_method, notes]);
 
           // SEND LOG
           infoLog(checkoutLogger, 'Payment was successfully added and invoice number was successfully generated', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);

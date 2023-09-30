@@ -16,97 +16,101 @@
     <div class="col-md-9 mx-auto my-1 px-4">
       <form action="/payment" method="post">
         <div class="row mt-2">
-          <h3 class="mb-2"><strong>Card Details >>></strong></h3>
-          <div class="mb-1">
-            <label for="barcode" class="form-label text-secondary">Barcode</label>
-            <input type="text" class="form-control" id="barcode" name="barcode" readonly value="<%= data.barcode %>" />
+          <div class="px-0 pb-3 rounded-3 shadow-sm blurred-box">
+            <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Card Details >>></strong></h3>
+
+            <div class="mb-1 px-3">
+              <label for="barcode" class="form-label text-secondary">Barcode</label>
+              <input type="text" class="form-control" id="barcode" name="barcode" readonly value="<%= data.barcode %>" />
+            </div>
+
+            <div class="mb-1 px-3 col-auto">
+              <label for="customerName" class="form-label text-secondary">Name</label>
+              <input type="text" class="form-control" id="customerName" name="customerName" value="<%= data.customer_name %>" readonly />
+            </div>
+
+            <div class="mb-1 px-3 col-auto">
+              <label for="customerId" class="form-label text-secondary">Customer ID</label>
+              <input type="text" class="form-control" id="customerId" name="customerId" value="<%= data.customer_id %>" readonly />
+            </div>
+
+            <div class="mb-1 px-3">
+              <label for="balance" class="form-label text-secondary">Balance</label>
+              <input type="text" class="form-control" id="balance" name="balance" value="<%= Intl.NumberFormat('en-US').format(data.balance) %>" readonly />
+            </div>
+
+            <% if (data.is_member) { %>
+            <div class="mb-1 px-3 col-auto">
+              <label for="isMember" class="form-label text-secondary">Member Status</label>
+              <input type="text" class="form-control text-success fw-bolder" id="isMember" name="isMember" value="yes" readonly />
+            </div>
+            <% } else { %>
+            <div class="mb-1 px-3 col-auto">
+              <label for="isMember" class="form-label text-secondary">Member Status</label>
+              <input type="text" class="form-control text-danger fw-bolder" id="isMember" name="isMember" value="no" readonly />
+            </div>
+            <% } %> <% if (data.is_active) { %>
+            <div class="mb-1 px-3 col-auto">
+              <label for="isActive" class="form-label text-secondary">Activation</label>
+              <input type="text" class="form-control text-success fw-bolder" id="isActive" name="isActive" value="active" readonly />
+            </div>
+            <% } else { %>
+            <div class="mb-1 px-3 col-auto">
+              <label for="isActive" class="form-label text-secondary">Activation</label>
+              <input type="text" class="form-control text-danger fw-bolder" id="isActive" name="isActive" value="inactive" readonly />
+            </div>
+            <% } %>
           </div>
 
-          <div class="mb-1 col-auto">
-            <label for="customerName" class="form-label text-secondary">Name</label>
-            <input type="text" class="form-control" id="customerName" name="customerName" value="<%= data.customer_name %>" readonly />
+          <div class="px-0 mt-4 pb-3 rounded-3 shadow-sm blurred-box">
+            <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Invoice Details >>></strong></h3>
+
+            <div class="mb-1 px-3">
+              <label for="invoiceNumber" class="form-label text-secondary">Payment Number*</label>
+              <input type="text" class="form-control" id="invoiceNumber" name="invoiceNumber" required />
+            </div>
+
+            <div class="mb-1 px-3 col-auto">
+              <!-- <label for="invoiceStatus" class="form-label text-secondary">Payment Status*</label> -->
+              <input type="hidden" class="form-control" id="invoiceStatus" name="invoiceStatus" value="paid" readonly />
+            </div>
+
+            <div class="mb-1 px-3">
+              <label for="payment" class="form-label text-secondary">Payment (IDR)*</label>
+              <input type="number" class="form-control" id="payment" name="payment" required />
+            </div>
           </div>
 
-          <div class="mb-1 col-auto">
-            <label for="customerId" class="form-label text-secondary">Customer ID</label>
-            <input type="text" class="form-control" id="customerId" name="customerId" value="<%= data.customer_id %>" readonly />
+          <div class="row my-4">
+            <h3>Moka POS >>></h3>
+            <div class="mb-1 d-grid gap-2 moka-data overflow-auto" style="max-height: 300px"></div>
           </div>
 
-          <div class="mb-1">
-            <label for="balance" class="form-label text-secondary">Balance</label>
-            <input type="text" class="form-control" id="balance" name="balance" value="<%= Intl.NumberFormat('en-US').format(data.balance) %>" readonly />
-          </div>
+          <div class="px-0 mt-4 pb-3 rounded-3 shadow-sm col-auto blurred-box">
+            <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Server Code >>></strong></h3>
+            <!-- <div class="mb-1" id="notificationPopup"></div> -->
 
-          <% if (data.is_member) { %>
-          <div class="mb-1 col-auto">
-            <label for="isMember" class="form-label text-secondary">Member Status</label>
-            <input type="text" class="form-control bg-success text-light" id="isMember" name="isMember" value="yes" readonly />
-          </div>
-          <% } else { %>
-          <div class="mb-1 col-auto">
-            <label for="isMember" class="form-label text-secondary">Member Status</label>
-            <input type="text" class="form-control bg-danger text-light" id="isMember" name="isMember" value="no" readonly />
-          </div>
-          <% } %> <% if (data.is_active) { %>
-          <div class="mb-1 col-auto">
-            <label for="isActive" class="form-label text-secondary">Activation</label>
-            <input type="text" class="form-control bg-success text-light" id="isActive" name="isActive" value="active" readonly />
-          </div>
-          <% } else { %>
-          <div class="mb-1 col-auto">
-            <label for="isActive" class="form-label text-secondary">Activation</label>
-            <input type="text" class="form-control bg-danger text-light" id="isActive" name="isActive" value="inactive" readonly />
-          </div>
-          <% } %>
+            <div class="mb-1 px-3">
+              <label for="serverCode" class="form-label text-secondary">Code*</label>
+              <input type="password" class="form-control" id="serverCode" name="serverCode" placeholder="Masukkan kode server" required />
+            </div>
 
-          <h3 class="mb-2 mt-5"><strong>Server Name >>></strong></h3>
-          <!-- <div class="mb-1" id="notificationPopup"></div> -->
-
-          <div class="mb-1 col-auto">
-            <label for="servedBy" class="form-label text-secondary">Served By*</label>
-            <select type="text" class="form-select bg-info bg-opacity-50" id="servedBy" name="servedBy" aria-label="Large select example" required>
-              <option selected>Tanpa Nama</option>
-              <option value="Agil">Agil</option>
-              <option value="Agus">Agus</option>
-              <option value="Gabriel">Gabriel</option>
-              <option value="Viktor">Viktor</option>
-              <option value="El">El</option>
-              <option value="Ika">Ika</option>
-              <option value="Luna">Luna</option>
-              <option value="Nicken">Nicken</option>
-              <option value="Azhar">Azhar</option>
-              <option value="Rudy">Rudy</option>
-              <option value="Others">Others...</option>
-            </select>
+            <div class="mb-1 px-3">
+              <!-- <label for="collectedBy" class="form-label text-secondary">Collected By*</label> -->
+              <input type="hidden" class="form-control" id="collectedBy" name="collectedBy" value="Kasir Bahari" required />
+            </div>
           </div>
-          <p class="text-dark"><small>(Mohon pilih sesuai dengan server yang bertugas)</small></p>
+          <div class="px-0 mt-4 mx-4 pb-3 rounded-3 shadow-sm col-auto blurred-box">
+            <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)">Note (optional) >>></h3>
+            <!-- <div class="mb-1" id="notificationPopup"></div> -->
 
-          <div class="mb-1 col-auto">
-            <!-- <label for="collectedBy" class="form-label text-secondary">Collected By*</label> -->
-            <input type="hidden" class="form-control" id="collectedBy" name="collectedBy" value="Kasir Bahari" required />
-          </div>
-
-          <h3 class="mb-2 mt-5"><strong>Invoice Details >>></strong></h3>
-
-          <div class="mb-1">
-            <label for="invoiceNumber" class="form-label text-secondary">Payment Number*</label>
-            <input type="text" class="form-control" id="invoiceNumber" name="invoiceNumber" required />
-          </div>
-
-          <div class="mb-1 col-auto">
-            <!-- <label for="invoiceStatus" class="form-label text-secondary">Payment Status*</label> -->
-            <input type="hidden" class="form-control" id="invoiceStatus" name="invoiceStatus" value="paid" readonly />
-          </div>
-
-          <div class="mb-1">
-            <label for="payment" class="form-label text-secondary">Payment (IDR)*</label>
-            <input type="number" class="form-control" id="payment" name="payment" required />
+            <div class="mb-1 px-3">
+              <label for="notes" class="form-label text-secondary">Note</label>
+              <input type="text" class="form-control" id="notes" name="notes" placeholder="Kosongkan bila tidak perlu" />
+            </div>
           </div>
         </div>
-        <div class="row my-4">
-          <h3>Moka POS >>></h3>
-          <div class="mb-1 d-grid gap-2 moka-data overflow-auto" style="max-height: 300px"></div>
-        </div>
+
         <div class="row my-3 multi-button">
           <div class="col-lg-8 mx-auto text-center">
             <a class="button shadow my-3" href="/payment/search" role="button">Back</a>

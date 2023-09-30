@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 const userQueries = require('../database/users/queries');
+const crewQueries = require('../database/crews/queries');
 const bcrypt = require('bcryptjs');
 const { v4 } = require('uuid');
 const jwt = require('jsonwebtoken');
@@ -10,7 +11,7 @@ const { errorLog } = require('../config/logger/functions');
 const { loginLogger } = require('../config/logger/childLogger');
 const { developerOnly } = require('./middlewares/userRole');
 
-// REGISTER
+// REGISTER USER
 router.post('/register', (req, res) => {
   const { username, password, position } = req.body;
 
@@ -35,6 +36,37 @@ router.post('/register', (req, res) => {
       });
     }
   });
+});
+
+// REGISTER CREWS
+router.post('/crew/register', async (req, res) => {
+  const { name, code } = req.body;
+
+  try {
+    const crews = await pool.query(crewQueries.getCrewByCode, [code]);
+    if (crews.rows.length) return res.status(401).json('Crew already exists');
+
+    try {
+      const id = v4();
+      await pool.query(crewQueries.addCrew, [id, name, code]);
+
+      return res.status(200).json('Crew has been successfully added');
+    } catch (error) {
+      return res.status(500).json('Server Error');
+    }
+  } catch (error) {
+    return res.status(500).json('Server Error');
+  }
+});
+
+// GET ALL CREWS
+router.get('/crew', async (req, res) => {
+  try {
+    const crews = await pool.query(crewQueries.getCrews, []);
+    return res.status(200).json(crews.rows);
+  } catch (error) {
+    return res.status(500).json('Server Error');
+  }
 });
 
 // LOGIN

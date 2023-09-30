@@ -18,9 +18,9 @@
   </div>
 </div> -->
 
-<div class="container my-1 multi-button">
+<div class="container my-1">
   <div class="row my-2">
-    <div class="col-md-7 mx-auto d-grid gap-2 text-center menu-button">
+    <div class="col-md-7 mx-auto mb-5 d-grid gap-2 text-center multi-button menu-button py-2">
       <!-- <a class="button shadow menu-button-checkin" href="/checkin/search" role="button">Check-In</a> -->
       <a class="button shadow menu-button-topup" href="/topup/search" role="button">Top-Up</a>
       <a class="button shadow menu-button-payment" href="/payment/search" role="button">Payment</a>
@@ -28,22 +28,333 @@
       <a class="button shadow menu-button-activation" href="/activation/search" role="button">Activation</a>
       <a class="button shadow menu-button-create" href="/create/search" role="button">Create a Card</a>
       <a class="button shadow menu-button-balance-check" href="/card/search" role="button">Balance Check</a>
+      <div class="row">
+        <div class="col-md-6 d-grid gap-2 text-center menu-button"><a class="button shadow my-auto menu-button-advanced" href="/advanced" role="button">Advanced</a></div>
+        <div class="col-md-6 d-grid gap-2 text-center menu-button"><a class="button-logout shadow my-auto menu-button-logout" href="/logout" role="button">Logout</a></div>
+      </div>
+
       <!-- <a class="button shadow menu-button-create" href="/member/search" role="button">Add Member</a> -->
     </div>
-  </div>
-  <div class="row my-2">
-    <div class="col-md-7 mx-auto">
+    <!-- <div class="col-md-8 mx-auto px-4 py-2 rounded-4">
       <div class="row">
-        <div class="col-md-6 d-grid gap-2 text-center menu-button">
-          <a class="button-logout shadow menu-button-logout" href="/logout" role="button">Logout</a>
+        <div class="col-md">
+          <div class="row pt-1 pb-3">
+            <div class="col-md-3 rounded-4">
+              <div class="row">
+                <div class="col-md shadow blurred-box">
+                  <div class="my-3 py-auto">
+                    <div class="spinner-grow text-danger" role="status" style="max-height: 15px; max-width: 15px">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="fs-6 mx-2 mb-0 d-inline">Daily Report</p>
+                  </div>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <div class="col-md shadow blurred-box">
+                  <p class="mt-2 fs-4">Payment</p>
+                  <p class="mb-0 mt-1 fs-6 text-secondary mt-3">IDR</p>
+                  <div class="text-secondary fs-6 mb-3 total-payment-data">
+                    <div class="spinner-border text-secondary" role="status" style="max-width: 19px; max-height: 19px">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md mx-3">
+              <div class="row py-3 blurred-box-violet-light">
+                <div class="py-auto">
+                  <p class="fs-4 mx-2 mb-0 d-inline">Check-Out</p>
+                </div>
+                <div class="col-md mt-2">
+                  <div class="row d-flex flex-nowrap overflow-auto px-2 pt-1 pb-3">
+                    <div class="col-md-3 mx-2 shadow blurred-box rounded-4">
+                      <p class="mt-2 fs-6 text-secondary">Cash</p>
+                      <p class="mb-0 mt-2 fs-6 text-secondary mt-3">IDR</p>
+                      <p class="text-secondary">xx.xxx.xxx,-</p>
+                    </div>
+                    <div class="col-md-3 mx-2 shadow blurred-box-blue rounded-4">
+                      <p class="mt-2 fs-6 text-secondary">Transfer</p>
+                      <p class="mb-0 mt-2 fs-6 text-secondary mt-3">IDR</p>
+                      <p class="text-secondary">xx.xxx.xxx,-</p>
+                    </div>
+                    <div class="col-md-3 mx-2 shadow blurred-box-yellow rounded-4">
+                      <p class="mt-2 fs-6 text-secondary">Transfer</p>
+                      <p class="mb-0 mt-2 fs-6 text-secondary mt-3">IDR</p>
+                      <p class="text-secondary">xx.xxx.xxx,-</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+      <div class="row py-3 blurred-box-violet-light">
+        <div class="py-auto">
+          <p class="fs-4 mx-2 mb-0 d-inline">Top-Up</p>
+        </div>
+        <div class="col-md mt-2">
+          <div class="row d-flex flex-nowrap overflow-auto px-2 pt-1 pb-3">
+            <div class="col-md-2 mx-2 shadow blurred-box rounded-4">
+              <p class="mt-2 fs-6 text-secondary">Cash</p>
+              <p class="mb-0 mt-2 fs-6 text-secondary mt-3">IDR</p>
+              <div class="mb-3 text-secondary total-topup-cash-data">
+                <div class="text-secondary fs-6 mb-3">
+                  <div class="spinner-border text-secondary" role="status" style="max-width: 19px; max-height: 19px">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 mx-2 shadow blurred-box-blue rounded-4">
+              <p class="mt-2 fs-6 text-secondary">Transfer</p>
+              <p class="mb-0 mt-2 fs-6 text-secondary mt-3">IDR</p>
+              <div class="mb-3 text-secondary total-topup-transfer-bca-data">
+                <div class="text-secondary fs-6 mb-3">
+                  <div class="spinner-border text-secondary" role="status" style="max-width: 19px; max-height: 19px">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 mx-2 shadow blurred-box-blue rounded-4">
+              <p class="mt-2 fs-6 text-secondary">EDC</p>
+              <p class="mb-0 mt-2 fs-6 text-secondary mt-3">IDR</p>
+              <div class="mb-3 text-secondary total-topup-edc-bca-data">
+                <div class="text-secondary fs-6 mb-3">
+                  <div class="spinner-border text-secondary" role="status" style="max-width: 19px; max-height: 19px">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 mx-2 shadow blurred-box-blue rounded-4">
+              <p class="mt-2 fs-6 text-secondary">QRIS</p>
+              <p class="mb-0 mt-2 fs-6 text-secondary mt-3">IDR</p>
+              <div class="mb-3 text-secondary total-topup-qris-bca-data">
+                <div class="text-secondary fs-6 mb-3">
+                  <div class="spinner-border text-secondary" role="status" style="max-width: 19px; max-height: 19px">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 mx-2 shadow blurred-box-yellow rounded-4">
+              <p class="mt-2 fs-6 text-secondary">Transfer</p>
+              <p class="mb-0 mt-2 fs-6 text-secondary mt-3">IDR</p>
+              <div class="mb-3 text-secondary total-topup-transfer-mandiri-data">
+                <div class="text-secondary fs-6 mb-3">
+                  <div class="spinner-border text-secondary" role="status" style="max-width: 19px; max-height: 19px">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 mx-2 shadow blurred-box-yellow rounded-4">
+              <p class="mt-2 fs-6 text-secondary">EDC</p>
+              <p class="mb-0 mt-2 fs-6 text-secondary mt-3">IDR</p>
+              <div class="mb-3 text-secondary total-topup-edc-mandiri-data">
+                <div class="text-secondary fs-6 mb-3">
+                  <div class="spinner-border text-secondary" role="status" style="max-width: 19px; max-height: 19px">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 mx-2 shadow blurred-box-yellow rounded-4">
+              <p class="mt-2 fs-6 text-secondary">QRIS</p>
+              <p class="mb-0 mt-2 fs-6 text-secondary mt-3">IDR</p>
+              <div class="mb-3 text-secondary total-topup-qris-mandiri-data">
+                <div class="text-secondary fs-6 mb-3">
+                  <div class="spinner-border text-secondary" role="status" style="max-width: 19px; max-height: 19px">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+    <div class="row my-2 multi-button">
+      <div class="col-md-12 mx-auto">
+        <div class="row">
+          <div class="col-md-6 d-grid gap-2 text-center menu-button"></div>
 
-        <div class="col-md-6 d-grid gap-2 text-center menu-button">
-          <a class="button shadow menu-button-advanced" href="/advanced" role="button">Advanced</a>
+          <div class="col-md-6 d-grid gap-2 text-center menu-button"></div>
         </div>
       </div>
     </div>
   </div>
-</div>
+  <!-- 
+<script>
+  const totalPaymentData = document.querySelector('.total-payment-data');
+  const totalTopupCashData = document.querySelector('.total-topup-cash-data');
+  const totalTopupTransferBcaData = document.querySelector('.total-topup-transfer-bca-data');
+  const totalTopupTransferMandiriData = document.querySelector('.total-topup-transfer-mandiri-data');
+  const totalTopupEdcBcaData = document.querySelector('.total-topup-edc-bca-data');
+  const totalTopupEdcMandiriData = document.querySelector('.total-topup-edc-mandiri-data');
+  const totalTopupQrisBcaData = document.querySelector('.total-topup-qris-bca-data');
+  const totalTopupQrisMandiriData = document.querySelector('.total-topup-qris-mandiri-data');
 
-<!-- <script src="/public/script/totalDineIn.js"></script> -->
+  async function fetchTotalPayment() {
+    try {
+      const response = await fetch('http://localhost:3000/analysis/payment');
+      const data = await response.json();
+
+      let totalPayment = 0;
+      data.forEach((element) => {
+        totalPayment = totalPayment + element.payment;
+      });
+
+      totalPayment = Intl.NumberFormat('en-US').format(totalPayment);
+
+      totalPaymentData.innerHTML = totalPayment;
+    } catch (error) {
+      totalPaymentData.innerHTML = 'Not Available';
+    }
+  }
+
+  async function fetchTotalTopupCash() {
+    try {
+      const response = await fetch('http://localhost:3000/analysis/topup/cash');
+      const data = await response.json();
+
+      let totalTopupCash = 0;
+      data.forEach((element) => {
+        totalTopupCash = totalTopupCash + element.payment;
+      });
+
+      totalTopupCash = Intl.NumberFormat('en-US').format(totalTopupCash);
+
+      totalTopupCashData.innerHTML = totalTopupCash;
+    } catch (error) {
+      totalTopupCashData.innerHTML = 'Not Available';
+    }
+  }
+
+  async function fetchTotalTopupTransferBca() {
+    try {
+      const response = await fetch('http://localhost:3000/analysis/topup/transfer/bca');
+      const data = await response.json();
+
+      let totalTopupTransferBca = 0;
+      data.forEach((element) => {
+        totalTopupTransferBca = totalTopupTransferBca + element.payment;
+      });
+
+      totalTopupTransferBca = Intl.NumberFormat('en-US').format(totalTopupTransferBca);
+
+      totalTopupTransferBcaData.innerHTML = totalTopupTransferBca;
+    } catch (error) {
+      totalTopupTransferBcaData.innerHTML = 'Not Available';
+    }
+  }
+
+  async function fetchTotalTopupTransferMandiri() {
+    try {
+      const response = await fetch('http://localhost:3000/analysis/topup/transfer/bca');
+      const data = await response.json();
+
+      let totalTopupTransferMandiri = 0;
+      data.forEach((element) => {
+        totalTopupTransferMandiri = totalTopupTransferMandiri + element.payment;
+      });
+
+      totalTopupTransferMandiri = Intl.NumberFormat('en-US').format(totalTopupTransferMandiri);
+
+      totalTopupTransferMandiriData.innerHTML = totalTopupTransferMandiri;
+    } catch (error) {
+      totalTopupTransferMandiriData.innerHTML = 'Not Available';
+    }
+  }
+
+  async function fetchTotalTopupEdcBca() {
+    try {
+      const response = await fetch('http://localhost:3000/analysis/topup/edc/bca');
+      const data = await response.json();
+
+      let totalTopupEdcBca = 0;
+      data.forEach((element) => {
+        totalTopupEdcBca = totalTopupEdcBca + element.payment;
+      });
+
+      totalTopupEdcBca = Intl.NumberFormat('en-US').format(totalTopupEdcBca);
+
+      totalTopupEdcBcaData.innerHTML = totalTopupEdcBca;
+    } catch (error) {
+      totalTopupEdcBcaData.innerHTML = 'Not Available';
+    }
+  }
+
+  async function fetchTotalTopupEdcMandiri() {
+    try {
+      const response = await fetch('http://localhost:3000/analysis/topup/edc/bca');
+      const data = await response.json();
+
+      let totalTopupEdcMandiri = 0;
+      data.forEach((element) => {
+        totalTopupEdcMandiri = totalTopupEdcMandiri + element.payment;
+      });
+
+      totalTopupEdcMandiri = Intl.NumberFormat('en-US').format(totalTopupEdcMandiri);
+
+      totalTopupEdcMandiriData.innerHTML = totalTopupEdcMandiri;
+    } catch (error) {
+      totalTopupEdcMandiriData.innerHTML = 'Not Available';
+    }
+  }
+
+  async function fetchTotalTopupQrisBca() {
+    try {
+      const response = await fetch('http://localhost:3000/analysis/topup/edc/bca');
+      const data = await response.json();
+
+      let totalTopupQrisBca = 0;
+      data.forEach((element) => {
+        totalTopupQrisBca = totalTopupQrisBca + element.payment;
+      });
+
+      totalTopupQrisBca = Intl.NumberFormat('en-US').format(totalTopupQrisBca);
+
+      totalTopupQrisBcaData.innerHTML = totalTopupQrisBca;
+    } catch (error) {
+      totalTopupQrisBcaData.innerHTML = 'Not Available';
+    }
+  }
+
+  async function fetchTotalTopupQrisMandiri() {
+    try {
+      const response = await fetch('http://localhost:3000/analysis/topup/edc/bca');
+      const data = await response.json();
+
+      let totalTopupQrisMandiri = 0;
+      data.forEach((element) => {
+        totalTopupQrisMandiri = totalTopupQrisMandiri + element.payment;
+      });
+
+      totalTopupQrisMandiri = Intl.NumberFormat('en-US').format(totalTopupQrisMandiri);
+
+      totalTopupQrisMandiriData.innerHTML = totalTopupQrisMandiri;
+    } catch (error) {
+      totalTopupQrisMandiriData.innerHTML = 'Not Available';
+    }
+  }
+
+  setInterval(() => {
+    fetchTotalPayment();
+    fetchTotalTopupCash();
+    fetchTotalTopupTransferBca();
+    fetchTotalTopupTransferMandiri();
+    fetchTotalTopupEdcBca();
+    fetchTotalTopupEdcMandiri();
+    fetchTotalTopupQrisBca();
+    fetchTotalTopupQrisMandiri();
+  }, 1000);
+</script> -->
+
+  <!-- <script src="/public/script/totalDineIn.js"></script> -->
+</div>

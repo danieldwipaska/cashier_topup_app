@@ -202,3 +202,43 @@ a {
 form {
   display: inline;
 }
+
+.blurred-box {
+  /* From https://css.glass */
+  background: rgba(255, 255, 255, 0.44);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5.8px);
+  -webkit-backdrop-filter: blur(5.8px);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+}
+
+.blurred-box-blue {
+  /* From https://css.glass */
+  background: rgba(143, 202, 252, 0.51);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(143, 202, 252, 0.3);
+}
+
+.blurred-box-yellow {
+  /* From https://css.glass */
+  background: rgba(244, 250, 84, 0.51);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(244, 250, 84, 0.3);
+}
+
+.blurred-box-violet-light {
+  /* From https://css.glass */
+  background: rgba(253, 233, 255, 0.51);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(253, 233, 255, 0.3);
+}
