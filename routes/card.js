@@ -125,32 +125,15 @@ router.post('/download', async (req, res) => {
   const { archiveFrom, archiveTo } = req.body;
   // console.log('hitted');
 
-  // ARCHIVEFROM PROCCESSING
-  const archiveFromArr = archiveFrom.split('');
-
-  const archiveFromTemplate1 = archiveFromArr.slice(0, 11).join('');
-  const archiveFromTemplate2 = archiveFromArr.slice(13, 16).join('');
-
-  const archiveFromGmtString = convertTimeHour(archiveFrom);
-
-  const dateFromString = archiveFromTemplate1 + archiveFromGmtString + archiveFromTemplate2;
-
-  // ARCHIVETO PROCESSING
-  const archiveToArr = archiveTo.split('');
-  const archiveToTemplate1 = archiveToArr.slice(0, 11).join('');
-  const archiveToTemplate2 = archiveToArr.slice(13, 16).join('');
-
-  const archiveToGmtString = convertTimeHour(archiveTo);
-
-  const dateToString = archiveToTemplate1 + archiveToGmtString + archiveToTemplate2;
-
   try {
-    // console.log(dateFromString);
-    // console.log(dateToString);
-    const dateFrom = new Date(dateFromString);
-    const dateTo = new Date(dateToString);
-    // console.log(dateFrom);
-    // console.log(dateTo);
+    const dateArchiveFrom = new Date(archiveFrom);
+    const dateArchiveTo = new Date(archiveTo);
+
+    const archiveFromGMTTime = dateArchiveFrom.getTime() - 7 * 60 * 60 * 1000;
+    const archiveToGMTTime = dateArchiveTo.getTime() - 7 * 60 * 60 * 1000;
+
+    const dateFrom = new Date(archiveFromGMTTime);
+    const dateTo = new Date(archiveToGMTTime);
 
     const cards = await pool.query(`SELECT * FROM cards WHERE updated_at >= $1 AND updated_at <= $2 ORDER BY updated_at ASC`, [dateFrom, dateTo]);
     // console.log(cards.rows);
