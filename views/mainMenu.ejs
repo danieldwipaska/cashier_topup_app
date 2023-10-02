@@ -20,7 +20,7 @@
 
 <div class="container my-1">
   <div class="row my-2">
-    <div class="col-md-7 mx-auto mb-5 d-grid gap-2 text-center multi-button menu-button py-2">
+    <div class="col-md-4 mx-auto mb-5 d-grid gap-2 text-center multi-button menu-button py-2">
       <!-- <a class="button shadow menu-button-checkin" href="/checkin/search" role="button">Check-In</a> -->
       <a class="button shadow menu-button-topup" href="/topup/search" role="button">Top-Up</a>
       <a class="button shadow menu-button-payment" href="/payment/search" role="button">Payment</a>
@@ -35,7 +35,7 @@
 
       <!-- <a class="button shadow menu-button-create" href="/member/search" role="button">Add Member</a> -->
     </div>
-    <!-- <div class="col-md-8 mx-auto px-4 py-2 rounded-4">
+    <div class="col-md-8 mx-auto px-4 py-2 rounded-4">
       <div class="row">
         <div class="col-md">
           <div class="row pt-1 pb-3">
@@ -72,17 +72,29 @@
                     <div class="col-md-3 mx-2 shadow blurred-box rounded-4">
                       <p class="mt-2 fs-6 text-secondary">Cash</p>
                       <p class="mb-0 mt-2 fs-6 text-secondary mt-3">IDR</p>
-                      <p class="text-secondary">xx.xxx.xxx,-</p>
+                      <div class="text-secondary fs-6 mb-3 total-checkout-cash-data">
+                        <div class="spinner-border text-secondary" role="status" style="max-width: 19px; max-height: 19px">
+                          <span class="visually-hidden">Loading...</span>
+                        </div>
+                      </div>
                     </div>
                     <div class="col-md-3 mx-2 shadow blurred-box-blue rounded-4">
                       <p class="mt-2 fs-6 text-secondary">Transfer</p>
                       <p class="mb-0 mt-2 fs-6 text-secondary mt-3">IDR</p>
-                      <p class="text-secondary">xx.xxx.xxx,-</p>
+                      <div class="text-secondary fs-6 mb-3 total-checkout-transfer-bca-data">
+                        <div class="spinner-border text-secondary" role="status" style="max-width: 19px; max-height: 19px">
+                          <span class="visually-hidden">Loading...</span>
+                        </div>
+                      </div>
                     </div>
                     <div class="col-md-3 mx-2 shadow blurred-box-yellow rounded-4">
                       <p class="mt-2 fs-6 text-secondary">Transfer</p>
                       <p class="mb-0 mt-2 fs-6 text-secondary mt-3">IDR</p>
-                      <p class="text-secondary">xx.xxx.xxx,-</p>
+                      <div class="text-secondary fs-6 mb-3 total-checkout-transfer-mandiri-data">
+                        <div class="spinner-border text-secondary" role="status" style="max-width: 19px; max-height: 19px">
+                          <span class="visually-hidden">Loading...</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -178,18 +190,18 @@
         </div>
       </div>
     </div>
-  </div> -->
-    <div class="row my-2 multi-button">
-      <div class="col-md-12 mx-auto">
-        <div class="row">
-          <div class="col-md-6 d-grid gap-2 text-center menu-button"></div>
+  </div>
+  <div class="row my-2 multi-button">
+    <div class="col-md-12 mx-auto">
+      <div class="row">
+        <div class="col-md-6 d-grid gap-2 text-center menu-button"></div>
 
-          <div class="col-md-6 d-grid gap-2 text-center menu-button"></div>
-        </div>
+        <div class="col-md-6 d-grid gap-2 text-center menu-button"></div>
       </div>
     </div>
   </div>
-  <!-- 
+</div>
+
 <script>
   const totalPaymentData = document.querySelector('.total-payment-data');
   const totalTopupCashData = document.querySelector('.total-topup-cash-data');
@@ -199,6 +211,9 @@
   const totalTopupEdcMandiriData = document.querySelector('.total-topup-edc-mandiri-data');
   const totalTopupQrisBcaData = document.querySelector('.total-topup-qris-bca-data');
   const totalTopupQrisMandiriData = document.querySelector('.total-topup-qris-mandiri-data');
+  const totalCheckoutCashData = document.querySelector('.total-checkout-cash-data');
+  const totalCheckoutTransferBcaData = document.querySelector('.total-checkout-transfer-bca-data');
+  const totalCheckoutTransferMandiriData = document.querySelector('.total-checkout-transfer-mandiri-data');
 
   async function fetchTotalPayment() {
     try {
@@ -256,7 +271,7 @@
 
   async function fetchTotalTopupTransferMandiri() {
     try {
-      const response = await fetch('http://localhost:3000/analysis/topup/transfer/bca');
+      const response = await fetch('http://localhost:3000/analysis/topup/transfer/mandiri');
       const data = await response.json();
 
       let totalTopupTransferMandiri = 0;
@@ -292,7 +307,7 @@
 
   async function fetchTotalTopupEdcMandiri() {
     try {
-      const response = await fetch('http://localhost:3000/analysis/topup/edc/bca');
+      const response = await fetch('http://localhost:3000/analysis/topup/edc/mandiri');
       const data = await response.json();
 
       let totalTopupEdcMandiri = 0;
@@ -310,7 +325,7 @@
 
   async function fetchTotalTopupQrisBca() {
     try {
-      const response = await fetch('http://localhost:3000/analysis/topup/edc/bca');
+      const response = await fetch('http://localhost:3000/analysis/topup/qris/bca');
       const data = await response.json();
 
       let totalTopupQrisBca = 0;
@@ -328,7 +343,7 @@
 
   async function fetchTotalTopupQrisMandiri() {
     try {
-      const response = await fetch('http://localhost:3000/analysis/topup/edc/bca');
+      const response = await fetch('http://localhost:3000/analysis/topup/qris/mandiri');
       const data = await response.json();
 
       let totalTopupQrisMandiri = 0;
@@ -344,6 +359,60 @@
     }
   }
 
+  async function fetchTotalCheckoutCash() {
+    try {
+      const response = await fetch('http://localhost:3000/analysis/checkout/cash');
+      const data = await response.json();
+
+      let totalCheckoutCash = 0;
+      data.forEach((element) => {
+        totalCheckoutCash = totalCheckoutCash + element.payment;
+      });
+
+      totalCheckoutCash = Intl.NumberFormat('en-US').format(totalCheckoutCash);
+
+      totalCheckoutCashData.innerHTML = totalCheckoutCash;
+    } catch (error) {
+      totalCheckoutCashData.innerHTML = 'Not Available';
+    }
+  }
+
+  async function fetchTotalCheckoutTransferBca() {
+    try {
+      const response = await fetch('http://localhost:3000/analysis/checkout/transfer/bca');
+      const data = await response.json();
+
+      let totalCheckoutTransferBca = 0;
+      data.forEach((element) => {
+        totalCheckoutTransferBca = totalCheckoutTransferBca + element.payment;
+      });
+
+      totalCheckoutTransferBca = Intl.NumberFormat('en-US').format(totalCheckoutTransferBca);
+
+      totalCheckoutTransferBcaData.innerHTML = totalCheckoutTransferBca;
+    } catch (error) {
+      totalCheckoutTransferBcaData.innerHTML = 'Not Available';
+    }
+  }
+
+  async function fetchTotalCheckoutTransferMandiri() {
+    try {
+      const response = await fetch('http://localhost:3000/analysis/checkout/transfer/mandiri');
+      const data = await response.json();
+
+      let totalCheckoutTransferMandiri = 0;
+      data.forEach((element) => {
+        totalCheckoutTransferMandiri = totalCheckoutTransferMandiri + element.payment;
+      });
+
+      totalCheckoutTransferMandiri = Intl.NumberFormat('en-US').format(totalCheckoutTransferMandiri);
+
+      totalCheckoutTransferMandiriData.innerHTML = totalCheckoutTransferMandiri;
+    } catch (error) {
+      totalCheckoutTransferMandiriData.innerHTML = 'Not Available';
+    }
+  }
+
   setInterval(() => {
     fetchTotalPayment();
     fetchTotalTopupCash();
@@ -353,8 +422,10 @@
     fetchTotalTopupEdcMandiri();
     fetchTotalTopupQrisBca();
     fetchTotalTopupQrisMandiri();
+    fetchTotalCheckoutCash();
+    fetchTotalCheckoutTransferBca();
+    fetchTotalCheckoutTransferMandiri();
   }, 1000);
-</script> -->
+</script>
 
-  <!-- <script src="/public/script/totalDineIn.js"></script> -->
-</div>
+<!-- <script src="/public/script/totalDineIn.js"></script> -->

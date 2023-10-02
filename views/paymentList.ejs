@@ -53,7 +53,6 @@
             <th scope="col">Customer Name</th>
             <th scope="col">Customer Id</th>
             <th scope="col">Payment(IDR)</th>
-            <th scope="col">Status</th>
             <th scope="col">Time</th>
             <th scope="col">Act</th>
           </tr>
@@ -69,7 +68,6 @@
             <td><%= element.customer_name %></td>
             <td><%= element.customer_id %></td>
             <td><%= Intl.NumberFormat('en-US').format(element.payment) %></td>
-            <td><%= element.invoice_status %></td>
             <td><%= element.created_at.toLocaleString() %></td>
             <td>
               <a class="confirm-button" href="/payment/<%= element.id %>/delete" role="button" title="delete" data-confirm="Are you sure to delete this item?">
@@ -173,7 +171,6 @@
             <td><%= element.customer_name %></td>
             <td><%= element.customer_id %></td>
             <td><%= Intl.NumberFormat('en-US').format(element.payment) %></td>
-            <td><%= element.invoice_status %></td>
             <td><%= element.created_at.toLocaleString() %></td>
             <td>
               <a class="confirm-button" href="/payment/<%= element.id %>/delete" role="button" title="delete" data-confirm="Are you sure to delete this item?">
@@ -324,7 +321,47 @@
           <li class="page-item">
             <a class="page-link" href="/payment/list?page=5">5</a>
           </li>
-          <% } %> <% if (page === '5') { %>
+          <% } %> <% if (page === '6') { %>
+          <li class="page-item active" aria-current="page">
+            <span class="page-link">6</span>
+          </li>
+          <% } else { %>
+          <li class="page-item">
+            <a class="page-link" href="/payment/list?page=6">6</a>
+          </li>
+          <% } %> <% if (page === '7') { %>
+          <li class="page-item active" aria-current="page">
+            <span class="page-link">7</span>
+          </li>
+          <% } else { %>
+          <li class="page-item">
+            <a class="page-link" href="/payment/list?page=7">7</a>
+          </li>
+          <% } %> <% if (page === '8') { %>
+          <li class="page-item active" aria-current="page">
+            <span class="page-link">8</span>
+          </li>
+          <% } else { %>
+          <li class="page-item">
+            <a class="page-link" href="/payment/list?page=8">8</a>
+          </li>
+          <% } %> <% if (page === '9') { %>
+          <li class="page-item active" aria-current="page">
+            <span class="page-link">9</span>
+          </li>
+          <% } else { %>
+          <li class="page-item">
+            <a class="page-link" href="/payment/list?page=9">9</a>
+          </li>
+          <% } %> <% if (page === '10') { %>
+          <li class="page-item active" aria-current="page">
+            <span class="page-link">10</span>
+          </li>
+          <% } else { %>
+          <li class="page-item">
+            <a class="page-link" href="/payment/list?page=10">10</a>
+          </li>
+          <% } %> <% if (page === '10') { %>
           <li class="page-item disabled">
             <span class="page-link">Next</span>
           </li>

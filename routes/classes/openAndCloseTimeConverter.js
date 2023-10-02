@@ -3,9 +3,10 @@ const { convertTZ } = require('../functions/convertDateTimezone');
 class OpenAndCloseTimeConverter {
   static hourNow() {
     const date = new Date();
-    const dateJakarta = convertTZ(date, 'Asia/Jakarta');
+    // const dateJakarta = convertTZ(date, 'Asia/Jakarta');
 
-    let hourNow = dateJakarta.getHours();
+    let hourNow = date.getHours();
+    // console.log(hourNow);
 
     if (hourNow >= 0 && hourNow <= 12) {
       hourNow = hourNow + 24;
@@ -17,6 +18,7 @@ class OpenAndCloseTimeConverter {
   static open() {
     const hourNow = this.hourNow();
     const rangeToFrom = hourNow - 13;
+    // UNCERTAINTY OF 1 HOUR
     const dateFromString = Date.now() - rangeToFrom * 60 * 60 * 1000;
     return new Date(dateFromString);
   }

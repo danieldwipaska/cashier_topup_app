@@ -94,35 +94,6 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
           // SEND LOG
           infoLog(checkoutLogger, 'Payment was successfully added and invoice number was successfully generated', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);
 
-          // if (cards.rows[0].is_member) {
-          //   // UPDATE MEMBER BARCODE & IS_ACTIVE
-          //   try {
-          //     const members = await pool.query(memberQueries.getMemberByCustomerId, [cards.rows[0].customer_id]);
-
-          //     try {
-          //       await pool.query(memberQueries.updateMemberByCustomerId, [
-          //         members.rows[0].fullname,
-          //         null,
-          //         members.rows[0].birth_date,
-          //         members.rows[0].phone_number,
-          //         false,
-          //         members.rows[0].address,
-          //         members.rows[0].email,
-          //         members.rows[0].instagram,
-          //         members.rows[0].facebook,
-          //         members.rows[0].twitter,
-          //         members.rows[0].customer_id,
-          //       ]);
-          //     } catch (error) {
-          //       errorLog(checkoutLogger, error, 'Error in HTTP POST / when calling memberQueries.updateMemberByCustomerId');
-          //       return res.status(500).json('Server Error');
-          //     }
-          //   } catch (error) {
-          //     errorLog(checkoutLogger, error, 'Error in HTTP POST / when calling memberQueries.getMemberByCustomerId');
-          //     return res.status(500).json('Server Error');
-          //   }
-          // }
-
           return res.render('notificationSuccess', {
             layout: 'layouts/main-layout',
             title: 'Check-Out',

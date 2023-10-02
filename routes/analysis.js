@@ -47,7 +47,7 @@ router.get('/topup/cash', async (req, res) => {
     const dateTo = OpenAndCloseTimeConverter.close();
 
     try {
-      const payments = await pool.query(paymentQueries.getTopupWithMethodDateRange, ['topup', 'Cash', dateFrom, dateTo]);
+      const payments = await pool.query(paymentQueries.getPaymentWithMethodDateRange, ['topup', 'Cash', dateFrom, dateTo]);
 
       return res.status(200).json(payments.rows);
     } catch (error) {
@@ -65,7 +65,7 @@ router.get('/topup/transfer/bca', async (req, res) => {
     const dateTo = OpenAndCloseTimeConverter.close();
 
     try {
-      const payments = await pool.query(paymentQueries.getTopupWithMethodDateRange, ['topup', 'Transfer BCA', dateFrom, dateTo]);
+      const payments = await pool.query(paymentQueries.getPaymentWithMethodDateRange, ['topup', 'Transfer BCA', dateFrom, dateTo]);
 
       return res.status(200).json(payments.rows);
     } catch (error) {
@@ -83,7 +83,7 @@ router.get('/topup/transfer/mandiri', async (req, res) => {
     const dateTo = OpenAndCloseTimeConverter.close();
 
     try {
-      const payments = await pool.query(paymentQueries.getTopupWithMethodDateRange, ['topup', 'Transfer MANDIRI', dateFrom, dateTo]);
+      const payments = await pool.query(paymentQueries.getPaymentWithMethodDateRange, ['topup', 'Transfer MANDIRI', dateFrom, dateTo]);
 
       return res.status(200).json(payments.rows);
     } catch (error) {
@@ -101,7 +101,7 @@ router.get('/topup/edc/bca', async (req, res) => {
     const dateTo = OpenAndCloseTimeConverter.close();
 
     try {
-      const payments = await pool.query(paymentQueries.getTopupWithMethodDateRange, ['topup', 'EDC BCA', dateFrom, dateTo]);
+      const payments = await pool.query(paymentQueries.getPaymentWithMethodDateRange, ['topup', 'EDC BCA', dateFrom, dateTo]);
 
       return res.status(200).json(payments.rows);
     } catch (error) {
@@ -119,7 +119,7 @@ router.get('/topup/edc/mandiri', async (req, res) => {
     const dateTo = OpenAndCloseTimeConverter.close();
 
     try {
-      const payments = await pool.query(paymentQueries.getTopupWithMethodDateRange, ['topup', 'EDC MANDIRI', dateFrom, dateTo]);
+      const payments = await pool.query(paymentQueries.getPaymentWithMethodDateRange, ['topup', 'EDC MANDIRI', dateFrom, dateTo]);
 
       return res.status(200).json(payments.rows);
     } catch (error) {
@@ -137,7 +137,7 @@ router.get('/topup/qris/bca', async (req, res) => {
     const dateTo = OpenAndCloseTimeConverter.close();
 
     try {
-      const payments = await pool.query(paymentQueries.getTopupWithMethodDateRange, ['topup', 'QRIS BCA', dateFrom, dateTo]);
+      const payments = await pool.query(paymentQueries.getPaymentWithMethodDateRange, ['topup', 'QRIS BCA', dateFrom, dateTo]);
 
       return res.status(200).json(payments.rows);
     } catch (error) {
@@ -155,7 +155,61 @@ router.get('/topup/qris/mandiri', async (req, res) => {
     const dateTo = OpenAndCloseTimeConverter.close();
 
     try {
-      const payments = await pool.query(paymentQueries.getTopupWithMethodDateRange, ['topup', 'QRIS MANDIRI', dateFrom, dateTo]);
+      const payments = await pool.query(paymentQueries.getPaymentWithMethodDateRange, ['topup', 'QRIS MANDIRI', dateFrom, dateTo]);
+
+      return res.status(200).json(payments.rows);
+    } catch (error) {
+      return res.status(500).json('Server Error');
+    }
+  } catch (error) {
+    return res.status(500).json('Server Error');
+  }
+});
+
+// CHECKOUT CASH
+router.get('/checkout/cash', async (req, res) => {
+  try {
+    const dateFrom = OpenAndCloseTimeConverter.open();
+    const dateTo = OpenAndCloseTimeConverter.close();
+
+    try {
+      const payments = await pool.query(paymentQueries.getPaymentWithMethodDateRange, ['checkout', 'Cash', dateFrom, dateTo]);
+
+      return res.status(200).json(payments.rows);
+    } catch (error) {
+      return res.status(500).json('Server Error');
+    }
+  } catch (error) {
+    return res.status(500).json('Server Error');
+  }
+});
+
+// CHECKOUT TRANSFER BCA
+router.get('/checkout/transfer/bca', async (req, res) => {
+  try {
+    const dateFrom = OpenAndCloseTimeConverter.open();
+    const dateTo = OpenAndCloseTimeConverter.close();
+
+    try {
+      const payments = await pool.query(paymentQueries.getPaymentWithMethodDateRange, ['checkout', 'Transfer BCA', dateFrom, dateTo]);
+
+      return res.status(200).json(payments.rows);
+    } catch (error) {
+      return res.status(500).json('Server Error');
+    }
+  } catch (error) {
+    return res.status(500).json('Server Error');
+  }
+});
+
+// CHECKOUT TRANSFER MANDIRI
+router.get('/checkout/transfer/mandiri', async (req, res) => {
+  try {
+    const dateFrom = OpenAndCloseTimeConverter.open();
+    const dateTo = OpenAndCloseTimeConverter.close();
+
+    try {
+      const payments = await pool.query(paymentQueries.getPaymentWithMethodDateRange, ['checkout', 'Transfer MANDIRI', dateFrom, dateTo]);
 
       return res.status(200).json(payments.rows);
     } catch (error) {

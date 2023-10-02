@@ -13,7 +13,7 @@ const updatePaymentPaid = 'UPDATE payments SET paid_off = $1, invoice_number = $
 const getInvoice = 'SELECT * FROM payments WHERE invoice_number = $1';
 
 const getPaymentWithDateRange = 'SELECT payment, created_at FROM payments WHERE action = $1 AND created_at >= $2 AND created_at <= $3 ORDER BY created_at ASC';
-const getTopupWithMethodDateRange = 'SELECT payment, created_at FROM payments WHERE action = $1 AND payment_method = $2 AND created_at >= $3 AND created_at <= $4 ORDER BY created_at ASC';
+const getPaymentWithMethodDateRange = 'SELECT payment, created_at FROM payments WHERE action = $1 AND payment_method = $2 AND created_at >= $3 AND created_at <= $4 ORDER BY created_at ASC';
 
 module.exports = {
   addPayment,
@@ -29,7 +29,7 @@ module.exports = {
   updatePaymentPaid,
   getInvoice,
   getPaymentWithDateRange,
-  getTopupWithMethodDateRange,
+  getPaymentWithMethodDateRange,
   //   checkEmailExists,
 
   //   removeStudent,
