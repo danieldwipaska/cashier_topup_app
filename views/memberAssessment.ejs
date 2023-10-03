@@ -1,0 +1,61 @@
+<% if (alert) { %>
+<div class="container-md my-1">
+  <div class="row">
+    <div class="col-md-8 mx-auto">
+      <div class="alert alert-dismissible alert-warning fade show mb-3">
+        <button type="button" class="btn-close" data-mdb-toggle="animation" data-mdb-animation="slide-right" data-mdb-animation-start="onLoad" data-bs-dismiss="alert"></button>
+        <strong>Oh no!</strong> <%= alert %>
+      </div>
+    </div>
+  </div>
+</div>
+<% } %>
+<div class="container my-1">
+  <div class="row">
+    <div class="col-md-9 mx-auto">
+      <h3>Member Assessment</h3>
+      <h5>From Purchases</h5>
+    </div>
+  </div>
+</div>
+<div class="container-md mt-1 mb-3">
+  <div class="row my-1">
+    <div class="col-md-9 mx-auto my-1 px-4">
+      <div class="row my-3">
+        <div class="col-md-9">
+          <div class="row">
+            <div class="col-md-1 bg-primary p-2">No.</div>
+            <div class="col-md-3 bg-primary p-2">ID</div>
+            <div class="col-md-2 bg-primary p-2">Name</div>
+            <div class="col-md-2 bg-primary p-2">Payment</div>
+            <div class="col-md-4 bg-primary p-2">Created At</div>
+            <div class="col-md-1 p-2">1</div>
+            <div class="col-md-3 p-2">081527352839</div>
+            <div class="col-md-2 p-2">Daniel</div>
+            <div class="col-md-2 p-2"><%= Intl.NumberFormat('en-US').format(1000000) %></div>
+            <div class="col-md-4 p-2"><%= new Date() %></div>
+            <div class="col-md-1 p-2">2</div>
+            <div class="col-md-3 p-2">08213736493</div>
+            <div class="col-md-2 p-2">Yeremia</div>
+            <div class="col-md-2 p-2"><%= Intl.NumberFormat('en-US').format(1000000) %></div>
+            <div class="col-md-4 p-2"><%= new Date() %></div>
+            <div class="col-md-1 p-2">3</div>
+            <div class="col-md-3 p-2">08122536338</div>
+            <div class="col-md-2 p-2">Haikal</div>
+            <div class="col-md-2 p-2"><%= Intl.NumberFormat('en-US').format(1000000) %></div>
+            <div class="col-md-4 p-2"><%= new Date() %></div>
+          </div>
+        </div>
+        <div class="col-md-3 ps-3 pe-2">
+          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Similique velit expedita minima soluta necessitatibus quos! Nam voluptatibus accusamus vero adipisci repellendus omnis recusandae maxime voluptates id rem, magnam, iure
+          eum.
+        </div>
+      </div>
+      <div class="row my-5 multi-button">
+        <div class="col-lg-8 mx-auto text-center">
+          <a class="button shadow my-3" href="/" role="button">Back</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

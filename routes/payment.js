@@ -72,18 +72,30 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
   const { barcode, customerName: customer_name, customerId: customer_id, payment, invoiceNumber: invoice_number, invoiceStatus: invoice_status, serverCode, collectedBy: collected_by, notes } = req.body;
 
   try {
+    // CHECK WHETHER OR NOT THE CARD EXISTS
     const cards = await pool.query(cardQueries.getCardById, [barcode]);
     if (!cards.rows.length) return res.status(404).json('Card Not Found');
 
-    if (cards.rows[0].customer_id !== customer_id) return res.status(401).json('The Card Does Not Belong To The Customer');
+    if (cards.rows[0].customer_id !== customer_id)
+      return res.render('notificationError', {
+        layout: 'layouts/main-layout',
+        title: 'Payment Error',
+        message: 'The Card does not belong to the customer.',
+      });
 
     const deposit = cards.rows[0].deposit;
     const initial_balance = cards.rows[0].balance;
 
     const final_balance = initial_balance - payment;
-    if (final_balance < 0) return res.status(401).json('Balance Not Enough');
+    if (final_balance < 0)
+      return res.render('notificationError', {
+        layout: 'layouts/main-layout',
+        title: 'Payment Error',
+        message: 'Balance Not Enough',
+      });
 
     try {
+      // CHECK WHETHER OR NOT THE CREW SUBMITTED CORRECT CREDENTIAL
       const crew = await pool.query(crewQueries.getCrewByCode, [serverCode]);
       if (!crew.rows.length)
         return res.render('notificationError', {
@@ -95,9 +107,14 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
       if (crew.rows.length >= 2) return res.status(500).json('SERVER ERROR');
 
       try {
+        // UPDATE CARD'S BALANCE
         const updatedCards = await pool.query(cardQueries.updateBalance, [final_balance, deposit, barcode]);
 
+        // SEND LOG
+        infoLog(paymentLogger, 'Card Balance was succesfully updated', updatedCards.rows[0].barcode, updatedCards.rows[0].customer_name, updatedCards.rows[0].customer_id, crew.rows[0].name);
+
         try {
+          // ADD PAYMENT REPORT
           const id = v4();
           const action = 'pay';
           const payment_method = 'None';
@@ -120,7 +137,7 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
           ]);
 
           // SEND LOG
-          infoLog(paymentLogger, 'Payment was successfully added and invoice number was successfully generated', updatedCards.rows[0].barcode, updatedCards.rows[0].customer_name, updatedCards.rows[0].customer_id, req.validUser.name);
+          infoLog(paymentLogger, 'Payment was successfully added and invoice number was successfully generated', updatedCards.rows[0].barcode, updatedCards.rows[0].customer_name, updatedCards.rows[0].customer_id, crew.rows[0].name);
 
           return res.render('notificationSuccessWithBalance', {
             layout: 'layouts/main-layout',
@@ -210,6 +227,7 @@ router.get('/list', verifyToken, allRoles, async (req, res) => {
 router.get('/:id/delete', verifyToken, cashierAndDeveloper, (req, res) => {
   const { id } = req.params;
 
+  // CHECK WHETHER OR NOT THE PAYMENT EXISTS
   pool.query(paymentQueries.getPaymentById, [id], (error, getResults) => {
     if (error) {
       errorLog(paymentLogger, error, 'Error in HTTP GET /:invoice/delete when calling paymentQueries.getPaymentsByInvoice');
@@ -219,6 +237,7 @@ router.get('/:id/delete', verifyToken, cashierAndDeveloper, (req, res) => {
     if (getResults.rows.length === 0) {
       res.status(404).json('Payment Not Found');
     } else {
+      // DELETE THE PAYMENT
       pool.query(paymentQueries.deletePaymentById, [id], (error, deleteResults) => {
         if (error) {
           errorLog(paymentLogger, error, 'Error in HTTP GET /:invoice/delete when calling paymentQueries.deletePaymentByInvoice');
@@ -233,148 +252,6 @@ router.get('/:id/delete', verifyToken, cashierAndDeveloper, (req, res) => {
     }
   });
 });
-
-// router.get('/token', async (req, res) => {
-//   let dataCollection = [];
-
-//   // getMokaInvoices();
-
-//   const clientId = '6d72c3e6b7dc3ddbb6e162feb275f0d298ead57c070ccc1a0de07a5ddea514cb';
-//   const clientSecret = '0643375a7d36cfaffd6f78a438fb96015922b9e741ac3d08d5aca3c139ae7036';
-//   let accessToken = null;
-//   let accessTokenExpiresAt = 0;
-//   let refreshToken = '';
-
-//   async function getNewAccessToken() {
-//     try {
-//       const response = await axios.post('https://api.mokapos.com/oauth/token', {
-//         grant_type: 'refresh_token',
-//         client_id: clientId,
-//         client_secret: clientSecret,
-//         refresh_token: refreshToken,
-//       });
-
-//       const newAccessToken = response.data.access_token;
-//       const newExpiresIn = response.data.expires_in;
-
-//       // Update the access token and its expiration time
-//       accessToken = newAccessToken;
-//       accessTokenExpiresAt = Date.now() + newExpiresIn * 1000;
-
-//       // Optionally, update the refresh token if the server provides a new one.
-//       const newRefreshToken = response.data.refresh_token;
-//       if (newRefreshToken) {
-//         // Store the newRefreshToken securely for future use.
-//         refreshToken = newRefreshToken;
-//       }
-
-//       return newAccessToken;
-//     } catch (error) {
-//       // Handle error (e.g., invalid refresh token, server errors, etc.).
-//       console.error('Error refreshing access token:', error.message);
-//       throw error;
-//     }
-//   }
-
-//   async function makeAuthenticatedRequest() {
-//     if (!accessToken || shouldRefreshToken()) {
-//       // Get a new access token if not available or about to expire
-//       try {
-//         accessToken = await getNewAccessToken();
-//       } catch (error) {
-//         // Handle token refresh errors here
-//         return;
-//       }
-//     }
-
-//     // Make the actual API request with the access token
-//     try {
-//       const response = await axios.get('https://api.mokapos.com/v3/outlets/852790/reports/get_latest_transactions?per_page=10', {
-//         headers: {
-//           Authorization: `Bearer ${accessToken}`,
-//         },
-//       });
-//       // Process the response
-//       const mokaData = document.querySelector('.moka-data');
-
-//       let dataString = '';
-
-//       response.data.data.payments.forEach((element, i) => {
-//         dataString += `<button type="button" class="btn btn-light shadow text-start p-3" id="${i}">${element.payment_no}&emsp;&emsp;${element.customer_name}</button>`;
-
-//         dataCollection.push(element);
-//       });
-
-//       mokaData.innerHTML = dataString;
-//     } catch (error) {
-//       // Handle API request errors here
-//     }
-//   }
-
-//   await makeAuthenticatedRequest();
-//   // Periodically check for token expiration and make authenticated requests
-
-// });
-
-// // TOP-UP
-// router.post('/', verifyToken, (req, res) => {
-//   const { barcode, payment } = req.body;
-//   // MENU and AMOUNT
-//   let paymentInt = parseInt(payment, 10);
-
-//   // SEARCH FOR CARD
-//   pool.query(cardQueries.getCardById, [barcode], (error, results) => {
-//     if (error) return console.log(error);
-
-//     // CHECK WHETHER CUSTOMER IS ACTIVE AND DINE-IN
-//     if (!results.rows[0].is_active) {
-//       res.render('payment', {
-//         layout: 'layouts/main-layout',
-//         title: 'Payment',
-//         alert: 'Card is NOT ACTIVE.\nPlease activate the card first',
-//         data: results.rows[0],
-//       });
-//     } else if (!results.rows[0].dine_in) {
-//       res.render('payment', {
-//         layout: 'layouts/main-layout',
-//         title: 'Payment',
-//         alert: 'Card has NOT CHECKED IN yet. Only person who is dine-in can do Top-Up.',
-//         data: results.rows[0],
-//       });
-//     } else {
-//       // ADD NEW BALANCE
-//       paymentInt = results.rows[0].balance - paymentInt;
-
-//       // IF BALANCE IS NOT ENOUGH
-//       if (paymentInt < 0) {
-//         res.render('payment', {
-//           layout: 'layouts/main-layout',
-//           title: 'Payment',
-//           alert: 'Card does NOT have ENOUGH BALANCE to pay. Please Top-Up your balance first.',
-//           data: results.rows[0],
-//         });
-//       } else {
-//         const id = v4();
-//         const customer_id = v5();
-
-//         pool.query(payments.addPayment, [id, results.rows[0].barcode, results.rows[0].customer_name, customer_id, paymentInt, menu, amount], (error, addPaymentResults) => {
-//           if (error) return console.log(error);
-
-//           pool.query(cardQueries.updateBalance, [paymentInt, barcode], (error, updateResults) => {
-//             if (error) return console.log(error);
-
-//             res.render('notificationSuccessWithBalance', {
-//               layout: 'layouts/main-layout',
-//               title: 'Payment Success',
-//               message: 'Payment succeed.',
-//               data: updateResults.rows[0],
-//             });
-//           });
-//         });
-//       }
-//     }
-//   });
-// });
 
 router.post('/download', async (req, res) => {
   const { archiveFrom, archiveTo } = req.body;

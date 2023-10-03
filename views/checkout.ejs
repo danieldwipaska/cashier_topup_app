@@ -53,22 +53,22 @@
               <% if (data.is_member) { %>
               <div class="mb-1 col-auto">
                 <label for="isMember" class="form-label text-secondary">Member Status</label>
-                <input type="text" class="form-control bg-success text-light" id="isMember" name="isMember" value="yes" readonly />
+                <input type="text" class="form-control text-success fw-bolder" id="isMember" name="isMember" value="yes" readonly />
               </div>
               <% } else { %>
               <div class="mb-1 col-auto">
                 <label for="isMember" class="form-label text-secondary">Member Status</label>
-                <input type="text" class="form-control bg-danger text-light" id="isMember" name="isMember" value="no" readonly />
+                <input type="text" class="form-control text-danger fw-bolder" id="isMember" name="isMember" value="no" readonly />
               </div>
               <% } %> <% if (data.is_active) { %>
               <div class="mb-1 col-auto">
                 <label for="isActive" class="form-label text-secondary">Activation</label>
-                <input type="text" class="form-control bg-success text-light" id="isActive" name="isActive" value="active" readonly />
+                <input type="text" class="form-control text-success fw-bolder" id="isActive" name="isActive" value="active" readonly />
               </div>
               <% } else { %>
               <div class="mb-1 col-auto">
                 <label for="isActive" class="form-label text-secondary">Activation</label>
-                <input type="text" class="form-control bg-danger text-light" id="isActive" name="isActive" value="inactive" readonly />
+                <input type="text" class="form-control text-danger fw-bolder" id="isActive" name="isActive" value="inactive" readonly />
               </div>
               <% } %>
             </div>
@@ -108,7 +108,7 @@
           <div class="col-lg-8 mx-auto text-center">
             <a class="button shadow my-3" href="/checkout/search" role="button">Back</a>
 
-            <% if (data.is_active === true) { %>
+            <% if (data.is_active) { %>
             <button class="button shadow my-3" type="submit">Check-Out</button>
             <% } %>
 

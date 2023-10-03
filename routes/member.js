@@ -79,6 +79,21 @@ router.get('/search', verifyToken, cashierAndDeveloper, async (req, res) => {
   }
 });
 
+// MEMBER ASSESSMENT
+router.get('/assessment', async (req, res) => {
+  try {
+    return res.render('memberAssessment', {
+      layout: 'layouts/main-layout',
+      title: 'Member Assessment',
+      subtitle: 'Member Assessment',
+      alert: '',
+    });
+  } catch (error) {
+    errorLog(paymentLogger, error, 'Error in HTTP GET /assessment');
+    return res.status(500).json('Server Error');
+  }
+});
+
 // GET ALL MEMBER
 router.get('/list', verifyToken, cashierAndDeveloper, async (req, res) => {
   try {

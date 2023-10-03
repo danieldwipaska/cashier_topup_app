@@ -62,7 +62,12 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
   const { barcode, addBalance, deposit, customerName: customer_name, customerId: customer_id, paymentMethod: payment_method, notes } = req.body;
 
   const addBalanceInt = parseInt(addBalance, 10);
-  if (addBalanceInt > 10000000) return res.status(400).json('Maximum Top-up allowed is IDR10,000,000');
+  if (addBalanceInt > 10000000)
+    return res.render('notificationError', {
+      layout: 'layouts/main-layout',
+      title: 'Top-up Error',
+      message: 'Top-up maximum allowed is IDR10,000,000',
+    });
 
   let depositInt = parseInt(deposit, 10);
 
@@ -89,7 +94,12 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
 
     try {
       // IF ADD-BALANCE LESS THAN DEPOSIT
-      if (addBalanceInt < depositInt) return res.status(401).json('Add-Balance should not be less than deposit, or should not be 0');
+      if (addBalanceInt < depositInt)
+        return res.render('notificationError', {
+          layout: 'layouts/main-layout',
+          title: 'Top-up Error',
+          message: 'Add-Balance should not be less than deposit, or should not be 0',
+        });
 
       try {
         // ADD NEW BALANCE
