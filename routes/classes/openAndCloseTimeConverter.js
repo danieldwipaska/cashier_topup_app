@@ -21,14 +21,20 @@ class OpenAndCloseTimeConverter {
     const rangeToFrom = hourNow - 13;
     // UNCERTAINTY OF 1 HOUR
     const dateFromString = Date.now() - rangeToFrom * 60 * 60 * 1000;
-    return new Date(dateFromString);
+    const dateFromDate = new Date(dateFromString);
+    const dateFromGMTTime = dateFromDate.getTime() - 7 * 60 * 60 * 1000;
+
+    return dateFromGMTTime;
   }
 
   static close() {
     const hourNow = this.hourNow();
     const rangeToTo = 28 - hourNow;
     const dateToString = Date.now() + rangeToTo * 60 * 60 * 1000;
-    return new Date(dateToString);
+    const dateToDate = new Date(dateToString);
+    const dateToGMTTime = dateToDate.getTime() - 7 * 60 * 60 * 1000;
+
+    return dateToGMTTime;
   }
 }
 
