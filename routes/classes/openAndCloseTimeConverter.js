@@ -23,6 +23,8 @@ class OpenAndCloseTimeConverter {
     const dateFromDate = new Date(dateFromString);
     const dateFromGMTTime = dateFromDate.getTime() - 7 * 60 * 60 * 1000;
 
+    console.log(dateFromGMTTime);
+
     return new Date(dateFromGMTTime);
   }
 
@@ -32,6 +34,8 @@ class OpenAndCloseTimeConverter {
     const dateToString = Date.now() + rangeToTo * 60 * 60 * 1000;
     const dateToDate = new Date(dateToString);
     const dateToGMTTime = dateToDate.getTime() - 7 * 60 * 60 * 1000;
+
+    console.log(dateToGMTTime);
 
     return new Date(dateToGMTTime);
   }
