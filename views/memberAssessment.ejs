@@ -20,35 +20,73 @@
 </div>
 <div class="container-md mt-1 mb-3">
   <div class="row my-1">
-    <div class="col-md-9 mx-auto my-1 px-4">
+    <div class="col-md-11 mx-auto my-1 px-4">
       <div class="row my-3">
         <div class="col-md-9">
-          <div class="row">
-            <div class="col-md-1 bg-primary p-2">No.</div>
-            <div class="col-md-3 bg-primary p-2">ID</div>
-            <div class="col-md-2 bg-primary p-2">Name</div>
-            <div class="col-md-2 bg-primary p-2">Payment</div>
-            <div class="col-md-4 bg-primary p-2">Created At</div>
-            <div class="col-md-1 p-2">1</div>
-            <div class="col-md-3 p-2">081527352839</div>
-            <div class="col-md-2 p-2">Daniel</div>
-            <div class="col-md-2 p-2"><%= Intl.NumberFormat('en-US').format(1000000) %></div>
-            <div class="col-md-4 p-2"><%= new Date() %></div>
-            <div class="col-md-1 p-2">2</div>
-            <div class="col-md-3 p-2">08213736493</div>
-            <div class="col-md-2 p-2">Yeremia</div>
-            <div class="col-md-2 p-2"><%= Intl.NumberFormat('en-US').format(1000000) %></div>
-            <div class="col-md-4 p-2"><%= new Date() %></div>
-            <div class="col-md-1 p-2">3</div>
-            <div class="col-md-3 p-2">08122536338</div>
-            <div class="col-md-2 p-2">Haikal</div>
-            <div class="col-md-2 p-2"><%= Intl.NumberFormat('en-US').format(1000000) %></div>
-            <div class="col-md-4 p-2"><%= new Date() %></div>
+          <div class="row rounded-3">
+            <div class="row" style="background-color: #ffe596">
+              <div class="col-1 p-3">No.</div>
+              <div class="col-3 p-3">ID</div>
+              <div class="col-2 p-3">Name</div>
+              <div class="col-2 p-3">Payment</div>
+              <div class="col-4 p-3">Created At</div>
+            </div>
+            <div class="row bg-light payment-data">
+              <div class="col-1 p-3">1</div>
+              <div class="col-3 p-3">081527352839</div>
+              <div class="col-2 p-3">Daniel</div>
+              <div class="col-2 p-3"><%= Intl.NumberFormat('en-US').format(1000000) %></div>
+              <div class="col-4 p-3"><%= new Date() %></div>
+              <div class="col-1 p-3">2</div>
+              <div class="col-3 p-3">08213736493</div>
+              <div class="col-2 p-3">Yeremia</div>
+              <div class="col-2 p-3"><%= Intl.NumberFormat('en-US').format(1000000) %></div>
+              <div class="col-4 p-3"><%= new Date() %></div>
+              <div class="col-1 p-3">3</div>
+              <div class="col-3 p-3">08122536338</div>
+              <div class="col-2 p-3">Haikal</div>
+              <div class="col-2 p-3"><%= Intl.NumberFormat('en-US').format(1000000) %></div>
+              <div class="col-4 p-3"><%= new Date() %></div>
+            </div>
           </div>
         </div>
         <div class="col-md-3 ps-3 pe-2">
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Similique velit expedita minima soluta necessitatibus quos! Nam voluptatibus accusamus vero adipisci repellendus omnis recusandae maxime voluptates id rem, magnam, iure
-          eum.
+          <div class="row">
+            <div class="col-md">
+              <div class="mx-2 p-3 rounded-top" style="background-color: #9ddde9">Quick Search</div>
+              <div class="mx-2 p-3 bg-light rounded-bottom quick-search">
+                <div class="mb-1">
+                  <label for="quickCustomerId">Customer ID</label>
+                  <input type="text" id="quickCustomerId" name="customerId" />
+                </div>
+                <div class="mb-1 text-end mt-3">
+                  <button class="btn search-button" style="background-color: #afdee7">Search</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row my-3">
+            <div class="col-md">
+              <div class="mx-2 p-3 rounded-top" style="background-color: #9ddde9">Advanced Search</div>
+              <div class="mx-2 p-3 bg-light rounded-bottom advanced-search">
+                <div class="mb-1">
+                  <label for="advancedCustomerId">Customer ID</label>
+                  <input type="text" id="advancedCustomerId" name="customerId" />
+                </div>
+                <div class="mb-1">
+                  <label for="customerName">Name</label>
+                  <input type="text" id="customerName" name="customerName" />
+                </div>
+                <div class="mb-1">
+                  <label for="date">Date</label>
+                  <input type="date" id="date" name="date" style="display: block" />
+                </div>
+                <div class="mb-1 text-end mt-3">
+                  <button class="btn" style="background-color: #afdee7">Search</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="row my-5 multi-button">
@@ -59,3 +97,28 @@
     </div>
   </div>
 </div>
+<script>
+  const quickSearch = document.querySelector('.quick-search');
+  const advancedSearch = document.querySelector('.advanced-search');
+  const paymentData = document.querySelector('.payment-data');
+
+  const quickSearchButton = quickSearch.querySelector('.search-button');
+  quickSearchButton.addEventListener('click', async () => {
+    const customerId = document.querySelector('#quickCustomerId').value;
+    try {
+      const response = await fetch(`http://localhost:3000/member/assessment/search?customerId=${customerId}`);
+      const data = await response.json();
+
+      const payments = '';
+      data.forEach((payment, i) => {
+        payment += `<div class="col-1 p-3"></div></div>
+              <div class="col-3 p-3"></div></div>
+              <div class="col-2 p-3"></div></div>
+              <div class="col-2 p-3"><%= Intl.NumberFormat('en-US').format(10000) %></div>
+              <div class="col-4 p-3"></div>`;
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  });
+</script>

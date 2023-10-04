@@ -94,6 +94,8 @@ router.get('/assessment', async (req, res) => {
   }
 });
 
+// PAYMENT DATA
+
 // GET ALL MEMBER
 router.get('/list', verifyToken, cashierAndDeveloper, async (req, res) => {
   try {
