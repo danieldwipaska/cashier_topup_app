@@ -22,8 +22,8 @@ router.get('/payment', async (req, res) => {
     const dateFrom = OpenAndCloseTimeConverter.open();
     const dateTo = OpenAndCloseTimeConverter.close();
 
-    console.log(dateFrom);
-    console.log(dateTo);
+    // console.log(dateFrom);
+    // console.log(dateTo);
 
     try {
       const payments = await pool.query(paymentQueries.getPaymentWithDateRange, ['pay', dateFrom, dateTo]);
