@@ -9,7 +9,7 @@ class OpenAndCloseTimeConverter {
     let hourNow = date.getHours();
     // console.log(hourNow);
 
-    if (hourNow >= 0 && hourNow <= 12) {
+    if (hourNow >= 0 && hourNow <= 4) {
       hourNow = hourNow + 24;
     }
 
@@ -18,13 +18,12 @@ class OpenAndCloseTimeConverter {
 
   static open() {
     const hourNow = this.hourNow();
-    const rangeToFrom = hourNow - 13;
+    const rangeToFrom = hourNow - 5;
     // UNCERTAINTY OF 1 HOUR
     const dateFromString = Date.now() - rangeToFrom * 60 * 60 * 1000;
     const dateFromDate = new Date(dateFromString);
-    const dateFromGMTTime = dateFromDate.getTime() - 7 * 60 * 60 * 1000;
 
-    return new Date(dateFromGMTTime);
+    return dateFromDate;
   }
 
   static close() {
@@ -32,9 +31,8 @@ class OpenAndCloseTimeConverter {
     const rangeToTo = 28 - hourNow;
     const dateToString = Date.now() + rangeToTo * 60 * 60 * 1000;
     const dateToDate = new Date(dateToString);
-    const dateToGMTTime = dateToDate.getTime() - 7 * 60 * 60 * 1000;
 
-    return new Date(dateToGMTTime);
+    return dateToDate;
   }
 }
 
