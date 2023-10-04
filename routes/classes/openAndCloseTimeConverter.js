@@ -4,6 +4,7 @@ class OpenAndCloseTimeConverter {
   static hourNow() {
     const date = new Date();
     // const dateJakarta = convertTZ(date, 'Asia/Jakarta');
+    console.log(date);
 
     let hourNow = date.getHours();
     // console.log(hourNow);
