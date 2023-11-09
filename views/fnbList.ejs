@@ -38,6 +38,7 @@
             <th scope="col">Code</th>
             <th scope="col">Name</th>
             <th scope="col">Variant</th>
+            <th scope="col">Price</th>
             <th scope="col">Created At</th>
             <th scope="col">Updated At</th>
             <th scope="col"></th>
@@ -49,9 +50,10 @@
             <th scope="row"><%= element.code %></th>
             <td><%= element.menu %></td>
             <td><%= element.kind %></td>
+            <td><%= Intl.NumberFormat('en-US').format(element.price) %></td>
             <td><%= element.created_at.toLocaleString() %></td>
             <td><%= element.updated_at.toLocaleString() %></td>
-            <td>
+            <td class="float-end">
               <button class="border-0 bg-transparent" data-bs-toggle="modal" data-bs-target="#exampleModal">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 20px">
                   <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -104,9 +106,10 @@
             <th scope="row"><%= element.code %></th>
             <td><%= element.menu %></td>
             <td><%= element.kind %></td>
+            <td><%= Intl.NumberFormat('en-US').format(element.price) %></td>
             <td><%= element.created_at.toLocaleString() %></td>
             <td><%= element.updated_at.toLocaleString() %></td>
-            <td>
+            <td class="float-end">
               <button class="border-0 bg-transparent" data-bs-toggle="modal" data-bs-target="#exampleModal">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 20px">
                   <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -165,18 +168,38 @@
     </div>
   </div>
 </div>
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Launch demo modal</button>
 
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Edit</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">...</div>
+      <div class="modal-body">
+        <form action="#" method="post">
+          <div class="input-group mb-3">
+            <span class="input-group-text" id="code">Code*</span>
+            <input type="text" class="form-control" aria-label="code" aria-describedby="code" />
+          </div>
+
+          <div class="input-group mb-3">
+            <span class="input-group-text" id="menu">Name*</span>
+            <input type="text" class="form-control" aria-label="menu" aria-describedby="menu" />
+          </div>
+
+          <div class="input-group mb-3">
+            <span class="input-group-text" id="kind">Variant</span>
+            <input type="text" class="form-control" aria-label="kind" aria-describedby="kind" />
+          </div>
+
+          <div class="input-group mb-3">
+            <span class="input-group-text" id="price">Price*</span>
+            <input type="text" class="form-control" aria-label="price" aria-describedby="price" />
+          </div>
+        </form>
+      </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary">Save changes</button>
