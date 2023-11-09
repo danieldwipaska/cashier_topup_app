@@ -1,0 +1,90 @@
+<% if (alert) { %>
+<div class="container-md my-1">
+  <div class="row">
+    <div class="col-md-8 mx-auto">
+      <div class="alert alert-dismissible alert-warning fade show mb-3">
+        <button type="button" class="btn-close" data-mdb-toggle="animation" data-mdb-animation="slide-right" data-mdb-animation-start="onLoad" data-bs-dismiss="alert"></button>
+        <strong>Oh no!</strong> <%= alert %>
+      </div>
+    </div>
+  </div>
+</div>
+<% } %>
+<div class="container my-1">
+  <div class="row">
+    <div class="col-md-9 mx-auto">
+      <h3>Food & Beverages</h3>
+    </div>
+  </div>
+</div>
+<div class="container-md mt-1 mb-3">
+  <div class="row my-1">
+    <div class="col-md-9 mx-auto my-1 px-4">
+      <form action="/fnb" method="post">
+        <div class="row">
+          <div class="px-3 pb-3">
+            <div class="row pb-2 rounded-3 shadow-sm blurred-box">
+              <h3 class="mb-2 py-3 px-3 mx-0 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Add a Menu</strong></h3>
+
+              <div class="mb-2 col-auto">
+                <label for="code" class="form-label text-secondary">Code*</label>
+                <input type="text" class="form-control" id="code" name="code" required />
+              </div>
+
+              <div class="mb-2 col-auto">
+                <label for="menu" class="form-label text-secondary">Name*</label>
+                <input type="text" class="form-control customer-name-input" id="menu" name="menu" placeholder="ex. Heineken Bottle" required />
+              </div>
+
+              <div class="mb-2 col-auto">
+                <label for="kind" class="form-label text-secondary">Variant</label>
+                <input type="text" class="form-control customer-name-input" id="kind" name="kind" placeholder="ex. Merah" required />
+              </div>
+
+              <div class="mb-2 col-auto">
+                <label for="price" class="form-label text-secondary">Price*</label>
+                <input type="text" class="form-control customer-name-input" id="price" name="price" placeholder="ex. 100000" required />
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- <div class="row my-4">
+              <h3>Moka POS >>></h3>
+              <div class="mb-1 d-grid gap-2 moka-data"></div>
+            </div> -->
+        <div class="row my-5 multi-button">
+          <div class="col-lg-8 mx-auto text-center">
+            <a class="button shadow my-3" href="/fnb/list" role="button">Back</a>
+
+            <button class="button shadow my-3" type="submit">Add</button>
+
+            <a class="button shadow my-3" href="/" role="button">Main Menu</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- <script src="/public/script/mokaInvoices.js"></script>
+    <script src="/public/script/copyMokaInvoices.js"></script> -->
+
+<!-- <script>
+      const memberInput = document.querySelector('.member-input');
+      const memberArea = document.querySelector('.member-area');
+      const inputs = memberArea.querySelectorAll('input');
+      const customerNameInput = document.querySelector('.customer-name-input');
+    
+      memberInput.addEventListener('click', () => {
+        memberArea.classList.toggle('visually-hidden');
+    
+        inputs.forEach((e) => {
+          if (e.getAttribute('disabled')) {
+            e.removeAttribute('disabled');
+            e.setAttribute('required', 'required');
+          } else {
+            e.removeAttribute('required');
+            e.setAttribute('disabled', 'disabled');
+          }
+        });
+      });
+    </script> -->

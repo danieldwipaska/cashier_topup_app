@@ -1,8 +1,8 @@
 CREATE TABLE fnbs (
 id UUID NOT NULL PRIMARY KEY,
+code VARCHAR(50) NOT NULL UNIQUE,
 menu VARCHAR(50) NOT NULL,
-kind TEXT NOT NULL, 
-netto INT,
+kind VARCHAR(50), 
 price INT NOT NULL,
 raw_mat TEXT[],
 raw_amount INT[],

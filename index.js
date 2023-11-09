@@ -21,7 +21,8 @@ const userRoute = require('./routes/user');
 
 const memberRoute = require('./routes/member');
 const analysisRoute = require('./routes/analysis');
-const thirdPartyRoute = require('./routes/thirdParty');
+// const thirdPartyRoute = require('./routes/thirdParty');
+const fnbRoute = require('./routes/fnbs');
 
 const app = express();
 
@@ -35,7 +36,6 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(`${__dirname}/public`)); // make files able to access
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use(cors());
-// app.use(cors());
 
 //ROUTES
 app.use('/', menuRoute);
@@ -53,7 +53,8 @@ app.use('/user', userRoute);
 
 app.use('/member', memberRoute);
 app.use('/analysis', analysisRoute);
-app.use('/thirdparty', thirdPartyRoute);
+// app.use('/thirdparty', thirdPartyRoute);
+app.use('/fnb', fnbRoute);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

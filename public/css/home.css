@@ -160,11 +160,19 @@ a {
   animation-fill-mode: both;
 }
 
-.menu-button-user-list {
+.menu-button-fnb-list {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
   animation-delay: 0.4s;
+  animation-fill-mode: both;
+}
+
+.menu-button-user-list {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.5s;
   animation-fill-mode: both;
 }
 
