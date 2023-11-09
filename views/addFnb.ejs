@@ -1,7 +1,14 @@
+<div class="container my-1">
+  <div class="row">
+    <div class="col-md-9 mx-auto">
+      <h3>Food & Beverages</h3>
+    </div>
+  </div>
+</div>
 <% if (alert) { %>
 <div class="container-md my-1">
   <div class="row">
-    <div class="col-md-8 mx-auto">
+    <div class="col-md-9 mx-auto">
       <div class="alert alert-dismissible alert-warning fade show mb-3">
         <button type="button" class="btn-close" data-mdb-toggle="animation" data-mdb-animation="slide-right" data-mdb-animation-start="onLoad" data-bs-dismiss="alert"></button>
         <strong>Oh no!</strong> <%= alert %>
@@ -10,17 +17,10 @@
   </div>
 </div>
 <% } %>
-<div class="container my-1">
-  <div class="row">
-    <div class="col-md-9 mx-auto">
-      <h3>Food & Beverages</h3>
-    </div>
-  </div>
-</div>
 <div class="container-md mt-1 mb-3">
   <div class="row my-1">
     <div class="col-md-9 mx-auto my-1 px-4">
-      <form action="/fnb" method="post">
+      <form action="/fnb/add" method="post">
         <div class="row">
           <div class="px-3 pb-3">
             <div class="row pb-2 rounded-3 shadow-sm blurred-box">
@@ -28,22 +28,22 @@
 
               <div class="mb-2 col-auto">
                 <label for="code" class="form-label text-secondary">Code*</label>
-                <input type="text" class="form-control" id="code" name="code" required />
+                <input type="text" class="form-control" id="code" name="code" value="<%= data.code %>" required />
               </div>
 
               <div class="mb-2 col-auto">
                 <label for="menu" class="form-label text-secondary">Name*</label>
-                <input type="text" class="form-control customer-name-input" id="menu" name="menu" placeholder="ex. Heineken Bottle" required />
+                <input type="text" class="form-control customer-name-input" id="menu" name="menu" placeholder="ex. Heineken Bottle" value="<%= data.menu %>" required />
               </div>
 
               <div class="mb-2 col-auto">
                 <label for="kind" class="form-label text-secondary">Variant</label>
-                <input type="text" class="form-control customer-name-input" id="kind" name="kind" placeholder="ex. Merah" required />
+                <input type="text" class="form-control customer-name-input" id="kind" name="kind" placeholder="ex. Merah" value="<%= data.kind %>" />
               </div>
 
               <div class="mb-2 col-auto">
                 <label for="price" class="form-label text-secondary">Price*</label>
-                <input type="text" class="form-control customer-name-input" id="price" name="price" placeholder="ex. 100000" required />
+                <input type="text" class="form-control customer-name-input" id="price" name="price" placeholder="ex. 100000" value="<%= data.price %>" required />
               </div>
             </div>
           </div>

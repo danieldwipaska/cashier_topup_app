@@ -33,17 +33,30 @@ router.get('/add', verifyToken, allRoles, (req, res) => {
     title: 'Food & Beverages List',
     messages: '',
     alert: '',
+    data: {},
   });
 });
 
 //ADD FNB
-router.post('/', verifyToken, allRoles, async (req, res) => {
+router.post('/add', verifyToken, allRoles, async (req, res) => {
   const { code, menu, kind, price } = req.body;
 
   try {
     const fnbs = await pool.query(fnbQueries.getFnbByCode, [code]);
 
-    if (fnbs.rows.length) return res.status(400).json('The code already exists. Code cannot be the same each other');
+    if (fnbs.rows.length)
+      return res.render('addFnb', {
+        layout: 'layouts/main-layout',
+        title: 'Food & Beverages List',
+        messages: '',
+        alert: 'The code already exists. Code cannot be the same as another',
+        data: {
+          code,
+          menu,
+          kind,
+          price,
+        },
+      });
 
     try {
       const id = v4();
