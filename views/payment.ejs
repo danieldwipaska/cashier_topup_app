@@ -17,7 +17,7 @@
       <form action="/payment" method="post">
         <div class="row mt-2">
           <div class="px-0 pb-3 rounded-3 shadow-sm blurred-box">
-            <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Card Details >>></strong></h3>
+            <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Card Details</strong></h3>
 
             <div class="mb-1 px-3">
               <label for="barcode" class="form-label text-secondary">Barcode</label>
@@ -62,32 +62,69 @@
             <% } %>
           </div>
 
-          <div class="px-0 mt-4 pb-3 rounded-3 shadow-sm blurred-box">
-            <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Invoice Details >>></strong></h3>
-
-            <div class="mb-1 px-3">
-              <label for="invoiceNumber" class="form-label text-secondary">Payment Number*</label>
-              <input type="text" class="form-control" id="invoiceNumber" name="invoiceNumber" required />
-            </div>
-
-            <div class="mb-1 px-3 col-auto">
-              <!-- <label for="invoiceStatus" class="form-label text-secondary">Payment Status*</label> -->
-              <input type="hidden" class="form-control" id="invoiceStatus" name="invoiceStatus" value="paid" readonly />
-            </div>
-
-            <div class="mb-1 px-3">
-              <label for="payment" class="form-label text-secondary">Payment (IDR)*</label>
-              <input type="number" class="form-control" id="payment" name="payment" required />
+          <div class="px-0 mt-4 pb-3 fs-3">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="inputMoka" />
+              <label class="form-check-label" for="inputMoka">Bills from Moka</label>
             </div>
           </div>
 
-          <!-- <div class="row my-4">
+          <div class="px-0" id="appInvoice">
+            <div class="px-0 mt-4 pb-3 rounded-3 shadow-sm blurred-box">
+              <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Menu</strong></h3>
+
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+            </div>
+
+            <div class="px-0 mt-4 pb-3 rounded-3 shadow-sm blurred-box">
+              <div class="mb-1 px-3">
+                <label for="payment" class="form-label text-secondary">Payment (IDR)*</label>
+                <input type="number" class="form-control" id="payment" name="payment" required />
+              </div>
+            </div>
+          </div>
+
+          <div class="px-0 visually-hidden" id="mokaInvoice">
+            <div class="px-0 mt-4 pb-3 rounded-3 shadow-sm blurred-box">
+              <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Invoice Details</strong></h3>
+
+              <div class="mb-1 px-3">
+                <label for="invoiceNumber" class="form-label text-secondary">Payment Number*</label>
+                <input type="text" class="form-control" id="invoiceNumber" name="invoiceNumber" required disabled />
+              </div>
+
+              <div class="mb-1 px-3">
+                <label for="payment" class="form-label text-secondary">Payment (IDR)*</label>
+                <input type="number" class="form-control" id="payment" name="payment" required disabled />
+              </div>
+            </div>
+
+            <!-- <div class="row my-4">
             <h3>Moka POS >>></h3>
             <div class="mb-1 d-grid gap-2 moka-data overflow-auto" style="max-height: 300px"></div>
           </div> -->
+          </div>
 
           <div class="px-0 mt-4 pb-3 rounded-3 shadow-sm col-auto blurred-box">
-            <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Server Code >>></strong></h3>
+            <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Server Code</strong></h3>
             <!-- <div class="mb-1" id="notificationPopup"></div> -->
 
             <div class="mb-1 px-3">
@@ -99,9 +136,14 @@
               <!-- <label for="collectedBy" class="form-label text-secondary">Collected By*</label> -->
               <input type="hidden" class="form-control" id="collectedBy" name="collectedBy" value="Kasir Bahari" required />
             </div>
+
+            <div class="mb-1 px-3 col-auto">
+              <!-- <label for="invoiceStatus" class="form-label text-secondary">Payment Status*</label> -->
+              <input type="hidden" class="form-control" id="invoiceStatus" name="invoiceStatus" value="paid" readonly />
+            </div>
           </div>
           <div class="px-0 mt-4 mx-4 pb-3 rounded-3 shadow-sm col-auto blurred-box">
-            <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)">Note (optional) >>></h3>
+            <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)">Note (optional)</h3>
             <!-- <div class="mb-1" id="notificationPopup"></div> -->
 
             <div class="mb-1 px-3">
@@ -138,3 +180,20 @@
 
   getFact();
 </script> -->
+<script>
+  const inputMoka = document.querySelector('#inputMoka');
+  const mokaInvoice = document.querySelector('#mokaInvoice');
+  const appInvoice = document.querySelector('#appInvoice');
+  const invoiceNumberMoka = mokaInvoice.querySelector('#invoiceNumber');
+  const paymentMoka = mokaInvoice.querySelector('#payment');
+  const paymentApp = appInvoice.querySelector('#payment');
+
+  inputMoka.addEventListener('click', () => {
+    appInvoice.classList.toggle('visually-hidden');
+    paymentApp.toggleAttribute('disabled');
+
+    mokaInvoice.classList.toggle('visually-hidden');
+    invoiceNumberMoka.toggleAttribute('disabled');
+    paymentMoka.toggleAttribute('disabled');
+  });
+</script>
