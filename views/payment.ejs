@@ -73,29 +73,55 @@
             <div class="px-0 mt-4 pb-3 rounded-3 shadow-sm blurred-box">
               <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Menu</strong></h3>
 
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-            </div>
+              <div class="d-flex bd-highlight mb-1 p-3 pt-4 border-bottom border-2 border-secondary menu">
+                <div class="p-2 fs-5 fw-normal flex-grow-1">Joker Merah</div>
+                <!-- <div class="p-2 fs-5 fw-normal">Flex item</div> -->
+                <div class="p-2 fs-5 fw-normal w-25">
+                  <div class="input-group">
+                    <button type="button" class="btn btn-secondary h-20 px-3 py-1 negative" style="display: inline">-</button>
+                    <input type="text" aria-label="First name" value="0" class="form-control amount text-center" />
+                    <button type="button" class="btn btn-primary h-20 px-3 py-1 positive" style="display: inline">+</button>
+                  </div>
+                </div>
+              </div>
 
-            <div class="px-0 mt-4 pb-3 rounded-3 shadow-sm blurred-box">
-              <div class="mb-1 px-3">
+              <div class="d-flex bd-highlight mb-1 p-3 pt-4 border-bottom border-2 border-secondary menu">
+                <div class="p-2 fs-5 fw-normal flex-grow-1">Joker Hijau</div>
+                <!-- <div class="p-2 fs-5 fw-normal">Flex item</div> -->
+                <div class="p-2 fs-5 fw-normal w-25">
+                  <div class="input-group">
+                    <button type="button" class="btn btn-secondary h-20 px-3 py-1 negative" style="display: inline">-</button>
+                    <input type="text" aria-label="First name" value="0" class="form-control amount text-center" />
+                    <button type="button" class="btn btn-primary h-20 px-3 py-1 positive" style="display: inline">+</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex bd-highlight mb-1 p-3 pt-4 border-bottom border-2 border-secondary menu">
+                <div class="p-2 fs-5 fw-normal flex-grow-1">Skyy Vodka</div>
+                <!-- <div class="p-2 fs-5 fw-normal">Flex item</div> -->
+                <div class="p-2 fs-5 fw-normal w-25">
+                  <div class="input-group">
+                    <button type="button" class="btn btn-secondary h-20 px-3 py-1 negative" style="display: inline">-</button>
+                    <input type="text" aria-label="First name" value="0" class="form-control amount text-center" />
+                    <button type="button" class="btn btn-primary h-20 px-3 py-1 positive" style="display: inline">+</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex bd-highlight mb-1 p-3 pt-4 border-bottom border-2 border-secondary menu">
+                <div class="p-2 fs-5 fw-normal flex-grow-1">Fashion Vodka</div>
+                <!-- <div class="p-2 fs-5 fw-normal">Flex item</div> -->
+                <div class="p-2 fs-5 fw-normal w-25">
+                  <div class="input-group">
+                    <button type="button" class="btn btn-secondary h-20 px-3 py-1 negative" style="display: inline">-</button>
+                    <input type="text" aria-label="First name" value="0" class="form-control amount text-center" />
+                    <button type="button" class="btn btn-primary h-20 px-3 py-1 positive" style="display: inline">+</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-1 px-3 pt-4">
                 <label for="payment" class="form-label text-secondary">Payment (IDR)*</label>
                 <input type="number" class="form-control" id="payment" name="payment" required />
               </div>
@@ -195,5 +221,21 @@
     mokaInvoice.classList.toggle('visually-hidden');
     invoiceNumberMoka.toggleAttribute('disabled');
     paymentMoka.toggleAttribute('disabled');
+  });
+</script>
+<script>
+  const menus = document.querySelectorAll('.menu');
+
+  menus.forEach((menu) => {
+    const inputAmount = menu.querySelector('input');
+    let count = parseInt(inputAmount.value);
+    menu.addEventListener('click', (element) => {
+      if (element.target.className.includes('positive')) {
+        count++;
+      } else if (element.target.className.includes('negative')) {
+        count--;
+      }
+      inputAmount.value = count;
+    });
   });
 </script>
