@@ -4,9 +4,9 @@ const pool = require('../db');
 const cardQueries = require('../database/cards/queries');
 const paymentQueries = require('../database/payments/queries');
 const crewQueries = require('../database/crews/queries');
+const fnbQueries = require('../database/fnbs/queries');
 const tokenQueries = require('../database/tokens/queries');
 const taxQueries = require('../database/taxes/queries');
-const fnbQueries = require('../database/fnbs/queries');
 const stockQueries = require('../database/stocks/queries');
 const discountQueries = require('../database/discounts/queries');
 const verifyToken = require('./middlewares/verifyToken');
@@ -69,11 +69,12 @@ router.get('/search', verifyToken, allRoles, async (req, res) => {
 
 // PAYMENTS
 router.post('/', verifyToken, allRoles, async (req, res) => {
-  const { barcode, customerName: customer_name, customerId: customer_id, payment, invoiceNumber: invoice_number, invoiceStatus: invoice_status, serverCode, collectedBy: collected_by, notes } = req.body;
+  const { barcode, customerName: customer_name, customerId: customer_id, payment, invoiceNumber: invoice_number, invoiceStatus: invoice_status, serverCode, collectedBy: collected_by, notes, menuNames, menuAmount, menuPrices } = req.body;
 
   try {
     // CHECK WHETHER OR NOT THE CARD EXISTS
     const cards = await pool.query(cardQueries.getCardById, [barcode]);
+
     if (!cards.rows.length) return res.status(404).json('Card Not Found');
 
     if (cards.rows[0].customer_id !== customer_id)
@@ -85,8 +86,8 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
 
     const deposit = cards.rows[0].deposit;
     const initial_balance = cards.rows[0].balance;
-
     const final_balance = initial_balance - payment;
+
     if (final_balance < 0)
       return res.render('notificationError', {
         layout: 'layouts/main-layout',
@@ -97,6 +98,7 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
     try {
       // CHECK WHETHER OR NOT THE CREW SUBMITTED CORRECT CREDENTIAL
       const crew = await pool.query(crewQueries.getCrewByCode, [serverCode]);
+
       if (!crew.rows.length)
         return res.render('notificationError', {
           layout: 'layouts/main-layout',
@@ -118,7 +120,6 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
           const id = v4();
           const action = 'pay';
           const payment_method = 'None';
-
           const payments = await pool.query(paymentQueries.addPayment, [
             id,
             action,
