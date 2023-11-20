@@ -86,10 +86,31 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
           const id = v4();
           const action = 'checkout';
           const payment = cards.rows[0].balance + cards.rows[0].deposit;
-          const invoice_number = v4();
+          const invoice_number = `CHE${Date.now()}`;
           const invoice_status = 'paid';
+          const menu_names = []; // NO MENU
+          const menu_amount = []; // NO MENU
+          const menu_prices = []; // NO MENU
 
-          await pool.query(paymentQueries.addPayment, [id, action, barcode, customer_name, customer_id, payment, invoice_number, invoice_status, initial_balance, final_balance, served_by, collected_by, payment_method, notes]);
+          await pool.query(paymentQueries.addPayment, [
+            id,
+            action,
+            barcode,
+            customer_name,
+            customer_id,
+            payment,
+            invoice_number,
+            invoice_status,
+            initial_balance,
+            final_balance,
+            served_by,
+            collected_by,
+            payment_method,
+            notes,
+            menu_names,
+            menu_amount,
+            menu_prices,
+          ]);
 
           // SEND LOG
           infoLog(checkoutLogger, 'Payment was successfully added and invoice number was successfully generated', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);

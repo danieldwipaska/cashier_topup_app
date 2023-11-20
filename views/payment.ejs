@@ -64,7 +64,7 @@
 
           <div class="px-0 mt-4 pb-3 fs-3">
             <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" id="inputMoka" />
+              <input class="form-check-input" type="checkbox" id="inputMoka" name="inputMoka" />
               <label class="form-check-label" for="inputMoka">Bills from Moka</label>
             </div>
           </div>
@@ -73,9 +73,21 @@
             <div class="px-0 mt-4 pb-3 rounded-3 shadow-sm blurred-box">
               <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Menu</strong></h3>
 
-              <div class="row px-4 mb-1 py-3 pt-4 menu">
-                <div class="col p-2 fs-5 fw-normal menu-name">Joker Merah</div>
-                <div class="col p-2 fs-5 fw-normal menu-price">200000</div>
+              <div class="row px-4 mb-1 py-2">
+                <div class="col p-2 fs-5 fw-bolder">Name</div>
+                <div class="col p-2 fs-5 fw-bolder">Variant</div>
+                <div class="col p-2 fs-5 fw-bolder">Price</div>
+                <!-- <div class="p-2 fs-5 fw-normal">Flex item</div> -->
+                <div class="col-2 p-2 fs-5 fw-bolder">Amount</div>
+              </div>
+
+              <% fnbs.forEach((fnb) => { %>
+
+              <div class="row px-4 mb-1 py-3 menu">
+                <div class="col p-2 fs-5 fw-normal menu-name"><%= fnb.menu %></div>
+                <div class="col p-2 fs-5 fw-normal menu-kind"><%= fnb.kind %></div>
+                <div class="col p-2 fs-5 fw-normal menu-price"><%= fnb.price %></div>
+                <div class="col p-2 fs-5 fw-normal menu-code visually-hidden"><%= fnb.code %></div>
                 <!-- <div class="p-2 fs-5 fw-normal">Flex item</div> -->
                 <div class="col-2 p-2 fs-5 fw-normal">
                   <div class="input-group">
@@ -86,49 +98,14 @@
                 </div>
               </div>
 
-              <div class="row px-4 mb-1 py-3 pt-4 menu">
-                <div class="col p-2 fs-5 fw-normal menu-name">Joker Hijau</div>
-                <div class="col p-2 fs-5 fw-normal menu-price">220000</div>
-                <!-- <div class="p-2 fs-5 fw-normal">Flex item</div> -->
-                <div class="col-2 p-2 fs-5 fw-normal">
-                  <div class="input-group">
-                    <button type="button" class="btn btn-secondary h-20 px-3 py-1 negative" style="display: inline">-</button>
-                    <input type="text" aria-label="First name" value="0" class="form-control amount text-center" readonly />
-                    <button type="button" class="btn btn-primary h-20 px-3 py-1 positive" style="display: inline">+</button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="row px-4 mb-1 py-3 pt-4 menu">
-                <div class="col p-2 fs-5 fw-normal menu-name">Skyy Vodka</div>
-                <div class="col p-2 fs-5 fw-normal menu-price">230000</div>
-                <!-- <div class="p-2 fs-5 fw-normal">Flex item</div> -->
-                <div class="col-2 p-2 fs-5 fw-normal">
-                  <div class="input-group">
-                    <button type="button" class="btn btn-secondary h-20 px-3 py-1 negative" style="display: inline">-</button>
-                    <input type="text" aria-label="First name" value="0" class="form-control amount text-center" readonly />
-                    <button type="button" class="btn btn-primary h-20 px-3 py-1 positive" style="display: inline">+</button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="row px-4 mb-1 py-3 pt-4 menu">
-                <div class="col p-2 fs-5 fw-normal menu-name">Fashion Vodka</div>
-                <div class="col p-2 fs-5 fw-normal menu-price">250000</div>
-                <!-- <div class="p-2 fs-5 fw-normal">Flex item</div> -->
-                <div class="col-2 p-2 fs-5 fw-normal">
-                  <div class="input-group">
-                    <button type="button" class="btn btn-secondary h-20 px-3 py-1 negative" style="display: inline">-</button>
-                    <input type="text" aria-label="First name" value="0" class="form-control amount text-center" readonly />
-                    <button type="button" class="btn btn-primary h-20 px-3 py-1 positive" style="display: inline">+</button>
-                  </div>
-                </div>
-              </div>
+              <% }); %>
 
               <div class="menu-names-and-amount">
                 <input type="hidden" class="form-control" id="menuNames" name="menuNames" required />
                 <input type="hidden" class="form-control" id="menuAmount" name="menuAmount" required />
                 <input type="hidden" class="form-control" id="menuPrices" name="menuPrices" required />
+                <input type="hidden" class="form-control" id="menuKinds" name="menuKinds" required />
+                <input type="hidden" class="form-control" id="menuCodes" name="menuCodes" required />
               </div>
 
               <div class="mb-1 px-3 pt-4">
@@ -226,6 +203,8 @@
   const menuNames = document.querySelector('#menuNames');
   const menuAmount = document.querySelector('#menuAmount');
   const menuPrices = document.querySelector('#menuPrices');
+  const menuKinds = document.querySelector('#menuKinds');
+  const menuCodes = document.querySelector('#menuCodes');
 
   inputMoka.addEventListener('click', () => {
     appInvoice.classList.toggle('visually-hidden');
@@ -233,6 +212,8 @@
     menuNames.toggleAttribute('disabled');
     menuAmount.toggleAttribute('disabled');
     menuPrices.toggleAttribute('disabled');
+    menuKinds.toggleAttribute('disabled');
+    menuCodes.toggleAttribute('disabled');
 
     mokaInvoice.classList.toggle('visually-hidden');
     invoiceNumberMoka.toggleAttribute('disabled');
@@ -246,6 +227,8 @@
   const allMenuNames = [];
   const allMenuAmount = [];
   const allMenuPrices = [];
+  const allMenuKinds = [];
+  const allMenuCodes = [];
   let payment = 0;
 
   // MAPPING FOR allMenuNames, allMenuAmount, and allMenuPrices
@@ -253,6 +236,8 @@
     const inputAmount = menu.querySelector('input');
     const menuName = menu.querySelector('.menu-name');
     const menuPrice = menu.querySelector('.menu-price');
+    const menuKind = menu.querySelector('.menu-kind');
+    const menuCode = menu.querySelector('.menu-code');
 
     // INITIAL AMOUNT FROM AMOUNT INPUT
     let count = parseInt(inputAmount.value);
@@ -261,6 +246,8 @@
     allMenuNames.push(menuName.innerHTML);
     allMenuPrices.push(menuPrice.innerHTML); // REQUIRED PURE NUMBER (NOT IN U.S. CURRENCY FORMAT)
     allMenuAmount.push(0);
+    allMenuKinds.push(menuKind.innerHTML);
+    allMenuCodes.push(menuCode.innerHTML);
 
     // CLICKING EVENT (+) AND (-) TO OVERWRITE allMenuNames, allMenuAmount, allMenuPrices, and payment
     menu.addEventListener('click', (element) => {
@@ -280,7 +267,7 @@
       inputAmount.value = count;
 
       // CHANGE allMenuAmount WITH NEW count
-      allMenuAmount[allMenuNames.indexOf(menuName.innerHTML)] = count;
+      allMenuAmount[allMenuCodes.indexOf(menuCode.innerHTML)] = count;
       // OVERWRITE HTML AMOUNT INPUT BY NEW allMenuAmount
       menuAmount.value = allMenuAmount;
 
@@ -302,5 +289,7 @@
   menuNames.value = allMenuNames;
   menuAmount.value = allMenuAmount;
   menuPrices.value = allMenuPrices;
+  menuKinds.value = allMenuKinds;
+  menuCodes.value = allMenuCodes;
   paymentApp.value = payment;
 </script>

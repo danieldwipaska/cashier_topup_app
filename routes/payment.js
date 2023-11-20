@@ -54,13 +54,21 @@ router.get('/search', verifyToken, allRoles, async (req, res) => {
       });
     }
 
-    return res.render('payment', {
-      layout: 'layouts/main-layout',
-      title: 'Payments',
-      subtitle: 'Payment',
-      alert: '',
-      data: cards.rows[0],
-    });
+    try {
+      const fnbs = await pool.query(fnbQueries.getFnbs, []);
+
+      return res.render('payment', {
+        layout: 'layouts/main-layout',
+        title: 'Payments',
+        subtitle: 'Payment',
+        alert: '',
+        data: cards.rows[0],
+        fnbs: fnbs.rows,
+      });
+    } catch (error) {
+      errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling fnbQueries.getFnbs');
+      return res.status(500).json('Server Error');
+    }
   } catch (error) {
     errorLog(paymentLogger, error, 'Error in HTTP GET /search when calling cardQueries.getCardById');
     return res.status(500).json('Server Error');
@@ -69,7 +77,7 @@ router.get('/search', verifyToken, allRoles, async (req, res) => {
 
 // PAYMENTS
 router.post('/', verifyToken, allRoles, async (req, res) => {
-  const { barcode, customerName: customer_name, customerId: customer_id, payment, invoiceNumber: invoice_number, invoiceStatus: invoice_status, serverCode, collectedBy: collected_by, notes, menuNames, menuAmount, menuPrices } = req.body;
+  const { barcode, customerName: customer_name, customerId: customer_id, payment, invoiceNumber, invoiceStatus: invoice_status, serverCode, collectedBy: collected_by, notes, menuNames, menuAmount, menuPrices, inputMoka } = req.body;
 
   try {
     // CHECK WHETHER OR NOT THE CARD EXISTS
@@ -84,10 +92,12 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
         message: 'The Card does not belong to the customer.',
       });
 
+    // FINAL BALANCE CHECK
     const deposit = cards.rows[0].deposit;
     const initial_balance = cards.rows[0].balance;
     const final_balance = initial_balance - payment;
 
+    // IF THE BALANCE IS NOT ENOUGH
     if (final_balance < 0)
       return res.render('notificationError', {
         layout: 'layouts/main-layout',
@@ -115,12 +125,31 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
         // SEND LOG
         infoLog(paymentLogger, 'Card Balance was succesfully updated', updatedCards.rows[0].barcode, updatedCards.rows[0].customer_name, updatedCards.rows[0].customer_id, crew.rows[0].name);
 
+        let invoice_number = invoiceNumber,
+          menu_names = [],
+          menu_amount = [],
+          menu_prices = [];
+
+        // IF THE INVOICE IS NOT FROM MOKA, GENERATE A NEW INVOICE NUMBER AND FILL IN THE MENU
+        if (!inputMoka) {
+          invoice_number = `PAY${Date.now()}`;
+
+          menuAmount.split(',').forEach((amount, i) => {
+            if (amount > 0) {
+              menu_names.push(menuNames[i]);
+              menu_amount.push(amount);
+              menu_prices.push(menuPrices[i]);
+            }
+          });
+        }
+
         try {
           // ADD PAYMENT REPORT
           const id = v4();
           const action = 'pay';
           const payment_method = 'None';
-          const payments = await pool.query(paymentQueries.addPayment, [
+
+          await pool.query(paymentQueries.addPayment, [
             id,
             action,
             barcode,
@@ -135,6 +164,9 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
             collected_by,
             payment_method,
             notes,
+            menu_names,
+            menu_amount,
+            menu_prices,
           ]);
 
           // SEND LOG

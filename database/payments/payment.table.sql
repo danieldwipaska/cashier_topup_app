@@ -18,3 +18,7 @@ updated_at TIMESTAMPTZ NOT NULL
 
 ALTER TABLE payments ADD COLUMN payment_method VARCHAR(50);
 ALTER TABLE payments ADD COLUMN notes TEXT;
+
+ALTER TABLE payments ADD COLUMN menu_names TEXT[];
+ALTER TABLE payments ADD COLUMN menu_amount INT[];
+ALTER TABLE payments ADD COLUMN menu_prices INT[];

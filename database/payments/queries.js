@@ -1,5 +1,5 @@
 const addPayment =
-  'INSERT INTO payments (id, action, barcode, customer_name, customer_id, payment, invoice_number, invoice_status, initial_balance, final_balance, served_by, collected_by, created_at, updated_at, payment_method, notes) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), NOW(), $13, $14)';
+  'INSERT INTO payments (id, action, barcode, customer_name, customer_id, payment, invoice_number, invoice_status, initial_balance, final_balance, served_by, collected_by, created_at, updated_at, payment_method, notes, menu_names, menu_amount, menu_prices) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), NOW(), $13, $14, $15, $16, $17)';
 const getPayments = 'SELECT * FROM payments ORDER BY updated_at DESC LIMIT $1 OFFSET $2';
 const getPaymentByCustomerId = 'SELECT * FROM payments WHERE customer_id = $1';
 const getPaymentByCustomerIdAndSort = 'SELECT * FROM payments WHERE customer_id = $1 AND invoice_status = $2';
