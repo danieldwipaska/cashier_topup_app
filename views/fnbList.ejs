@@ -35,7 +35,6 @@
       <table class="table table-sm" style="font-size: small">
         <thead>
           <tr class="table-warning">
-            <th scope="col">Code</th>
             <th scope="col">Name</th>
             <th scope="col">Variant</th>
             <th scope="col">Price</th>
@@ -47,8 +46,7 @@
         <tbody>
           <% data.forEach((element,i) => { %> <% if (i % 2 === 0) { %>
           <tr class="table-info">
-            <th scope="row"><%= element.code %></th>
-            <td><%= element.menu %></td>
+            <th scope="row"><%= element.menu %></th>
             <td><%= element.kind %></td>
             <td><%= Intl.NumberFormat('en-US').format(element.price) %></td>
             <td><%= element.created_at.toLocaleString() %></td>
@@ -104,8 +102,7 @@
           </tr>
           <% } else { %>
           <tr class="table-light">
-            <th scope="row"><%= element.code %></th>
-            <td><%= element.menu %></td>
+            <th scope="row"><%= element.menu %></th>
             <td><%= element.kind %></td>
             <td><%= Intl.NumberFormat('en-US').format(element.price) %></td>
             <td><%= element.created_at.toLocaleString() %></td>
@@ -182,11 +179,6 @@
         </div>
         <div class="modal-body">
           <div class="input-group mb-3">
-            <span class="input-group-text" id="code">Code*</span>
-            <input type="text" class="form-control code" aria-label="code" aria-describedby="code" name="code" />
-          </div>
-
-          <div class="input-group mb-3">
             <span class="input-group-text" id="menu">Name*</span>
             <input type="text" class="form-control menu" aria-label="menu" aria-describedby="menu" name="menu" />
           </div>
@@ -217,14 +209,12 @@
 
       const response = await data.json();
 
-      const code = document.querySelector('.code');
       const menu = document.querySelector('.menu');
       const kind = document.querySelector('.kind');
       const price = document.querySelector('.price');
 
       const form = document.querySelector('form');
 
-      code.value = response.code;
       menu.value = response.menu;
       kind.value = response.kind;
       price.value = response.price;

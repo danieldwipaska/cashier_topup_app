@@ -22,3 +22,4 @@ ALTER TABLE payments ADD COLUMN notes TEXT;
 ALTER TABLE payments ADD COLUMN menu_names TEXT[];
 ALTER TABLE payments ADD COLUMN menu_amount INT[];
 ALTER TABLE payments ADD COLUMN menu_prices INT[];
+ALTER TABLE payments ADD COLUMN menu_kinds VARCHAR(50)[];

@@ -54,6 +54,15 @@ router.get('/search', verifyToken, allRoles, async (req, res) => {
       });
     }
 
+    if (!cards.rows[0].customer_id) {
+      return res.render('search', {
+        layout: 'layouts/main-layout',
+        title: 'Search',
+        subtitle: 'Payment',
+        alert: 'Card is ACTIVE but DOES NOT BELONG to anyone',
+      });
+    }
+
     try {
       const fnbs = await pool.query(fnbQueries.getFnbs, []);
 
@@ -77,7 +86,7 @@ router.get('/search', verifyToken, allRoles, async (req, res) => {
 
 // PAYMENTS
 router.post('/', verifyToken, allRoles, async (req, res) => {
-  const { barcode, customerName: customer_name, customerId: customer_id, payment, invoiceNumber, invoiceStatus: invoice_status, serverCode, collectedBy: collected_by, notes, menuNames, menuAmount, menuPrices, inputMoka } = req.body;
+  const { barcode, customerName: customer_name, customerId: customer_id, payment, invoiceNumber, invoiceStatus: invoice_status, serverCode, collectedBy: collected_by, notes, menuAmount, menuIds, inputMoka } = req.body;
 
   try {
     // CHECK WHETHER OR NOT THE CARD EXISTS
@@ -118,30 +127,36 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
 
       if (crew.rows.length >= 2) return res.status(500).json('SERVER ERROR');
 
+      let invoice_number = invoiceNumber,
+        menu_names = [],
+        menu_amount = [],
+        menu_prices = [],
+        menu_kinds = [];
+
+      // IF THE INVOICE IS NOT FROM MOKA, GENERATE A NEW INVOICE NUMBER AND FILL IN THE MENU
+      if (!inputMoka) {
+        invoice_number = `PAY${Date.now()}`;
+
+        menuAmount.split(',').forEach(async (amount, i) => {
+          if (amount > 0) {
+            const fnbs = await pool.query(fnbQueries.getFnbById, [menuIds.split(',')[i]]);
+
+            if (!fnbs.rows.length) return res.status(404).json('There is a Menu ID that does not exist');
+
+            menu_names.push(fnbs.rows[0].menu);
+            menu_amount.push(parseInt(amount));
+            menu_prices.push(fnbs.rows[0].price);
+            menu_kinds.push(fnbs.rows[0].kind);
+          }
+        });
+      }
+
       try {
         // UPDATE CARD'S BALANCE
         const updatedCards = await pool.query(cardQueries.updateBalance, [final_balance, deposit, barcode]);
 
         // SEND LOG
         infoLog(paymentLogger, 'Card Balance was succesfully updated', updatedCards.rows[0].barcode, updatedCards.rows[0].customer_name, updatedCards.rows[0].customer_id, crew.rows[0].name);
-
-        let invoice_number = invoiceNumber,
-          menu_names = [],
-          menu_amount = [],
-          menu_prices = [];
-
-        // IF THE INVOICE IS NOT FROM MOKA, GENERATE A NEW INVOICE NUMBER AND FILL IN THE MENU
-        if (!inputMoka) {
-          invoice_number = `PAY${Date.now()}`;
-
-          menuAmount.split(',').forEach((amount, i) => {
-            if (amount > 0) {
-              menu_names.push(menuNames[i]);
-              menu_amount.push(amount);
-              menu_prices.push(menuPrices[i]);
-            }
-          });
-        }
 
         try {
           // ADD PAYMENT REPORT
@@ -167,6 +182,7 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
             menu_names,
             menu_amount,
             menu_prices,
+            menu_kinds,
           ]);
 
           // SEND LOG

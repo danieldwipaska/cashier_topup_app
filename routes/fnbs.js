@@ -39,19 +39,18 @@ router.get('/add', verifyToken, allRoles, (req, res) => {
 
 //ADD FNB
 router.post('/add', verifyToken, allRoles, async (req, res) => {
-  const { code, menu, kind, price } = req.body;
+  const { menu, kind, price } = req.body;
 
   try {
-    const fnbs = await pool.query(fnbQueries.getFnbByCode, [code]);
+    const fnbs = await pool.query(fnbQueries.getFnbByMenuAndKind, [menu, kind]);
 
     if (fnbs.rows.length)
       return res.render('addFnb', {
         layout: 'layouts/main-layout',
         title: 'Food & Beverages List',
         messages: '',
-        alert: 'The code already exists. Code cannot be the same as another',
+        alert: 'The menu already exists. Menu cannot be the same as another',
         data: {
-          code,
           menu,
           kind,
           price,
@@ -60,7 +59,7 @@ router.post('/add', verifyToken, allRoles, async (req, res) => {
 
     try {
       const id = v4();
-      await pool.query(fnbQueries.addFnb, [id, code, menu, kind, price, null, null]);
+      await pool.query(fnbQueries.addFnb, [id, menu, kind, price, null, null]);
 
       infoLog(fnbLogger, 'Fnb was successfully added', '', '', '', req.validUser.name);
 
@@ -70,7 +69,7 @@ router.post('/add', verifyToken, allRoles, async (req, res) => {
       return res.status(500).json('Server Error');
     }
   } catch (error) {
-    errorLog(fnbLogger, error, 'Error in POST / when calling fnbQueries.getFnbByCode');
+    errorLog(fnbLogger, error, 'Error in POST / when calling fnbQueries.getFnbByMenuAndKind');
     return res.status(500).json('Server Error');
   }
 });
@@ -93,14 +92,14 @@ router.get('/:id', async (req, res) => {
 // UPDATE FNB
 router.post('/:id', verifyToken, allRoles, async (req, res) => {
   const { id } = req.params;
-  const { code, menu, price, kind } = req.body;
+  const { menu, price, kind } = req.body;
 
   try {
     const fnbs = await pool.query(fnbQueries.getFnbById, [id]);
     if (!fnbs.rows.length) return res.status(404).json('Food / Beverages Not Found');
 
     try {
-      await pool.query(fnbQueries.updateFnbById, [code, menu, kind, price, fnbs.rows[0].raw_mat, fnbs.rows[0].raw_amount, id]);
+      await pool.query(fnbQueries.updateFnbById, [menu, kind, price, fnbs.rows[0].raw_mat, fnbs.rows[0].raw_amount, id]);
 
       infoLog(fnbLogger, 'Fnb was successfully updated', '', '', '', req.validUser.name);
 

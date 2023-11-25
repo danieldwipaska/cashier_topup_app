@@ -91,6 +91,7 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
           const menu_names = []; // NO MENU
           const menu_amount = []; // NO MENU
           const menu_prices = []; // NO MENU
+          const menu_kinds = []; // NO MENU
 
           await pool.query(paymentQueries.addPayment, [
             id,
@@ -110,6 +111,7 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
             menu_names,
             menu_amount,
             menu_prices,
+            menu_kinds,
           ]);
 
           // SEND LOG

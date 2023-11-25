@@ -87,7 +87,7 @@
                 <div class="col p-2 fs-5 fw-normal menu-name"><%= fnb.menu %></div>
                 <div class="col p-2 fs-5 fw-normal menu-kind"><%= fnb.kind %></div>
                 <div class="col p-2 fs-5 fw-normal menu-price"><%= fnb.price %></div>
-                <div class="col p-2 fs-5 fw-normal menu-code visually-hidden"><%= fnb.code %></div>
+                <div class="col p-2 fs-5 fw-normal menu-id visually-hidden"><%= fnb.id %></div>
                 <!-- <div class="p-2 fs-5 fw-normal">Flex item</div> -->
                 <div class="col-2 p-2 fs-5 fw-normal">
                   <div class="input-group">
@@ -101,16 +101,13 @@
               <% }); %>
 
               <div class="menu-names-and-amount">
-                <input type="hidden" class="form-control" id="menuNames" name="menuNames" required />
                 <input type="hidden" class="form-control" id="menuAmount" name="menuAmount" required />
-                <input type="hidden" class="form-control" id="menuPrices" name="menuPrices" required />
-                <input type="hidden" class="form-control" id="menuKinds" name="menuKinds" required />
-                <input type="hidden" class="form-control" id="menuCodes" name="menuCodes" required />
+                <input type="hidden" class="form-control" id="menuIds" name="menuIds" required />
               </div>
 
               <div class="mb-1 px-3 pt-4">
                 <label for="payment" class="form-label text-secondary">Payment (IDR)*</label>
-                <input type="number" class="form-control" id="payment" name="payment" required />
+                <input type="number" class="form-control" id="payment" name="payment" readonly />
               </div>
             </div>
           </div>
@@ -200,20 +197,14 @@
   const invoiceNumberMoka = mokaInvoice.querySelector('#invoiceNumber');
   const paymentMoka = mokaInvoice.querySelector('#payment');
   const paymentApp = appInvoice.querySelector('#payment');
-  const menuNames = document.querySelector('#menuNames');
   const menuAmount = document.querySelector('#menuAmount');
-  const menuPrices = document.querySelector('#menuPrices');
-  const menuKinds = document.querySelector('#menuKinds');
-  const menuCodes = document.querySelector('#menuCodes');
+  const menuIds = document.querySelector('#menuIds');
 
   inputMoka.addEventListener('click', () => {
     appInvoice.classList.toggle('visually-hidden');
     paymentApp.toggleAttribute('disabled');
-    menuNames.toggleAttribute('disabled');
     menuAmount.toggleAttribute('disabled');
-    menuPrices.toggleAttribute('disabled');
-    menuKinds.toggleAttribute('disabled');
-    menuCodes.toggleAttribute('disabled');
+    menuIds.toggleAttribute('disabled');
 
     mokaInvoice.classList.toggle('visually-hidden');
     invoiceNumberMoka.toggleAttribute('disabled');
@@ -224,11 +215,9 @@
   const menus = document.querySelectorAll('.menu');
 
   // MENU NAMES, AMOUNT, PRICES, AND PAYMENT DECLARATION
-  const allMenuNames = [];
-  const allMenuAmount = [];
   const allMenuPrices = [];
-  const allMenuKinds = [];
-  const allMenuCodes = [];
+  const allMenuAmount = [];
+  const allMenuIds = [];
   let payment = 0;
 
   // MAPPING FOR allMenuNames, allMenuAmount, and allMenuPrices
@@ -237,17 +226,15 @@
     const menuName = menu.querySelector('.menu-name');
     const menuPrice = menu.querySelector('.menu-price');
     const menuKind = menu.querySelector('.menu-kind');
-    const menuCode = menu.querySelector('.menu-code');
+    const menuId = menu.querySelector('.menu-id');
 
     // INITIAL AMOUNT FROM AMOUNT INPUT
     let count = parseInt(inputAmount.value);
 
     // PUSH INITIAL MENU DATA TO allMenuNames, allMenuAmount, and allMenuPrices
-    allMenuNames.push(menuName.innerHTML);
     allMenuPrices.push(menuPrice.innerHTML); // REQUIRED PURE NUMBER (NOT IN U.S. CURRENCY FORMAT)
     allMenuAmount.push(0);
-    allMenuKinds.push(menuKind.innerHTML);
-    allMenuCodes.push(menuCode.innerHTML);
+    allMenuIds.push(menuId.innerHTML);
 
     // CLICKING EVENT (+) AND (-) TO OVERWRITE allMenuNames, allMenuAmount, allMenuPrices, and payment
     menu.addEventListener('click', (element) => {
@@ -267,7 +254,7 @@
       inputAmount.value = count;
 
       // CHANGE allMenuAmount WITH NEW count
-      allMenuAmount[allMenuCodes.indexOf(menuCode.innerHTML)] = count;
+      allMenuAmount[allMenuIds.indexOf(menuId.innerHTML)] = count;
       // OVERWRITE HTML AMOUNT INPUT BY NEW allMenuAmount
       menuAmount.value = allMenuAmount;
 
@@ -286,10 +273,7 @@
   });
 
   // ADD INITIAL VALUE TO FORM INPUTS
-  menuNames.value = allMenuNames;
   menuAmount.value = allMenuAmount;
-  menuPrices.value = allMenuPrices;
-  menuKinds.value = allMenuKinds;
-  menuCodes.value = allMenuCodes;
+  menuIds.value = allMenuIds;
   paymentApp.value = payment;
 </script>
