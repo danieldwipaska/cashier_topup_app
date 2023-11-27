@@ -52,6 +52,7 @@
             <th scope="col">Barcode</th>
             <th scope="col">Customer Name</th>
             <th scope="col">Customer Id</th>
+            <th scope="col">Orders</th>
             <th scope="col">Payment(IDR)</th>
             <th scope="col">Time</th>
             <th scope="col">Act</th>
@@ -67,6 +68,11 @@
             <td><%= element.barcode %></td>
             <td><%= element.customer_name %></td>
             <td><%= element.customer_id %></td>
+            <td>
+              <% element.menu_names.forEach((menuName,i) => { %>
+              <p class="mb-0"><span class="me-1"><%= menuName %></span><span class="me-1"><%= element.menu_kinds[i] %></span><span><%= element.menu_amount[i] %></span></p>
+              <% }) %>
+            </td>
             <td><%= Intl.NumberFormat('en-US').format(element.payment) %></td>
             <td><%= element.created_at.toLocaleString() %></td>
             <td>
@@ -112,6 +118,11 @@
             <td><%= element.barcode %></td>
             <td><%= element.customer_name %></td>
             <td><%= element.customer_id %></td>
+            <td>
+              <% element.menu_names.forEach((menuName,i) => { %>
+              <p class="mb-0"><span class="me-1"><%= menuName %></span><span class="me-1"><%= element.menu_kinds[i] %></span><span><%= element.menu_amount[i] %></span></p>
+              <% }) %>
+            </td>
             <td><%= Intl.NumberFormat('en-US').format(element.payment) %></td>
             <td><%= element.created_at.toLocaleString() %></td>
             <td>
