@@ -21,7 +21,7 @@ const userRoute = require('./routes/user');
 
 const memberRoute = require('./routes/member');
 const analysisRoute = require('./routes/analysis');
-// const thirdPartyRoute = require('./routes/thirdParty');
+const thirdPartyRoute = require('./routes/thirdParty');
 const fnbRoute = require('./routes/fnbs');
 
 const app = express();
@@ -53,7 +53,7 @@ app.use('/user', userRoute);
 
 app.use('/member', memberRoute);
 app.use('/analysis', analysisRoute);
-// app.use('/thirdparty', thirdPartyRoute);
+app.use('/thirdparty', thirdPartyRoute);
 app.use('/fnb', fnbRoute);
 
 const port = process.env.PORT || 3000;
