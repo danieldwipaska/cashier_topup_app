@@ -1,5 +1,5 @@
 const addFnb = 'INSERT INTO fnbs (id, menu, kind, price, raw_mat, raw_amount, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())';
-const getFnbs = 'SELECT * FROM fnbs ORDER BY menu ASC, kind';
+const getFnbs = 'SELECT * FROM fnbs ORDER BY menu ASC, kind ASC';
 const getFnbByMenu = 'SELECT * FROM fnbs WHERE menu = $1';
 const getFnbByMenuAndKind = 'SELECT * FROM fnbs WHERE menu = $1 AND kind = $2';
 const getFnbById = 'SELECT * FROM fnbs WHERE id = $1';

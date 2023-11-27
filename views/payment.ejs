@@ -71,34 +71,69 @@
 
           <div class="px-0" id="appInvoice">
             <div class="px-0 mt-4 pb-3 rounded-3 shadow-sm blurred-box">
-              <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Menu</strong></h3>
+              <h3 class="px-3 py-3 mb-0 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Menu</strong></h3>
 
-              <div class="row px-4 mb-1 py-2">
-                <div class="col p-2 fs-5 fw-bolder">Name</div>
-                <div class="col p-2 fs-5 fw-bolder">Variant</div>
-                <div class="col p-2 fs-5 fw-bolder">Price</div>
-                <!-- <div class="p-2 fs-5 fw-normal">Flex item</div> -->
-                <div class="col-2 p-2 fs-5 fw-bolder">Amount</div>
-              </div>
-
-              <% fnbs.forEach((fnb) => { %>
-
-              <div class="row px-4 mb-1 py-3 menu">
-                <div class="col p-2 fs-5 fw-normal menu-name"><%= fnb.menu %></div>
-                <div class="col p-2 fs-5 fw-normal menu-kind"><%= fnb.kind %></div>
-                <div class="col p-2 fs-5 fw-normal menu-price"><%= fnb.price %></div>
-                <div class="col p-2 fs-5 fw-normal menu-id visually-hidden"><%= fnb.id %></div>
-                <!-- <div class="p-2 fs-5 fw-normal">Flex item</div> -->
-                <div class="col-2 p-2 fs-5 fw-normal">
-                  <div class="input-group">
-                    <button type="button" class="btn btn-secondary h-20 px-3 py-1 negative" style="display: inline">-</button>
-                    <input type="text" aria-label="First name" value="0" class="form-control amount text-center" readonly />
-                    <button type="button" class="btn btn-primary h-20 px-3 py-1 positive" style="display: inline">+</button>
-                  </div>
+              <div style="background-color: rgb(224, 224, 224)">
+                <div class="row px-4 mb-1 py-2">
+                  <div class="col p-2 fs-5 fw-bolder">Name</div>
+                  <div class="col p-2 fs-5 fw-bolder">Variant</div>
+                  <div class="col p-2 fs-5 fw-bolder">Price</div>
+                  <!-- <div class="p-2 fs-5 fw-normal">Flex item</div> -->
+                  <div class="col-2 p-2 fs-5 fw-bolder">Amount</div>
                 </div>
               </div>
 
-              <% }); %>
+              <div class="overflow-auto" style="max-height: 500px; width: 100%">
+                <% fnbs.forEach((fnb) => { %>
+
+                <div class="row px-4 mb-1 py-3 menu border-bottom border-2 border-dark">
+                  <div class="col p-2 fs-5 fw-normal menu-name"><%= fnb.menu %></div>
+                  <div class="col p-2 fs-5 fw-normal menu-kind"><%= fnb.kind %></div>
+                  <div class="col p-2 fs-5 fw-normal menu-price"><%= fnb.price %></div>
+                  <div class="col p-2 fs-5 fw-normal menu-id visually-hidden"><%= fnb.id %></div>
+                  <!-- <div class="p-2 fs-5 fw-normal">Flex item</div> -->
+                  <div class="col-2 p-2 fs-5 fw-normal">
+                    <div class="input-group">
+                      <button type="button" class="btn btn-secondary h-20 px-3 py-1 negative" style="display: inline">-</button>
+                      <input type="text" aria-label="First name" value="0" class="form-control amount text-center" readonly />
+                      <button type="button" class="btn btn-primary h-20 px-3 py-1 positive" style="display: inline">+</button>
+                    </div>
+                  </div>
+                </div>
+
+                <% }); %>
+              </div>
+
+              <!-- <div class="mb-1 px-3 pt-4 row">
+                <div class="col-md">
+                  <div class="form-check mb-3 form-switch fs-6 text-secondary">
+                    <input class="form-check-input" type="checkbox" id="inputDiscount" name="inputDiscount" />
+                    <label class="form-check-label" for="inputDiscount">Discount</label>
+                  </div>
+
+                  <div class="mb-1 px-3 text-secondary form-select-discount">
+                    <select class="form-select" aria-label="Default select example">
+                      <option value="percent" selected>Percentage</option>
+                      <option value="value">Fixed Value</option>
+                    </select>
+                  </div>
+
+                  <div class="input-group mb-1 ms-3 form-percent-discount" style="width: 80%">
+                    <input type="text" class="form-control" id="inputDiscountPercent" name="inputDiscountPercent" />
+                  </div>
+                </div>
+                <div class="col-md">
+                  <div class="form-check form-switch fs-6 text-secondary">
+                    <input class="form-check-input" type="checkbox" id="inputService" name="inputService" checked />
+                    <label class="form-check-label" for="inputService">Service (5%)</label>
+                  </div>
+
+                  <div class="form-check form-switch fs-6 text-secondary">
+                    <input class="form-check-input" type="checkbox" id="inputTax" name="inputTax" checked />
+                    <label class="form-check-label" for="inputTax">Tax (10%)</label>
+                  </div>
+                </div>
+              </div> -->
 
               <div class="menu-names-and-amount">
                 <input type="hidden" class="form-control" id="menuAmount" name="menuAmount" required />
