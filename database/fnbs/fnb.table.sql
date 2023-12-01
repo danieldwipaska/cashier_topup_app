@@ -8,3 +8,6 @@ raw_amount INT[],
 created_at TIMESTAMPTZ NOT NULL,
 updated_at TIMESTAMPTZ NOT NULL
 );
+
+ALTER TABLE fnbs ADD COLUMN discount_percent INT;
+ALTER TABLE fnbs ADD COLUMN discount_status BOOLEAN;

@@ -39,7 +39,7 @@ router.get('/add', verifyToken, allRoles, (req, res) => {
 
 //ADD FNB
 router.post('/add', verifyToken, allRoles, async (req, res) => {
-  const { menu, kind, price } = req.body;
+  const { menu, kind, price, discountPercent: discount_percent } = req.body;
 
   try {
     const fnbs = await pool.query(fnbQueries.getFnbByMenuAndKind, [menu, kind]);
@@ -54,12 +54,14 @@ router.post('/add', verifyToken, allRoles, async (req, res) => {
           menu,
           kind,
           price,
+          discount_percent,
         },
       });
 
     try {
       const id = v4();
-      await pool.query(fnbQueries.addFnb, [id, menu, kind, price, null, null]);
+      const discount_status = false;
+      await pool.query(fnbQueries.addFnb, [id, menu, kind, price, null, null, discount_percent, discount_status]);
 
       infoLog(fnbLogger, 'Fnb was successfully added', '', '', '', req.validUser.name);
 
@@ -92,14 +94,26 @@ router.get('/:id', async (req, res) => {
 // UPDATE FNB
 router.post('/:id', verifyToken, allRoles, async (req, res) => {
   const { id } = req.params;
-  const { menu, price, kind } = req.body;
+  const { menu, price, kind, discountPercent, discount } = req.body;
+
+  let discount_status;
+  if (discount) {
+    discount_status = true;
+  } else {
+    discount_status = false;
+  }
+
+  let discount_percent = parseInt(discountPercent);
+  if (!discountPercent) {
+    discount_percent = 0;
+  }
 
   try {
     const fnbs = await pool.query(fnbQueries.getFnbById, [id]);
     if (!fnbs.rows.length) return res.status(404).json('Food / Beverages Not Found');
 
     try {
-      await pool.query(fnbQueries.updateFnbById, [menu, kind, price, fnbs.rows[0].raw_mat, fnbs.rows[0].raw_amount, id]);
+      await pool.query(fnbQueries.updateFnbById, [menu, kind, price, fnbs.rows[0].raw_mat, fnbs.rows[0].raw_amount, discount_percent, discount_status, id]);
 
       infoLog(fnbLogger, 'Fnb was successfully updated', '', '', '', req.validUser.name);
 

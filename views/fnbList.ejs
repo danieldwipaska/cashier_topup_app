@@ -1,6 +1,6 @@
 <div class="container my-1">
   <div class="row">
-    <div class="col-md-11 mx-auto">
+    <div class="col-md-12 mx-auto">
       <div class="d-flex justify-content-between">
         <div>
           <h3 class="mb-0">Beverages List</h3>
@@ -31,13 +31,15 @@
 </div>
 <div class="container my-1">
   <div class="row">
-    <div class="col-md-11 mx-auto">
+    <div class="col-md mx-auto">
       <table class="table table-sm" style="font-size: small">
         <thead>
           <tr class="table-warning">
             <th scope="col">Name</th>
             <th scope="col">Variant</th>
             <th scope="col">Price</th>
+            <th scope="col">Discount Status</th>
+            <th scope="col">Discount (%)</th>
             <th scope="col">Created At</th>
             <th scope="col">Updated At</th>
             <th scope="col"></th>
@@ -49,6 +51,12 @@
             <th scope="row"><%= element.menu %></th>
             <td><%= element.kind %></td>
             <td><%= Intl.NumberFormat('en-US').format(element.price) %></td>
+            <% if (element.discount_status) { %>
+            <td class="text-success">active</td>
+            <% } else { %>
+            <td class="text-danger">inactive</td>
+            <% } %>
+            <td><%= element.discount_percent %></td>
             <td><%= element.created_at.toLocaleString() %></td>
             <td><%= element.updated_at.toLocaleString() %></td>
             <td class="text-end">
@@ -105,6 +113,12 @@
             <th scope="row"><%= element.menu %></th>
             <td><%= element.kind %></td>
             <td><%= Intl.NumberFormat('en-US').format(element.price) %></td>
+            <% if (element.discount_status) { %>
+            <td class="text-success">active</td>
+            <% } else { %>
+            <td class="text-danger">inactive</td>
+            <% } %>
+            <td><%= element.discount_percent %></td>
             <td><%= element.created_at.toLocaleString() %></td>
             <td><%= element.updated_at.toLocaleString() %></td>
             <td class="text-end">
@@ -192,6 +206,15 @@
             <span class="input-group-text" id="price">Price*</span>
             <input type="text" class="form-control price" aria-label="price" aria-describedby="price" name="price" required />
           </div>
+
+          <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" id="discount" name="discount" />
+            <label class="form-check-label" for="discount">Discount (%)</label>
+          </div>
+
+          <div class="input-group mb-3" style="max-width: 30%">
+            <input class="form-control" type="text" id="discountPercent" name="discountPercent" />
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -205,19 +228,32 @@
 <script>
   async function fetchMemberData(fnbId) {
     try {
-      const data = await fetch(`https://baharimalangirishpub-app.com/fnb/${fnbId}`);
+      const data = await fetch(`http://localhost:3000/fnb/${fnbId}`);
 
       const response = await data.json();
 
       const menu = document.querySelector('.menu');
       const kind = document.querySelector('.kind');
       const price = document.querySelector('.price');
+      const discount = document.querySelector('#discount');
+      const discountPercent = document.querySelector('#discountPercent');
+
+      let isDiscount;
 
       const form = document.querySelector('form');
 
       menu.value = response.menu;
       kind.value = response.kind;
       price.value = response.price;
+
+      if (response.discount_status) {
+        isDiscount = true;
+        discount.setAttribute('checked', 'checked');
+      } else {
+        isDiscount = false;
+      }
+
+      discountPercent.value = response.discount_percent;
 
       form.setAttribute('action', `/fnb/${response.id}`);
     } catch (error) {
