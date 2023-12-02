@@ -23,3 +23,6 @@ ALTER TABLE payments ADD COLUMN menu_names TEXT[];
 ALTER TABLE payments ADD COLUMN menu_amount INT[];
 ALTER TABLE payments ADD COLUMN menu_prices INT[];
 ALTER TABLE payments ADD COLUMN menu_kinds VARCHAR(50)[];
+
+ALTER TABLE payments ADD COLUMN menu_discounts BOOLEAN[];
+ALTER TABLE payments ADD COLUMN menu_discount_percents INT[];

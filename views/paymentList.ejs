@@ -69,9 +69,39 @@
             <td><%= element.customer_name %></td>
             <td><%= element.customer_id %></td>
             <td>
-              <% element.menu_names.forEach((menuName,i) => { %>
-              <p class="mb-0"><span class="me-1"><%= menuName %></span><span class="me-1"><%= element.menu_kinds[i] %></span><span><%= element.menu_amount[i] %></span></p>
-              <% }) %>
+              <table class="table border-dark">
+                <thead>
+                  <tr class="table-secondary">
+                    <th scope="col">Name</th>
+                    <th scope="col">Variant</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Discount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% element.menu_names.forEach((menuName,i) => { %>
+                  <tr>
+                    <th scope="row"><%= menuName %></th>
+                    <td><%= element.menu_kinds[i] %></td>
+                    <td><%= element.menu_amount[i] %></td>
+                    <% if(element.menu_discounts) { %> <% if(element.menu_discounts[i]) { %>
+
+                    <td><%= element.menu_discount_percents[i] %><span class="ms-1">%</span></td>
+
+                    <% } else { %>
+
+                    <td>No</td>
+
+                    <% } %> <% } else { %>
+
+                    <td></td>
+
+                    <% } %>
+                  </tr>
+
+                  <% }) %>
+                </tbody>
+              </table>
             </td>
             <td><%= Intl.NumberFormat('en-US').format(element.payment) %></td>
             <td><%= element.created_at.toLocaleString() %></td>
@@ -119,9 +149,39 @@
             <td><%= element.customer_name %></td>
             <td><%= element.customer_id %></td>
             <td>
-              <% element.menu_names.forEach((menuName,i) => { %>
-              <p class="mb-0"><span class="me-1"><%= menuName %></span><span class="me-1"><%= element.menu_kinds[i] %></span><span><%= element.menu_amount[i] %></span></p>
-              <% }) %>
+              <table class="table border-dark">
+                <thead>
+                  <tr class="table-secondary">
+                    <th scope="col">Name</th>
+                    <th scope="col">Variant</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Discount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% element.menu_names.forEach((menuName,i) => { %>
+                  <tr>
+                    <th scope="row"><%= menuName %></th>
+                    <td><%= element.menu_kinds[i] %></td>
+                    <td><%= element.menu_amount[i] %></td>
+                    <% if(element.menu_discounts) { %> <% if(element.menu_discounts[i]) { %>
+
+                    <td><%= element.menu_discount_percents[i] %><span class="ms-1">%</span></td>
+
+                    <% } else { %>
+
+                    <td>No</td>
+
+                    <% } %> <% } else { %>
+
+                    <td></td>
+
+                    <% } %>
+                  </tr>
+
+                  <% }) %>
+                </tbody>
+              </table>
             </td>
             <td><%= Intl.NumberFormat('en-US').format(element.payment) %></td>
             <td><%= element.created_at.toLocaleString() %></td>

@@ -66,6 +66,12 @@ router.get('/search', verifyToken, allRoles, async (req, res) => {
     try {
       const fnbs = await pool.query(fnbQueries.getFnbs, []);
 
+      fnbs.rows.forEach((fnb) => {
+        if (fnb.discount_status) {
+          fnb.price = parseInt(fnb.price * (1 - fnb.discount_percent / 100));
+        }
+      });
+
       return res.render('payment', {
         layout: 'layouts/main-layout',
         title: 'Payments',
@@ -131,7 +137,9 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
         menu_names = [],
         menu_amount = [],
         menu_prices = [],
-        menu_kinds = [];
+        menu_kinds = [],
+        menu_discounts = [],
+        menu_discount_percents = [];
 
       // IF THE INVOICE IS NOT FROM MOKA, GENERATE A NEW INVOICE NUMBER AND FILL IN THE MENU
       if (!inputMoka) {
@@ -147,6 +155,9 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
             menu_amount.push(parseInt(amount));
             menu_prices.push(fnbs.rows[0].price);
             menu_kinds.push(fnbs.rows[0].kind);
+
+            menu_discounts.push(fnbs.rows[0].discount_status);
+            menu_discount_percents.push(fnbs.rows[0].discount_percent);
           }
         });
       }
@@ -183,6 +194,8 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
             menu_amount,
             menu_prices,
             menu_kinds,
+            menu_discounts,
+            menu_discount_percents,
           ]);
 
           // SEND LOG

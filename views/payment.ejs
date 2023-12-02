@@ -13,7 +13,7 @@
 
 <div class="container-md mt-1 mb-3">
   <div class="row my-1">
-    <div class="col-md-9 mx-auto my-1 px-4">
+    <div class="col-md mx-auto my-1 px-4">
       <form action="/payment" method="post">
         <div class="row mt-2">
           <div class="px-0 pb-3 rounded-3 shadow-sm blurred-box">
@@ -77,6 +77,7 @@
                 <div class="row px-4 py-2">
                   <div class="col p-2 fs-5 fw-bolder">Name</div>
                   <div class="col p-2 fs-5 fw-bolder">Variant</div>
+                  <div class="col p-2 fs-5 fw-bolder">Discount</div>
                   <div class="col p-2 fs-5 fw-bolder">Price</div>
                   <!-- <div class="p-2 fs-5 fw-normal">Flex item</div> -->
                   <div class="col-2 p-2 fs-5 fw-bolder">Amount</div>
@@ -89,6 +90,11 @@
                 <div class="row px-4 py-3 menu border-bottom border-2 border-dark">
                   <div class="col p-2 fs-5 fw-normal menu-name"><%= fnb.menu %></div>
                   <div class="col p-2 fs-5 fw-normal menu-kind"><%= fnb.kind %></div>
+                  <% if (fnb.discount_status) { %>
+                  <div class="col p-2 fs-5 fw-normal menu-discount"><%= fnb.discount_percent %><span class="ms-1">%</span></div>
+                  <% } else { %>
+                  <div class="col p-2 fs-5 fw-normal menu-discount">No</div>
+                  <% } %>
                   <div class="col p-2 fs-5 fw-normal menu-price"><%= fnb.price %></div>
                   <div class="col p-2 fs-5 fw-normal menu-id visually-hidden"><%= fnb.id %></div>
                   <!-- <div class="p-2 fs-5 fw-normal">Flex item</div> -->

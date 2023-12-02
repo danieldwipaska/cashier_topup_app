@@ -92,6 +92,8 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
           const menu_amount = []; // NO MENU
           const menu_prices = []; // NO MENU
           const menu_kinds = []; // NO MENU
+          const menu_discounts = []; // NO MENU
+          const menu_discount_percents = []; // NO MENU
 
           await pool.query(paymentQueries.addPayment, [
             id,
@@ -112,6 +114,8 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
             menu_amount,
             menu_prices,
             menu_kinds,
+            menu_discounts,
+            menu_discount_percents,
           ]);
 
           // SEND LOG
