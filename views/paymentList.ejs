@@ -69,39 +69,10 @@
             <td><%= element.customer_name %></td>
             <td><%= element.customer_id %></td>
             <td>
-              <table class="table border-dark">
-                <thead>
-                  <tr class="table-secondary">
-                    <th scope="col">Name</th>
-                    <th scope="col">Variant</th>
-                    <th scope="col">Amount</th>
-                    <th scope="col">Discount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% element.menu_names.forEach((menuName,i) => { %>
-                  <tr>
-                    <th scope="row"><%= menuName %></th>
-                    <td><%= element.menu_kinds[i] %></td>
-                    <td><%= element.menu_amount[i] %></td>
-                    <% if(element.menu_discounts) { %> <% if(element.menu_discounts[i]) { %>
-
-                    <td><%= element.menu_discount_percents[i] %><span class="ms-1">%</span></td>
-
-                    <% } else { %>
-
-                    <td>No</td>
-
-                    <% } %> <% } else { %>
-
-                    <td></td>
-
-                    <% } %>
-                  </tr>
-
-                  <% }) %>
-                </tbody>
-              </table>
+              <button class="btn btn-secondary py-0 px-2 order-detail-button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                details
+                <input type="hidden" value="<%= element.id %>" />
+              </button>
             </td>
             <td><%= Intl.NumberFormat('en-US').format(element.payment) %></td>
             <td><%= element.created_at.toLocaleString() %></td>
@@ -149,39 +120,10 @@
             <td><%= element.customer_name %></td>
             <td><%= element.customer_id %></td>
             <td>
-              <table class="table border-dark">
-                <thead>
-                  <tr class="table-secondary">
-                    <th scope="col">Name</th>
-                    <th scope="col">Variant</th>
-                    <th scope="col">Amount</th>
-                    <th scope="col">Discount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% element.menu_names.forEach((menuName,i) => { %>
-                  <tr>
-                    <th scope="row"><%= menuName %></th>
-                    <td><%= element.menu_kinds[i] %></td>
-                    <td><%= element.menu_amount[i] %></td>
-                    <% if(element.menu_discounts) { %> <% if(element.menu_discounts[i]) { %>
-
-                    <td><%= element.menu_discount_percents[i] %><span class="ms-1">%</span></td>
-
-                    <% } else { %>
-
-                    <td>No</td>
-
-                    <% } %> <% } else { %>
-
-                    <td></td>
-
-                    <% } %>
-                  </tr>
-
-                  <% }) %>
-                </tbody>
-              </table>
+              <button class="btn btn-secondary py-0 px-2 order-detail-button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                details
+                <input type="hidden" value="<%= element.id %>" />
+              </button>
             </td>
             <td><%= Intl.NumberFormat('en-US').format(element.payment) %></td>
             <td><%= element.created_at.toLocaleString() %></td>
@@ -336,3 +278,129 @@
     </div>
   </div>
 </div>
+
+<div class="offcanvas offcanvas-end px-3" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel" style="width: 35%">
+  <div class="offcanvas-header">
+    <h3 id="offcanvasRightLabel"></h3>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="row">
+      <div class="col-md">
+        <h5>Cashier</h5>
+        <div class="input-group mb-3">
+          <span class="input-group-text">Served By</span>
+          <input type="text" class="form-control" id="servedBy" disabled />
+        </div>
+        <div class="input-group mb-3">
+          <span class="input-group-text">Invoice</span>
+          <input type="text" class="form-control" id="invoiceNumber" disabled />
+        </div>
+        <div class="input-group mb-3">
+          <span class="input-group-text">Method</span>
+          <input type="text" class="form-control" id="paymentMethod" disabled />
+        </div>
+        <h5>Customer</h5>
+        <div class="input-group mb-3">
+          <span class="input-group-text">Name</span>
+          <input type="text" class="form-control" id="customerName" disabled />
+        </div>
+        <div class="input-group mb-3">
+          <span class="input-group-text">ID</span>
+          <input type="text" class="form-control" id="customerId" disabled />
+        </div>
+        <h5>Card</h5>
+        <div class="input-group mb-3">
+          <span class="input-group-text">Barcode</span>
+          <input type="text" class="form-control" id="barcode" disabled />
+        </div>
+        <div class="input-group mb-3">
+          <span class="input-group-text">Total Payment</span>
+          <input type="text" class="form-control" id="payment" disabled />
+        </div>
+      </div>
+    </div>
+    <h5>Orders</h5>
+    <table class="table border-dark orders">
+      <thead>
+        <tr class="table-secondary">
+          <th scope="col">Name</th>
+          <th scope="col">Variant</th>
+          <th scope="col">Amount</th>
+          <th scope="col">Discount</th>
+        </tr>
+      </thead>
+      <tbody class="order-body"></tbody>
+    </table>
+    <button class="btn btn-secondary" data-bs-dismiss="offcanvas" aria-label="Close">Back</button>
+  </div>
+</div>
+<script>
+  const offcanvasRight = document.querySelector('#offcanvasRight');
+  const servedBy = offcanvasRight.querySelector('#servedBy');
+  const invoiceNumber = offcanvasRight.querySelector('#invoiceNumber');
+  const paymentMethod = offcanvasRight.querySelector('#paymentMethod');
+  const customerName = offcanvasRight.querySelector('#customerName');
+  const customerId = offcanvasRight.querySelector('#customerId');
+  const barcode = offcanvasRight.querySelector('#barcode');
+  const payment = offcanvasRight.querySelector('#payment');
+  const orders = offcanvasRight.querySelector('.orders');
+  const orderDetailButtons = document.querySelectorAll('.order-detail-button');
+  const tableBody = offcanvasRight.querySelector('.order-body');
+  const offcanvasHeader = offcanvasRight.querySelector('#offcanvasRightLabel');
+
+  orderDetailButtons.forEach((orderDetailButton) => {
+    orderDetailButton.addEventListener('click', () => {
+      const input = orderDetailButton.querySelector('input');
+
+      fetchPaymentData(input.value);
+    });
+  });
+
+  async function fetchPaymentData(paymentId) {
+    try {
+      const data = await fetch(`${document.URL}/details/${paymentId}`);
+      const response = await data.json();
+
+      if (response.action === 'topup') {
+        offcanvasHeader.innerHTML = `Payment Details<span class="mx-2 badge bg-warning">${response.action}</span>`;
+      } else if (response.action === 'pay') {
+        offcanvasHeader.innerHTML = `Payment Details<span class="mx-2 badge bg-success">${response.action}</span>`;
+      } else {
+        offcanvasHeader.innerHTML = `Payment Details<span class="mx-2 badge bg-secondary">${response.action}</span>`;
+      }
+
+      servedBy.value = response.served_by;
+      invoiceNumber.value = response.invoice_number;
+      paymentMethod.value = response.payment_method;
+      customerName.value = response.customer_name;
+      customerId.value = response.customer_id;
+      barcode.value = response.barcode;
+      payment.value = response.payment;
+
+      if (response.menu_names) {
+        let tableRow = '';
+        response.menu_names.forEach((menu, i) => {
+          tableRow += `<tr>
+          <th scope="row">${menu}</th>
+          <td>${response.menu_kinds[i]}</td>
+          <td>${response.menu_amount[i]}</td>
+          <td>`;
+          if (response.menu_discounts) {
+            if (response.menu_discounts[i]) {
+              tableRow += `${response.menu_discount_percents[i]}<span class="ms-1">%</span></td></tr>`;
+            } else {
+              tableRow += `No</td></tr>`;
+            }
+          } else {
+            tableRow += `No</td></tr>`;
+          }
+        });
+
+        tableBody.innerHTML = tableRow;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+</script>

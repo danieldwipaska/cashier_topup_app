@@ -352,4 +352,17 @@ router.post('/download', async (req, res) => {
   }
 });
 
+router.get('/list/details/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const payments = await pool.query(paymentQueries.getPaymentById, [id]);
+    if (!payments.rows.length) return res.status(404).json('Payment Not Found');
+
+    return res.status(200).json(payments.rows[0]);
+  } catch (error) {
+    return res.status(500).json('Server Error');
+  }
+});
+
 module.exports = router;
