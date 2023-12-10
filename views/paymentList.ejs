@@ -320,7 +320,7 @@
         </div>
       </div>
     </div>
-    <h5>Orders</h5>
+    <h5 class="order-header">Orders</h5>
     <table class="table border-dark orders">
       <thead>
         <tr class="table-secondary">
@@ -348,6 +348,7 @@
   const orderDetailButtons = document.querySelectorAll('.order-detail-button');
   const tableBody = offcanvasRight.querySelector('.order-body');
   const offcanvasHeader = offcanvasRight.querySelector('#offcanvasRightLabel');
+  const orderHeader = offcanvasRight.querySelector('.order-header');
 
   orderDetailButtons.forEach((orderDetailButton) => {
     orderDetailButton.addEventListener('click', () => {
@@ -359,7 +360,7 @@
 
   async function fetchPaymentData(paymentId) {
     try {
-      const data = await fetch(`${document.URL}/details/${paymentId}`);
+      const data = await fetch(`http://localhost:3000/payment/list/details/${paymentId}`);
       const response = await data.json();
 
       if (response.action === 'topup') {
@@ -378,26 +379,36 @@
       barcode.value = response.barcode;
       payment.value = response.payment;
 
-      if (response.menu_names) {
+      if (response.action === 'pay') {
+        orderHeader.classList.remove('visually-hidden');
+        orders.classList.remove('visually-hidden');
+
         let tableRow = '';
-        response.menu_names.forEach((menu, i) => {
-          tableRow += `<tr>
+        if (response.menu_names && response.menu_names.length) {
+          response.menu_names.forEach((menu, i) => {
+            tableRow += `<tr>
           <th scope="row">${menu}</th>
           <td>${response.menu_kinds[i]}</td>
           <td>${response.menu_amount[i]}</td>
           <td>`;
-          if (response.menu_discounts) {
-            if (response.menu_discounts[i]) {
-              tableRow += `${response.menu_discount_percents[i]}<span class="ms-1">%</span></td></tr>`;
+            if (response.menu_discounts) {
+              if (response.menu_discounts[i]) {
+                tableRow += `${response.menu_discount_percents[i]}<span class="ms-1">%</span></td></tr>`;
+              } else {
+                tableRow += `No</td></tr>`;
+              }
             } else {
               tableRow += `No</td></tr>`;
             }
-          } else {
-            tableRow += `No</td></tr>`;
-          }
-        });
+          });
+        } else {
+          tableRow = 'LIHAT DI MOKA';
+        }
 
         tableBody.innerHTML = tableRow;
+      } else {
+        orderHeader.classList.add('visually-hidden');
+        orders.classList.add('visually-hidden');
       }
     } catch (error) {
       console.log(error);

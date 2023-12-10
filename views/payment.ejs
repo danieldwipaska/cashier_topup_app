@@ -148,7 +148,8 @@
 
               <div class="mb-1 px-3 pt-4">
                 <label for="payment" class="form-label text-secondary">Payment (IDR)*</label>
-                <input type="number" class="form-control" id="payment" name="payment" readonly />
+                <input type="text" class="form-control" id="paymentShown" readonly />
+                <input type="hidden" class="form-control" id="payment" name="payment" readonly />
               </div>
             </div>
           </div>
@@ -237,12 +238,14 @@
   const appInvoice = document.querySelector('#appInvoice');
   const invoiceNumberMoka = mokaInvoice.querySelector('#invoiceNumber');
   const paymentMoka = mokaInvoice.querySelector('#payment');
+  const paymentShownApp = appInvoice.querySelector('#paymentShown');
   const paymentApp = appInvoice.querySelector('#payment');
   const menuAmount = document.querySelector('#menuAmount');
   const menuIds = document.querySelector('#menuIds');
 
   inputMoka.addEventListener('click', () => {
     appInvoice.classList.toggle('visually-hidden');
+    paymentShownApp.toggleAttribute('disabled');
     paymentApp.toggleAttribute('disabled');
     menuAmount.toggleAttribute('disabled');
     menuIds.toggleAttribute('disabled');
@@ -316,6 +319,7 @@
 
       // OVERWRITE HTML PAYMENT INPUT BY payment
       paymentApp.value = payment;
+      paymentShownApp.value = Intl.NumberFormat('en-US').format(payment);
     });
   });
 
@@ -323,4 +327,5 @@
   menuAmount.value = allMenuAmount;
   menuIds.value = allMenuIds;
   paymentApp.value = payment;
+  paymentShownApp.value = Intl.NumberFormat('en-US').format(payment);
 </script>

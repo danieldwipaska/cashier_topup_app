@@ -110,7 +110,7 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
     // FINAL BALANCE CHECK
     const deposit = cards.rows[0].deposit;
     const initial_balance = cards.rows[0].balance;
-    const final_balance = initial_balance - payment;
+    const final_balance = initial_balance - parseInt(payment);
 
     // IF THE BALANCE IS NOT ENOUGH
     if (final_balance < 0)
@@ -181,7 +181,7 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
             barcode,
             customer_name,
             customer_id,
-            payment,
+            parseInt(payment),
             invoice_number,
             invoice_status,
             initial_balance,
@@ -358,6 +358,8 @@ router.get('/list/details/:id', async (req, res) => {
   try {
     const payments = await pool.query(paymentQueries.getPaymentById, [id]);
     if (!payments.rows.length) return res.status(404).json('Payment Not Found');
+
+    // console.log(payments.rows[0]);
 
     return res.status(200).json(payments.rows[0]);
   } catch (error) {
