@@ -152,6 +152,22 @@ a {
   animation-fill-mode: both;
 }
 
+.menu-button-new-card {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.1s;
+  animation-fill-mode: both;
+}
+
+.menu-button-member-assessment {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.2s;
+  animation-fill-mode: both;
+}
+
 .menu-button-member-list {
   position: relative;
   animation-name: menu;

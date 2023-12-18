@@ -9,8 +9,12 @@ const getMemberByBarcode = 'SELECT * FROM members WHERE barcode = $1';
 const deleteMemberById = 'DELETE FROM members WHERE id = $1';
 const updateMemberByCustomerId =
   'UPDATE members SET fullname = $1, barcode = $2, birth_date = $3, phone_number = $4, is_active = $5, address = $6, email = $7, instagram = $8, facebook = $9, twitter = $10, updated_at = NOW() WHERE customer_id = $11';
+const updateMemberById =
+  'UPDATE members SET fullname = $1, barcode = $2, birth_date = $3, phone_number = $4, is_active = $5, address = $6, email = $7, instagram = $8, facebook = $9, twitter = $10, customer_id = $11, identity_number = $12, updated_at = NOW() WHERE id = $13';
 const updateMemberByIdentityNumber =
   'UPDATE members SET fullname = $1, barcode = $2, birth_date = $3, phone_number = $4, is_active = $5, address = $6, email = $7, instagram = $8, facebook = $9, twitter = $10, updated_at = NOW() WHERE identity_number = $11';
+
+const updateMemberCardById = 'UPDATE members SET barcode = $1, updated_at = NOW() WHERE id = $2';
 
 module.exports = {
   addMember,
@@ -21,5 +25,7 @@ module.exports = {
   getMemberByBarcode,
   deleteMemberById,
   updateMemberByCustomerId,
+  updateMemberById,
   updateMemberByIdentityNumber,
+  updateMemberCardById,
 };

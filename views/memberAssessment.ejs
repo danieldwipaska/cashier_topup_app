@@ -31,22 +31,13 @@
               <div class="col-2 p-3">Payment</div>
               <div class="col-4 p-3">Created At</div>
             </div>
-            <div class="row bg-light payment-data">
-              <div class="col-1 p-3">1</div>
-              <div class="col-3 p-3">081527352839</div>
-              <div class="col-2 p-3">Daniel</div>
-              <div class="col-2 p-3"><%= Intl.NumberFormat('en-US').format(1000000) %></div>
-              <div class="col-4 p-3"><%= new Date() %></div>
-              <div class="col-1 p-3">2</div>
-              <div class="col-3 p-3">08213736493</div>
-              <div class="col-2 p-3">Yeremia</div>
-              <div class="col-2 p-3"><%= Intl.NumberFormat('en-US').format(1000000) %></div>
-              <div class="col-4 p-3"><%= new Date() %></div>
-              <div class="col-1 p-3">3</div>
-              <div class="col-3 p-3">08122536338</div>
-              <div class="col-2 p-3">Haikal</div>
-              <div class="col-2 p-3"><%= Intl.NumberFormat('en-US').format(1000000) %></div>
-              <div class="col-4 p-3"><%= new Date() %></div>
+            <div class="row bg-light payment-data overflow-auto" style="max-height: 400px"></div>
+            <div class="row" style="background-color: rgb(240, 240, 240)">
+              <div class="col-1 p-3"></div>
+              <div class="col-3 p-3">TOTAL</div>
+              <div class="col-2 p-3"></div>
+              <div class="col-2 p-3 total-payment">0</div>
+              <div class="col-4 p-3"></div>
             </div>
           </div>
         </div>
@@ -55,9 +46,8 @@
             <div class="col-md">
               <div class="mx-2 p-3 rounded-top" style="background-color: #9ddde9">Quick Search</div>
               <div class="mx-2 p-3 bg-light rounded-bottom quick-search">
-                <div class="mb-1">
-                  <label for="quickCustomerId">Customer ID</label>
-                  <input type="text" id="quickCustomerId" name="customerId" />
+                <div class="input-group mb-1">
+                  <input type="text" class="form-control" placeholder="Customer ID" id="quickCustomerId" name="customerId" />
                 </div>
                 <div class="mb-1 text-end mt-3">
                   <button class="btn search-button" style="background-color: #afdee7">Search</button>
@@ -65,33 +55,33 @@
               </div>
             </div>
           </div>
-          <div class="row my-3">
-            <div class="col-md">
-              <div class="mx-2 p-3 rounded-top" style="background-color: #9ddde9">Advanced Search</div>
-              <div class="mx-2 p-3 bg-light rounded-bottom advanced-search">
-                <div class="mb-1">
-                  <label for="advancedCustomerId">Customer ID</label>
-                  <input type="text" id="advancedCustomerId" name="customerId" />
-                </div>
-                <div class="mb-1">
-                  <label for="customerName">Name</label>
-                  <input type="text" id="customerName" name="customerName" />
-                </div>
-                <div class="mb-1">
-                  <label for="date">Date</label>
-                  <input type="date" id="date" name="date" style="display: block" />
-                </div>
-                <div class="mb-1 text-end mt-3">
-                  <button class="btn" style="background-color: #afdee7">Search</button>
+          <!-- <div class="row my-3">
+              <div class="col-md">
+                <div class="mx-2 p-3 rounded-top" style="background-color: #9ddde9">Advanced Search</div>
+                <div class="mx-2 p-3 bg-light rounded-bottom advanced-search">
+                  <div class="mb-1">
+                    <label for="advancedCustomerId">Customer ID</label>
+                    <input type="text" id="advancedCustomerId" name="customerId" />
+                  </div>
+                  <div class="mb-1">
+                    <label for="date">From</label>
+                    <input type="date" id="date" name="archiveFrom" style="display: block" />
+                  </div>
+                  <div class="mb-1">
+                    <label for="date">To</label>
+                    <input type="date" id="date" name="archiveTo" style="display: block" />
+                  </div>
+                  <div class="mb-1 text-end mt-3">
+                    <button class="btn" style="background-color: #afdee7">Search</button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </div> -->
         </div>
       </div>
       <div class="row my-5 multi-button">
         <div class="col-lg-8 mx-auto text-center">
-          <a class="button shadow my-3" href="/" role="button">Back</a>
+          <a class="button shadow my-3" href="/member" role="button">Back</a>
         </div>
       </div>
     </div>
@@ -101,24 +91,43 @@
   const quickSearch = document.querySelector('.quick-search');
   const advancedSearch = document.querySelector('.advanced-search');
   const paymentData = document.querySelector('.payment-data');
+  const totalPaymentDiv = document.querySelector('.total-payment');
 
   const quickSearchButton = quickSearch.querySelector('.search-button');
   quickSearchButton.addEventListener('click', async () => {
     const customerId = document.querySelector('#quickCustomerId').value;
+    paymentData.innerHTML = `<div class="d-flex justify-content-center my-5">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>`;
     try {
-      const response = await fetch(`http://localhost:3000/member/assessment/search?customerId=${customerId}`);
+      const response = await fetch(`http://localhost:3000/member/assessment/search?id=${customerId}`);
+      // console.log('hitted');
+
       const data = await response.json();
 
-      const payments = '';
+      // console.log(data);
+
+      let payments = '';
+      let totalPayment = 0;
       data.forEach((payment, i) => {
-        payment += `<div class="col-1 p-3"></div></div>
-              <div class="col-3 p-3"></div></div>
-              <div class="col-2 p-3"></div></div>
-              <div class="col-2 p-3"><%= Intl.NumberFormat('en-US').format(10000) %></div>
-              <div class="col-4 p-3"></div>`;
+        payments += `<div class="col-1 p-3">${i + 1}</div>
+                <div class="col-3 p-3">${payment.customer_id}</div>
+                <div class="col-2 p-3">${payment.customer_name}</div>
+                <div class="col-2 p-3">${Intl.NumberFormat('en-US').format(payment.payment)}</div>
+                <div class="col-4 p-3">${new Date(payment.created_at).toLocaleString()}</div>`;
+        totalPayment += payment.payment;
       });
+
+      paymentData.innerHTML = payments;
+      totalPaymentDiv.innerHTML = Intl.NumberFormat('en-US').format(totalPayment);
     } catch (error) {
       console.log(error);
+      paymentData.innerHTML = `<div class="d-flex justify-content-center my-5">
+    No Data Available
+  </div>`;
+      totalPaymentDiv.innerHTML = 0;
     }
   });
 </script>

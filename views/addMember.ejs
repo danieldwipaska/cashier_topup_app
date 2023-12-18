@@ -1,0 +1,68 @@
+<div class="container-md my-1">
+  <div class="row">
+    <div class="col-8 mx-auto">
+      <h4 class="text-secondary"><%= subtitle %></h4>
+    </div>
+  </div>
+  <% if (message) { %>
+  <div class="row my-2">
+    <div class="col-md-8 mx-auto">
+      <div class="alert alert-dismissible alert-success fade show mb-3">
+        <button type="button" class="btn-close" data-mdb-toggle="animation" data-mdb-animation="slide-right" data-mdb-animation-start="onLoad" data-bs-dismiss="alert"></button>
+        <%= message %>
+      </div>
+    </div>
+  </div>
+  <% } %>
+  <form action="/member/new" method="post">
+    <div class="row my-2">
+      <div class="col-md-8 p-4 mx-auto rounded-4 bg-light shadow">
+        <label class="form-label">Customer Details</label>
+        <div class="input-group mb-3">
+          <span class="input-group-text" id="customerId">Phone</span>
+          <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="customerId" name="customerId" value="<%= customerId %>" readonly style="background-color: rgb(211, 211, 211)" />
+          <span class="input-group-text" id="barcode">Card</span>
+          <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="barcode" name="barcode" value="<%= barcode %>" readonly style="background-color: rgb(211, 211, 211)" />
+        </div>
+        <div class="input-group mb-3">
+          <span class="input-group-text" id="name">Fullname*</span>
+          <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="name" name="name" required />
+        </div>
+        <div class="input-group mb-3">
+          <span class="input-group-text" id="identityNumber">Identity Number*</span>
+          <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="identityNumber" name="identityNumber" required />
+          <span class="input-group-text" id="birthDate">Tanggal Lahir*</span>
+          <input type="date" class="form-control" aria-label="Sizing example input" aria-describedby="birthDate" name="birthDate" required />
+        </div>
+        <div class="input-group mb-3">
+          <span class="input-group-text" id="email">Email*</span>
+          <input type="email" class="form-control" aria-label="Sizing example input" aria-describedby="email" name="email" required />
+        </div>
+        <div class="input-group mb-3">
+          <span class="input-group-text" id="address">Address</span>
+          <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="address" name="address" required />
+        </div>
+        <label class="form-label">Social Media</label>
+        <div class="input-group mb-3">
+          <span class="input-group-text" id="instagram">https://instagram.com/</span>
+          <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="instagram" name="instagram" />
+        </div>
+        <div class="input-group mb-3">
+          <span class="input-group-text" id="facebook">https://facebook.com/</span>
+          <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="facebook" name="facebook" />
+        </div>
+        <div class="input-group mb-3">
+          <span class="input-group-text" id="twitter">https://twitter.com/</span>
+          <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="twitter" name="twitter" />
+        </div>
+      </div>
+    </div>
+    <div class="row my-5 multi-button">
+      <div class="col-lg-8 mx-auto text-center">
+        <a class="button shadow my-3" href="/member/new" role="button">Back</a>
+        <button class="button shadow my-3" type="submit">Submit</button>
+        <a class="button shadow my-3" href="/" role="button">Menu</a>
+      </div>
+    </div>
+  </form>
+</div>

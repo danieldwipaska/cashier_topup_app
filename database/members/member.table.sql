@@ -2,7 +2,7 @@ CREATE TABLE members (
 id UUID NOT NULL PRIMARY KEY,
 identity_number VARCHAR(50) NOT NULL,
 fullname TEXT NOT NULL,
-customer_id UUID NOT NULL,
+customer_id VARCHAR(50) NOT NULL,
 barcode VARCHAR(50),
 birth_date DATE NOT NULL,
 phone_number VARCHAR(20) NOT NULL,

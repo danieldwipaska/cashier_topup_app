@@ -360,7 +360,7 @@
 
   async function fetchPaymentData(paymentId) {
     try {
-      const data = await fetch(`https://baharimalangirishpub-app.com/payment/list/details/${paymentId}`);
+      const data = await fetch(`http://localhost:3000/payment/list/details/${paymentId}`);
       const response = await data.json();
 
       if (response.action === 'topup') {

@@ -18,6 +18,7 @@ const fastcsv = require('fast-csv');
 const fs = require('fs');
 const { convertTZ } = require('./functions/convertDateTimezone');
 const { convertTimeHour } = require('./functions/convertTimeString');
+const { OpenAndCloseTimeConverter } = require('./classes/openAndCloseTimeConverter');
 
 // SEARCH
 router.get('/search', verifyToken, allRoles, async (req, res) => {
@@ -362,6 +363,19 @@ router.get('/list/details/:id', async (req, res) => {
     // console.log(payments.rows[0]);
 
     return res.status(200).json(payments.rows[0]);
+  } catch (error) {
+    return res.status(500).json('Server Error');
+  }
+});
+
+router.get('/invoices/number/recent', async (req, res) => {
+  const { limit, offset } = req.query;
+
+  try {
+    const payments = await pool.query(paymentQueries.getPaymentInvoiceNumberMoka, ['pay', null, OpenAndCloseTimeConverter.open(), OpenAndCloseTimeConverter.close(), limit, offset]);
+    if (!payments.rows.length) return res.status(404).json('Payment does not exist');
+
+    return payments.rows;
   } catch (error) {
     return res.status(500).json('Server Error');
   }
