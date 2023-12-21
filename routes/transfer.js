@@ -105,17 +105,19 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
       if (currentCards.rows[0].is_member != newCards.rows[0].is_member) return res.status(400).json('Both Current Card and New Card are not in the same type (member or non-member). Transferring Cards require the same type of cards');
 
       try {
+        // UPDATE NEW CARD
         const newCardUpdated = await pool.query(cardQueries.cardStatus, [true, currentCards.rows[0].customer_name, currentCards.rows[0].customer_id, currentCards.rows[0].balance, currentCards.rows[0].deposit, newBarcode]);
 
         infoLog(transferLogger, 'New Card was successfully updated', newBarcode, newCardUpdated.rows[0].customer_name, newCardUpdated.rows[0].customer_id, req.validUser.name);
 
         try {
+          // UPDATE CURRENT CARD
           const currentCardUpdated = await pool.query(cardQueries.cardStatus, [false, null, null, 0, 0, currentBarcode]);
 
           infoLog(transferLogger, 'Current Card was successfully updated', currentBarcode, currentCardUpdated.rows[0].customer_name, currentCardUpdated.rows[0].customer_id, req.validUser.name);
 
           if (currentCards.rows[0].is_member) {
-            // CHANGE CARD NUMBER IN MEMBERS
+            // CHANGE CARD BARCODE IN MEMBERS
             try {
               const members = await pool.query(memberQueries.getMemberByBarcode, [currentBarcode]);
               if (!members.rows.length) return res.status(404).json('There is no member using the current card');

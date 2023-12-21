@@ -19,6 +19,7 @@ const fs = require('fs');
 const { convertTZ } = require('./functions/convertDateTimezone');
 const { convertTimeHour } = require('./functions/convertTimeString');
 const { OpenAndCloseTimeConverter } = require('./classes/openAndCloseTimeConverter');
+const { redirect } = require('express/lib/response');
 
 // SEARCH
 router.get('/search', verifyToken, allRoles, async (req, res) => {
@@ -378,6 +379,95 @@ router.get('/invoices/number/recent', async (req, res) => {
     return payments.rows;
   } catch (error) {
     return res.status(500).json('Server Error');
+  }
+});
+
+router.post('/list/refund', verifyToken, allRoles, async (req, res) => {
+  const { paymentId, serverCode, notes } = req.body;
+
+  try {
+    const crews = await pool.query(crewQueries.getCrewByCode, [serverCode]);
+
+    if (!crews.rows.length)
+      return res.render('notificationError', {
+        layout: 'layouts/main-layout',
+        title: 'Refund Error',
+        message: 'Kode Server SALAH.',
+      });
+
+    if (crews.rows.length >= 2) return res.status(500).json('SERVER ERROR');
+
+    try {
+      const payments = await pool.query(paymentQueries.getPaymentById, [paymentId]);
+      if (!payments.rows.length) return res.status(404).json('Payment Not Found');
+
+      try {
+        const cards = await pool.query(cardQueries.getCardByIdAndCustomerId, [payments.rows[0].barcode, payments.rows[0].customer_id]);
+        if (!cards.rows.length) return res.status(404).json('Card/Customer Not Found or the card belongs to another customer');
+
+        try {
+          await pool.query(cardQueries.updateBalance, [cards.rows[0].balance + payments.rows[0].payment, cards.rows[0].deposit, payments.rows[0].barcode]);
+
+          infoLog(paymentLogger, 'Balance was successfully updated', payments.rows[0].barcode, payments.rows[0].customer_name, payments.rows[0].customer_id, crews.rows[0].name);
+
+          try {
+            const id = v4();
+            const invoiceStatus = 'refund';
+            const action = 'refund';
+            await pool.query(paymentQueries.addPayment, [
+              id,
+              action,
+              payments.rows[0].barcode,
+              payments.rows[0].customer_name,
+              payments.rows[0].customer_id,
+              -payments.rows[0].payment,
+              payments.rows[0].invoice_number,
+              invoiceStatus,
+              payments.rows[0].final_balance,
+              payments.rows[0].initial_balance,
+              crews.rows[0].name,
+              payments.rows[0].collected_by,
+              payments.rows[0].payment_method,
+              notes,
+              payments.rows[0].menu_names,
+              payments.rows[0].menu_amount,
+              payments.rows[0].menu_prices,
+              payments.rows[0].menu_kinds,
+              payments.rows[0].menu_discounts,
+              payments.rows[0].menu_discount_percents,
+            ]);
+
+            infoLog(paymentLogger, 'Payments were successfully refunded', payments.rows[0].barcode, payments.rows[0].customer_name, payments.rows[0].customer_id, crews.rows[0].name);
+
+            try {
+              await pool.query(paymentQueries.updatePaymentStatusById, [invoiceStatus, payments.rows[0].id]);
+
+              infoLog(paymentLogger, 'Payment status was successfully updated', payments.rows[0].barcode, payments.rows[0].customer_name, payments.rows[0].customer_id, crews.rows[0].name);
+
+              return res.redirect('/payment/list');
+            } catch (error) {
+              errorLog(paymentLogger, error, 'Error in HTTP POST /list/refund when calling paymentQueries.updatePaymentStatusById');
+              return res.status(500).json('SERVER ERROR');
+            }
+          } catch (error) {
+            errorLog(paymentLogger, error, 'Error in HTTP POST /list/refund when calling paymentQueries.addPayment');
+            return res.status(500).json('SERVER ERROR');
+          }
+        } catch (error) {
+          errorLog(paymentLogger, error, 'Error in HTTP POST /list/refund when calling cardQueries.updateBalance');
+          return res.status(500).json('Server Error');
+        }
+      } catch (error) {
+        errorLog(paymentLogger, error, 'Error in HTTP POST /list/refund when calling cardQueries.getCardByIdAndCustomerId');
+        return res.status(500).json('Server Error');
+      }
+    } catch (error) {
+      errorLog(paymentLogger, error, 'Error in HTTP POST /list/refund when calling paymentQueries.getPaymentById');
+      return res.status(500).json('SERVER ERROR');
+    }
+  } catch (error) {
+    errorLog(paymentLogger, error, 'Error in HTTP POST /list/refund when calling crewQueries.getCrewByCode');
+    return res.status(500).json('SERVER ERROR');
   }
 });
 

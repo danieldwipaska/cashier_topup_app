@@ -26,3 +26,6 @@ ALTER TABLE payments ADD COLUMN menu_kinds VARCHAR(50)[];
 
 ALTER TABLE payments ADD COLUMN menu_discounts BOOLEAN[];
 ALTER TABLE payments ADD COLUMN menu_discount_percents INT[];
+
+ALTER TYPE sort ADD VALUE 'refund' AFTER 'checkout';
+ALTER TYPE sort ADD VALUE 'exchange' AFTER 'refund';

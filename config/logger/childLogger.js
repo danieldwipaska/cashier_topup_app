@@ -15,6 +15,7 @@ const stockLogger = logger.child({ feature: 'Stock List' });
 const memberLogger = logger.child({ feature: 'Member List' });
 const discountLogger = logger.child({ feature: 'Discount' });
 const mokaLogger = logger.child({ feature: 'Moka' });
+const transferLogger = logger.child({ feature: 'Transfer' });
 
 module.exports = {
   checkinLogger,
@@ -32,4 +33,5 @@ module.exports = {
   memberLogger,
   discountLogger,
   mokaLogger,
+  transferLogger,
 };

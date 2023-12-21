@@ -67,16 +67,22 @@
                 <input type="text" class="form-control" id="balance" name="balance" value="<%= Intl.NumberFormat('en-US').format(data.balance) %>" readonly />
               </div>
 
-              <% if (data.deposit) { %>
+              <% if (data.is_member) { %>
               <div class="mb-1 col-auto">
                 <label for="deposit" class="form-label text-secondary">Add Deposit</label>
                 <input type="number" class="form-control" id="deposit" name="deposit" value="0" readonly />
               </div>
-              <% } else { %>
+              <% } else if (!data.is_member && data.customer_id) { %>
+              <div class="mb-1 col-auto">
+                <label for="deposit" class="form-label text-secondary">Add Deposit</label>
+                <input type="number" class="form-control" id="deposit" name="deposit" value="0" readonly />
+              </div>
+              <% } else if (!data.is_member && !data.customer_id) { %>
               <div class="mb-1 col-auto">
                 <label for="deposit" class="form-label text-secondary">Add Deposit</label>
                 <input type="number" class="form-control" id="deposit" name="deposit" value="5000" required />
               </div>
+
               <% } %>
 
               <div class="mb-1 col-auto">

@@ -44,6 +44,13 @@ router.get('/search', verifyToken, cashierAndDeveloper, (req, res) => {
           subtitle: 'Top-Up',
           alert: 'Card is NOT ACTIVE',
         });
+      } else if (results.rows[0].is_member && !results.rows[0].customer_id) {
+        return res.render('search', {
+          layout: 'layouts/main-layout',
+          title: 'Search',
+          subtitle: 'Top-Up',
+          alert: 'Card is a Member Card which does not belong to any Customer. Only Member Cards that belong to a Customer can be used to Top-Up',
+        });
       } else {
         return res.render('topup', {
           layout: 'layouts/main-layout',

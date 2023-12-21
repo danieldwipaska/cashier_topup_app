@@ -37,6 +37,20 @@ router.get('/search', verifyToken, cashierAndDeveloper, (req, res) => {
           subtitle: 'Check-Out Status',
           alert: 'Card does not exists',
         });
+      } else if (!results.rows[0].is_active) {
+        return res.render('search', {
+          layout: 'layouts/main-layout',
+          title: 'Search',
+          subtitle: 'Check-Out Status',
+          alert: 'Card is NOT ACTIVE.',
+        });
+      } else if (results.rows[0].is_member) {
+        return res.render('search', {
+          layout: 'layouts/main-layout',
+          title: 'Search',
+          subtitle: 'Check-Out Status',
+          alert: 'Card is a MEMBER CARD. Member Cards cannot be checked out. Please use Abort Member to check-out.',
+        });
       } else {
         return res.render('checkout', {
           layout: 'layouts/main-layout',

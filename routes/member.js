@@ -12,75 +12,6 @@ const { v4 } = require('uuid');
 const { convertTZ } = require('./functions/convertDateTimezone');
 const { CARD_NOT_EXIST, CARD_NOT_ACTIVE, CARD_NOT_MEMBER, CARD_BELONGS_TO_OTHER } = require('./var/reports');
 
-// SEARCH
-router.get('/search', verifyToken, cashierAndDeveloper, async (req, res) => {
-  const { card: barcode } = req.query;
-
-  // INITIAL PAGE
-  if (!barcode) {
-    return res.render('search', {
-      layout: 'layouts/main-layout',
-      title: 'Search',
-      subtitle: 'Membership',
-      alert: '',
-    });
-  } else {
-    try {
-      const cards = await pool.query(cardQueries.getCardById, [barcode]);
-
-      if (!cards.rows.length)
-        return res.render('search', {
-          layout: 'layouts/main-layout',
-          title: 'Search',
-          subtitle: 'Membership',
-          alert: CARD_NOT_EXIST,
-        });
-
-      if (!cards.rows[0].is_active)
-        return res.render('search', {
-          layout: 'layouts/main-layout',
-          title: 'Search',
-          subtitle: 'Membership',
-          alert: CARD_NOT_ACTIVE,
-        });
-
-      if (!cards.rows[0].is_member)
-        return res.render('search', {
-          layout: 'layouts/main-layout',
-          title: 'Search',
-          subtitle: 'Membership',
-          alert: CARD_NOT_MEMBER,
-        });
-
-      try {
-        const members = await pool.query(memberQueries.getMemberByBarcode, [cards.rows[0].barcode]);
-
-        if (members.rows.length)
-          return res.render('search', {
-            layout: 'layouts/main-layout',
-            title: 'Search',
-            subtitle: 'Membership',
-            alert: CARD_BELONGS_TO_OTHER,
-          });
-
-        return res.render('membership', {
-          layout: 'layouts/main-layout',
-          title: 'Membership',
-          subtitle: 'Membership',
-          alert: '',
-          data: cards.rows[0],
-        });
-      } catch (error) {
-        errorLog(memberLogger, error, 'Error in HTTP GET /search when calling memberQueries.getMemberByBarcode');
-        return res.status(500).json('Server Error');
-      }
-    } catch (error) {
-      errorLog(memberLogger, error, 'Error in HTTP GET /search when calling cardQueries.getCardById');
-      return res.status(500).json('Server Error');
-    }
-  }
-});
-
 // MEMBER ASSESSMENT
 router.get('/assessment', async (req, res) => {
   return res.render('memberAssessment', {
@@ -124,139 +55,7 @@ router.get('/list', verifyToken, cashierAndDeveloper, async (req, res) => {
   }
 });
 
-// ADD MEMBER WITH NEW CARD
-router.post('/new', verifyToken, cashierAndDeveloper, async (req, res) => {
-  const { barcode, identityNumber: identity_number, name: fullname, birthDate, customerId: customer_id, address, email, instagram, facebook, twitter } = req.body;
-
-  // CHECK THE CARD
-  try {
-    const birth_date = new Date(birthDate);
-    const phone_number = customer_id;
-
-    const cards = await pool.query(cardQueries.getCardById, [barcode]);
-
-    if (!cards.rows.length === 0)
-      return res.render('notificationError', {
-        layout: 'layouts/main-layout',
-        title: 'Membership Error',
-        message: CARD_NOT_EXIST,
-      });
-
-    if (!cards.rows[0].is_active)
-      return res.render('notificationError', {
-        layout: 'layouts/main-layout',
-        title: 'Membership Error',
-        message: CARD_NOT_ACTIVE,
-      });
-
-    if (!cards.rows[0].is_member)
-      return res.render('notificationError', {
-        layout: 'layouts/main-layout',
-        title: 'Membership Error',
-        message: CARD_NOT_MEMBER,
-      });
-
-    try {
-      const members = await pool.query(memberQueries.getMemberByIdentityNumber, [identity_number]);
-
-      if (members.rows.length)
-        return res.render('addMember', {
-          layout: 'layouts/main-layout',
-          title: 'Member Submission',
-          subtitle: 'Member Submission',
-          message: 'Oh, no! Identity Number already existed',
-          customer_id,
-          barcode,
-        });
-
-      // IF THE MEMBER DOES NOT EXIST
-      // ADD A MEMBER
-      try {
-        const memberId = v4();
-
-        await pool.query(memberQueries.addMember, [memberId, identity_number, fullname, customer_id, barcode, birth_date, phone_number, true, address, email, instagram, facebook, twitter]);
-
-        // SEND LOG
-        infoLog(memberLogger, 'Member was successfully added', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);
-
-        // UPDATE CARD CUSTOMER_NAME
-        try {
-          await pool.query(cardQueries.updateCardById, [fullname, customer_id, barcode]);
-
-          // SEND LOG
-          infoLog(memberLogger, 'Card was successfully updated', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);
-
-          return res.render('notificationSuccess', {
-            layout: 'layouts/main-layout',
-            title: 'Member Subscription Success',
-            message: 'Member Subscription succeed, and The Card details have been updated.',
-          });
-          fullname;
-        } catch (error) {
-          errorLog(memberLogger, error, 'Error in HTTP POST / when calling cardQueries.updateCardById');
-
-          return res.render('notificationError', {
-            layout: 'layouts/main-layout',
-            title: 'Membership Error',
-            message: 'Failed to change card name, ID, and balance',
-          });
-        }
-      } catch (error) {
-        errorLog(memberLogger, error, 'Error in HTTP POST / when calling memberqueries.addMember');
-
-        return res.render('notificationError', {
-          layout: 'layouts/main-layout',
-          title: 'Membership Error',
-          message: 'Failed to add the member',
-        });
-      }
-    } catch (error) {
-      errorLog(memberLogger, error, 'Error in HTTP POST / when calling memberQueries.getMemberByIdentityNumber');
-      return res.status(500).json('Server Error');
-    }
-  } catch (error) {
-    errorLog(memberLogger, error, 'Error in HTTP POST / when calling cardQueries.getCardById');
-    return res.status(500).json('Server Error');
-  }
-});
-
-// DELETE MEMBER
-router.get('/:id/delete', verifyToken, cashierAndDeveloper, async (req, res) => {
-  const { id } = req.params;
-
-  // GET MEMBER
-  try {
-    const members = await pool.query(memberQueries.getMemberById, [id]);
-
-    if (!members.rows.length) return res.status(404).json('Member not found');
-
-    // DELETE MEMBER
-    try {
-      await pool.query(memberQueries.deleteMemberById, [members.rows[0].id]);
-
-      // SEND LOG
-      infoLog(memberLogger, 'Member was successfully deleted', '', '', '', req.validUser.name);
-
-      return res.redirect('/member/list');
-    } catch (error) {
-      errorLog(memberLogger, error, 'Error in HTTP GET /:id/delete when calling memberQueries.deleteMemberById');
-      return res.status(500).json('Server Error');
-    }
-  } catch (error) {
-    errorLog(memberLogger, error, 'Error in HTTP GET /:id/delete when calling memberQueries.getMemberById');
-    return res.status(500).json('Server Error');
-  }
-});
-
-// MEMBER AREA
-router.get('/', (req, res) => {
-  return res.render('memberArea', {
-    layout: 'layouts/main-layout',
-    title: 'Member Area',
-  });
-});
-
-// NEW CARD
+// SEARCH CARD
 router.get('/new', async (req, res) => {
   const { customerId, barcode } = req.query;
 
@@ -316,12 +115,22 @@ router.get('/new', async (req, res) => {
     try {
       const members = await pool.query(memberQueries.getMemberByCustomerId, [customerId]);
 
-      if (members.rows.length)
+      if (members.rows.length && members.rows[0].is_active)
         return res.render('newCardMember', {
           layout: 'layouts/main-layout',
           title: 'Member Eligibility',
           subtitle: 'Card & Member Eligibility Check',
           alert: "The Customer's Phone Number is already a member",
+          customerId,
+          barcode,
+        });
+
+      if (members.rows.length && !members.rows[0].is_active && members.rows[0].barcode)
+        return res.render('newCardMember', {
+          layout: 'layouts/main-layout',
+          title: 'Member Eligibility',
+          subtitle: 'Card & Member Eligibility Check',
+          alert: 'Although the member was inactive, There is a card attached to the member.',
           customerId,
           barcode,
         });
@@ -354,6 +163,13 @@ router.get('/new', async (req, res) => {
             barcode,
           });
 
+        // Calibrate the date timezone
+        const date = members.rows[0].birth_date;
+        date.setTime(date.getTime() - date.getTimezoneOffset() * 60000);
+
+        // Date to ISO String and slice
+        members.rows[0].birth_date = date.toISOString().slice(0, 10);
+
         return res.render('addMember', {
           layout: 'layouts/main-layout',
           title: 'Member Submission',
@@ -361,6 +177,7 @@ router.get('/new', async (req, res) => {
           message: 'Customer is Eligible to Add',
           customerId,
           barcode,
+          data: members.rows[0],
         });
       } catch (err) {
         errorLog(memberLogger, err, 'Error in /new when calling paymentQueries.getPaymentWithActionByCustomerId');
@@ -371,6 +188,172 @@ router.get('/new', async (req, res) => {
   } catch (err) {
     errorLog(memberLogger, err, 'Error in /new when calling cardQueries.getCardById');
   }
+});
+
+// ADD MEMBER WITH NEW CARD
+router.post('/new', verifyToken, cashierAndDeveloper, async (req, res) => {
+  const { barcode, identityNumber: identity_number, name: fullname, birthDate, customerId: customer_id, address, email, instagram, facebook, twitter } = req.body;
+
+  // CHECK THE CARD
+  try {
+    const birth_date = new Date(birthDate);
+    const phone_number = customer_id;
+
+    const cards = await pool.query(cardQueries.getCardById, [barcode]);
+
+    console.log(cards.rows);
+
+    if (!cards.rows.length === 0)
+      return res.render('notificationError', {
+        layout: 'layouts/main-layout',
+        title: 'Membership Error',
+        message: CARD_NOT_EXIST,
+      });
+
+    if (!cards.rows[0].is_active)
+      return res.render('notificationError', {
+        layout: 'layouts/main-layout',
+        title: 'Membership Error',
+        message: CARD_NOT_ACTIVE,
+      });
+
+    if (!cards.rows[0].is_member)
+      return res.render('notificationError', {
+        layout: 'layouts/main-layout',
+        title: 'Membership Error',
+        message: CARD_NOT_MEMBER,
+      });
+
+    try {
+      const members = await pool.query(memberQueries.getMemberByIdentityNumber, [identity_number]);
+
+      if (members.rows.length && members.rows[0].is_active) {
+        // Calibrate the date timezone
+        const date = members.rows[0].birth_date;
+        date.setTime(date.getTime() - date.getTimezoneOffset() * 60000);
+
+        // Date to ISO String and slice
+        members.rows[0].birth_date = date.toISOString().slice(0, 10);
+
+        return res.render('addMember', {
+          layout: 'layouts/main-layout',
+          title: 'Member Submission',
+          subtitle: 'Member Submission',
+          message: 'Oh, no! Identity Number already existed',
+          customer_id,
+          barcode,
+          data: members.rows[0],
+        });
+      }
+
+      if (members.rows.length && !members.rows[0].is_active) {
+        // IF THE MEMBER ALREADY EXISTS BUT IS NOT ACTIVE
+        // UPDATE THE MEMBER
+        try {
+          await pool.query(memberQueries.updateMemberById, [fullname, barcode, birth_date, phone_number, true, address, email, instagram, facebook, twitter, customer_id, identity_number, members.rows[0].id]);
+
+          // SEND LOG
+          infoLog(memberLogger, 'Member was successfully updated', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);
+
+          return res.render('notificationSuccess', {
+            layout: 'layouts/main-layout',
+            title: 'Member Subscription Success',
+            message: 'Member Subscription succeed, and The Card details have been updated.',
+          });
+        } catch (error) {
+          errorLog(memberLogger, error, 'Error in /new when calling memberQueries.updateMemberByIdentityNumber');
+          return res.render('notificationError', {
+            layout: 'layouts/main-layout',
+            title: 'Membership Error',
+            message: 'Error in updating the member',
+          });
+        }
+      } else {
+        // IF THE MEMBER DOES NOT EXIST
+        // ADD A MEMBER
+        try {
+          const memberId = v4();
+
+          await pool.query(memberQueries.addMember, [memberId, identity_number, fullname, customer_id, barcode, birth_date, phone_number, true, address, email, instagram, facebook, twitter]);
+
+          // SEND LOG
+          infoLog(memberLogger, 'Member was successfully added', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);
+
+          // UPDATE CARD CUSTOMER_NAME
+          try {
+            await pool.query(cardQueries.updateCardById, [fullname, customer_id, barcode]);
+
+            // SEND LOG
+            infoLog(memberLogger, 'Card was successfully updated', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);
+
+            return res.render('notificationSuccess', {
+              layout: 'layouts/main-layout',
+              title: 'Member Subscription Success',
+              message: 'Member Subscription succeed, and The Card details have been updated.',
+            });
+          } catch (error) {
+            errorLog(memberLogger, error, 'Error in HTTP POST / when calling cardQueries.updateCardById');
+
+            return res.render('notificationError', {
+              layout: 'layouts/main-layout',
+              title: 'Membership Error',
+              message: 'Failed to change card name, ID, and balance',
+            });
+          }
+        } catch (error) {
+          errorLog(memberLogger, error, 'Error in HTTP POST / when calling memberqueries.addMember');
+
+          return res.render('notificationError', {
+            layout: 'layouts/main-layout',
+            title: 'Membership Error',
+            message: 'Failed to add the member',
+          });
+        }
+      }
+    } catch (error) {
+      errorLog(memberLogger, error, 'Error in HTTP POST / when calling memberQueries.getMemberByIdentityNumber');
+      return res.status(500).json('Server Error');
+    }
+  } catch (error) {
+    errorLog(memberLogger, error, 'Error in HTTP POST / when calling cardQueries.getCardById');
+    return res.status(500).json('Server Error');
+  }
+});
+
+// DELETE MEMBER
+router.get('/:id/delete', verifyToken, cashierAndDeveloper, async (req, res) => {
+  const { id } = req.params;
+
+  // GET MEMBER
+  try {
+    const members = await pool.query(memberQueries.getMemberById, [id]);
+
+    if (!members.rows.length) return res.status(404).json('Member not found');
+
+    // DELETE MEMBER
+    try {
+      await pool.query(memberQueries.deleteMemberById, [members.rows[0].id]);
+
+      // SEND LOG
+      infoLog(memberLogger, 'Member was successfully deleted', '', '', '', req.validUser.name);
+
+      return res.redirect('/member/list');
+    } catch (error) {
+      errorLog(memberLogger, error, 'Error in HTTP GET /:id/delete when calling memberQueries.deleteMemberById');
+      return res.status(500).json('Server Error');
+    }
+  } catch (error) {
+    errorLog(memberLogger, error, 'Error in HTTP GET /:id/delete when calling memberQueries.getMemberById');
+    return res.status(500).json('Server Error');
+  }
+});
+
+// MEMBER AREA
+router.get('/', (req, res) => {
+  return res.render('memberArea', {
+    layout: 'layouts/main-layout',
+    title: 'Member Area',
+  });
 });
 
 // GET ALL MEMBERS
