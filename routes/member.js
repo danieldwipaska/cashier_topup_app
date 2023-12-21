@@ -421,4 +421,197 @@ router.post('/details/:id', verifyToken, cashierAndDeveloper, async (req, res) =
   }
 });
 
+// SEARCH TO CHECKOUT
+router.get('/abort', verifyToken, cashierAndDeveloper, async (req, res) => {
+  const { card: barcode } = req.query;
+  if (!barcode)
+    return res.render('search', {
+      layout: 'layouts/main-layout',
+      title: 'Search',
+      subtitle: 'Checkout Member',
+      alert: '',
+    });
+
+  // SEARCH FOR CARD
+  try {
+    const cards = await pool.query(cardQueries.getCardById, [barcode]);
+    if (!cards.rows.length)
+      return res.render('search', {
+        layout: 'layouts/main-layout',
+        title: 'Search',
+        subtitle: 'Checkout Member',
+        alert: 'Card does not exists',
+      });
+
+    if (!cards.rows[0].is_active)
+      return res.render('search', {
+        layout: 'layouts/main-layout',
+        title: 'Search',
+        subtitle: 'Checkout Member',
+        alert: 'Card is NOT ACTIVE.',
+      });
+
+    if (!cards.rows[0].is_member)
+      return res.render('search', {
+        layout: 'layouts/main-layout',
+        title: 'Search',
+        subtitle: 'Checkout Member',
+        alert: 'Card is NOT a MEMBER.',
+      });
+
+    return res.render('abortMember', {
+      layout: 'layouts/main-layout',
+      title: 'Checkout Member',
+      subtitle: 'Checkout Member',
+      alert: '',
+      data: cards.rows[0],
+    });
+  } catch (error) {
+    errorLog(memberLogger, error, 'Error in GET /abort when calling cardQueries.getCardById');
+    return res.status(500).json('Server Error');
+  }
+});
+
+//CHECKOUT MEMBER
+router.post('/abort', verifyToken, cashierAndDeveloper, async (req, res) => {
+  const { barcode, paymentMethod: payment_method, notes } = req.body;
+
+  const served_by = 'Greeter';
+  const collected_by = req.validUser.name;
+
+  // SEARCH FOR CARD
+  try {
+    const cards = await pool.query(cardQueries.getCardById, [barcode]);
+
+    if (!cards.rows.length)
+      // IF CARD DOES NOT EXIST
+      return res.status(404).json('Card does not exist');
+
+    if (cards.rows[0].is_active === false)
+      // IF CARD IS ALREADY CHECKOUT
+      return res.render('abortMember', {
+        layout: 'layouts/main-layout',
+        title: 'Checkout Member',
+        alert: 'Card is NOT ACTIVE yet',
+        data: cards.rows[0],
+      });
+
+    if (!cards.rows[0].is_member)
+      return res.render('abortMember', {
+        layout: 'layouts/main-layout',
+        title: 'Checkout Member',
+        alert: 'Card is NOT a MEMBER',
+        data: cards.rows[0],
+      });
+
+    const initial_balance = cards.rows[0].balance;
+    const final_balance = 0;
+
+    if (!cards.rows[0].customer_id) {
+      try {
+        await pool.query(cardQueries.cardStatus, [false, null, null, 0, 0, cards.rows[0].barcode]);
+
+        infoLog(memberLogger, 'Card is_active was successfully updated into false', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);
+
+        return res.render('notificationSuccess', {
+          layout: 'layouts/main-layout',
+          title: 'Check-Out Member',
+          message: 'Member Card has been checked out successfully.',
+        });
+      } catch (error) {
+        errorLog(memberLogger, error, 'Error in POST /abort when calling cardQueries.cardStatus');
+        return res.status(500).json('Server Error');
+      }
+    }
+
+    // SEARCH MEMBER
+    try {
+      const members = await pool.query(memberQueries.getMemberByCustomerId, [cards.rows[0].customer_id]);
+      if (!members.rows.length)
+        return res.render('abortMember', {
+          layout: 'layouts/main-layout',
+          title: 'Checkout Member',
+          alert: 'Member does not exist',
+          data: cards.rows[0],
+        });
+
+      // UPDATE MEMBER
+      try {
+        await pool.query(memberQueries.deactivateMemberByCustomerId, [false, null, cards.rows[0].customer_id]);
+
+        infoLog(memberLogger, 'Member was successfully deactivated', members.rows[0].barcode, members.rows[0].fullname, members.rows[0].customer_id, req.validUser.name);
+
+        // UPDATE CARD
+        try {
+          await pool.query(cardQueries.cardStatus, [false, null, null, 0, 0, cards.rows[0].barcode]);
+
+          infoLog(checkoutLogger, 'Card is_active was successfully updated into false', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);
+
+          try {
+            // ADD PAYMENT
+            const id = v4();
+            const action = 'checkout';
+            const payment = cards.rows[0].balance + cards.rows[0].deposit;
+            const invoice_number = `CHE${Date.now()}`;
+            const invoice_status = 'paid';
+            const menu_names = []; // NO MENU
+            const menu_amount = []; // NO MENU
+            const menu_prices = []; // NO MENU
+            const menu_kinds = []; // NO MENU
+            const menu_discounts = []; // NO MENU
+            const menu_discount_percents = []; // NO MENU
+
+            await pool.query(paymentQueries.addPayment, [
+              id,
+              action,
+              cards.rows[0].barcode,
+              cards.rows[0].customer_name,
+              cards.rows[0].customer_id,
+              payment,
+              invoice_number,
+              invoice_status,
+              initial_balance,
+              final_balance,
+              served_by,
+              collected_by,
+              payment_method,
+              notes,
+              menu_names,
+              menu_amount,
+              menu_prices,
+              menu_kinds,
+              menu_discounts,
+              menu_discount_percents,
+            ]);
+
+            // SEND LOG
+            infoLog(checkoutLogger, 'Payment was successfully added and invoice number was successfully generated', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);
+
+            return res.render('notificationSuccess', {
+              layout: 'layouts/main-layout',
+              title: 'Check-Out Member',
+              message: 'Card has been checked out successfully.',
+            });
+          } catch (error) {
+            errorLog(checkoutLogger, error, 'Error in HTTP POST / when calling paymentQueries.addPayment');
+            return res.status(500).json('Server Error');
+          }
+        } catch (error) {
+          errorLog(checkoutLogger, error, 'Error in HTTP POST / when calling cardQueries.cardStatus');
+          return res.status(500).json('Server Error');
+        }
+      } catch (error) {
+        errorLog(memberLogger, error, 'Error in POST /abort when calling memberQueries.deactivateMemberByCustomerId');
+        return res.status(500).json('Server Error');
+      }
+    } catch (error) {
+      errorLog(memberLogger, error, 'Error in POST /abort when calling memberQueries.getMemberByCustomerId');
+      return res.status(500).json('Server Error');
+    }
+  } catch (error) {
+    errorLog(checkoutLogger, error, 'Error in HTTP POST / when calling cardQueries.getCardById');
+    return res.status(500).json('Server Error');
+  }
+});
+
 module.exports = router;

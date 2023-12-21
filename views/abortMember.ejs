@@ -1,0 +1,120 @@
+<% if (alert) { %>
+<div class="container-md my-1">
+  <div class="row">
+    <div class="col-md-8 mx-auto">
+      <div class="alert alert-dismissible alert-warning fade show mb-3">
+        <button type="button" class="btn-close" data-mdb-toggle="animation" data-mdb-animation="slide-right" data-mdb-animation-start="onLoad" data-bs-dismiss="alert"></button>
+        <strong>Oh no!</strong> <%= alert %>
+      </div>
+    </div>
+  </div>
+</div>
+<% } %>
+<div class="container my-1">
+  <div class="row">
+    <div class="col-md-9 mx-auto">
+      <h3>Abort Member</h3>
+    </div>
+  </div>
+</div>
+<div class="container-md mt-1 mb-3">
+  <div class="row my-1">
+    <div class="col-md-9 mx-auto my-1 px-4">
+      <form action="/member/abort" method="post">
+        <div class="row">
+          <div class="px-3 pb-3">
+            <div class="row pb-2 rounded-3 shadow-sm blurred-box">
+              <h3 class="mb-2 py-3 px-3 mx-0 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Card Details</strong></h3>
+              <div class="mb-1">
+                <label for="barcode" class="form-label text-secondary">Card</label>
+                <input type="text" class="form-control" id="barcode" name="barcode" readonly value="<%= data.barcode %>" />
+              </div>
+
+              <div class="mb-1">
+                <label for="customerName" class="form-label text-secondary">Name</label>
+                <input type="text" class="form-control" id="customerName" name="customerName" value="<%= data.customer_name %>" readonly />
+              </div>
+
+              <div class="mb-1 col-auto">
+                <label for="customerId" class="form-label text-secondary">Costumer ID</label>
+                <input type="text" class="form-control" id="customerId" name="customerId" value="<%= data.customer_id %>" readonly />
+              </div>
+
+              <div class="mb-1 col-auto">
+                <label for="balance" class="form-label text-secondary">Balance</label>
+                <input type="text" class="form-control" id="balance" name="balance" value="<%= Intl.NumberFormat('en-US').format(data.balance) %>" readonly />
+              </div>
+
+              <div class="mb-1 col-auto">
+                <label for="deposit" class="form-label text-secondary">Deposit</label>
+                <input type="text" class="form-control" id="deposit" name="deposit" value="<%= Intl.NumberFormat('en-US').format(data.deposit) %>" readonly />
+              </div>
+
+              <% if (data.is_member) { %>
+              <div class="mb-1 col-auto">
+                <label for="isMember" class="form-label text-secondary">Member Status</label>
+                <input type="text" class="form-control text-success fw-bolder" id="isMember" name="isMember" value="yes" readonly />
+              </div>
+              <% } else { %>
+              <div class="mb-1 col-auto">
+                <label for="isMember" class="form-label text-secondary">Member Status</label>
+                <input type="text" class="form-control text-danger fw-bolder" id="isMember" name="isMember" value="no" readonly />
+              </div>
+              <% } %> <% if (data.is_active) { %>
+              <div class="mb-1 col-auto">
+                <label for="isActive" class="form-label text-secondary">Activation</label>
+                <input type="text" class="form-control text-success fw-bolder" id="isActive" name="isActive" value="active" readonly />
+              </div>
+              <% } else { %>
+              <div class="mb-1 col-auto">
+                <label for="isActive" class="form-label text-secondary">Activation</label>
+                <input type="text" class="form-control text-danger fw-bolder" id="isActive" name="isActive" value="inactive" readonly />
+              </div>
+              <% } %>
+            </div>
+            <div class="row">
+              <div class="px-0 mt-4 pb-3 rounded-3 shadow-sm col-auto blurred-box">
+                <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Payment Method</strong></h3>
+                <!-- <div class="mb-1" id="notificationPopup"></div> -->
+
+                <div class="mb-1 px-3">
+                  <label for="paymentMethod" class="form-label text-secondary">Method</label>
+                  <select class="form-select" id="paymentMethod" name="paymentMethod" aria-label="Default select example" required>
+                    <option value="" selected disabled hidden>Pilih metode</option>
+                    <option value="Cash">Cash</option>
+                    <option value="Transfer BCA">Transfer BCA</option>
+                    <option value="Transfer MANDIRI">Transfer MANDIRI</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                <div class="mb-1 px-3">
+                  <!-- <label for="collectedBy" class="form-label text-secondary">Collected By*</label> -->
+                  <input type="hidden" class="form-control" id="collectedBy" name="collectedBy" value="Kasir Bahari" required />
+                </div>
+              </div>
+              <div class="px-0 mt-4 mx-4 pb-3 rounded-3 shadow-sm col-auto blurred-box">
+                <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)">Note (optional)</h3>
+                <!-- <div class="mb-1" id="notificationPopup"></div> -->
+
+                <div class="mb-1 px-3">
+                  <label for="notes" class="form-label text-secondary">Note</label>
+                  <input type="text" class="form-control" id="notes" name="notes" placeholder="Kosongkan bila tidak perlu" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row my-5 multi-button">
+          <div class="col-lg-8 mx-auto text-center">
+            <a class="button shadow my-3" href="/member/abort" role="button">Back</a>
+
+            <button class="button shadow my-3" type="submit">Check-Out</button>
+
+            <a class="button shadow my-3" href="/" role="button">Menu</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

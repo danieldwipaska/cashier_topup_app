@@ -16,6 +16,8 @@ const updateMemberByIdentityNumber =
 
 const updateMemberCardById = 'UPDATE members SET barcode = $1, updated_at = NOW() WHERE id = $2';
 
+const deactivateMemberByCustomerId = 'UPDATE members SET is_active = $1, barcode = $2, updated_at = NOW() WHERE customer_id = $3';
+
 module.exports = {
   addMember,
   getMembers,
@@ -28,4 +30,5 @@ module.exports = {
   updateMemberById,
   updateMemberByIdentityNumber,
   updateMemberCardById,
+  deactivateMemberByCustomerId,
 };
