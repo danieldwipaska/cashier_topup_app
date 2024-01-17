@@ -120,7 +120,7 @@ a {
   animation-fill-mode: both;
 }
 
-.menu-button-logout {
+.menu-button-balance-adjustment {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
@@ -128,13 +128,37 @@ a {
   animation-fill-mode: both;
 }
 
-.menu-button-advanced {
+.menu-button-card-transfer {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.8s;
+  animation-fill-mode: both;
+}
+
+.menu-button-member-area {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.9s;
+  animation-fill-mode: both;
+}
+
+/* .menu-button-logout {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
   animation-delay: 0.7s;
   animation-fill-mode: both;
-}
+} */
+
+/* .menu-button-advanced {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.7s;
+  animation-fill-mode: both;
+} */
 
 .menu-button-card-list {
   position: relative;
@@ -173,6 +197,14 @@ a {
   animation-name: menu;
   animation-duration: 1s;
   animation-delay: 0.3s;
+  animation-fill-mode: both;
+}
+
+.menu-button-member-abort {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.4s;
   animation-fill-mode: both;
 }
 

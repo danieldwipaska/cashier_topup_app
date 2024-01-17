@@ -5,10 +5,6 @@ const cardQueries = require('../database/cards/queries');
 const paymentQueries = require('../database/payments/queries');
 const crewQueries = require('../database/crews/queries');
 const fnbQueries = require('../database/fnbs/queries');
-const tokenQueries = require('../database/tokens/queries');
-const taxQueries = require('../database/taxes/queries');
-const stockQueries = require('../database/stocks/queries');
-const discountQueries = require('../database/discounts/queries');
 const verifyToken = require('./middlewares/verifyToken');
 const { v4 } = require('uuid');
 const { errorLog, infoLog } = require('../config/logger/functions');
@@ -17,9 +13,8 @@ const { allRoles, cashierAndDeveloper } = require('./middlewares/userRole');
 const fastcsv = require('fast-csv');
 const fs = require('fs');
 const { convertTZ } = require('./functions/convertDateTimezone');
-const { convertTimeHour } = require('./functions/convertTimeString');
 const { OpenAndCloseTimeConverter } = require('./classes/openAndCloseTimeConverter');
-const { redirect } = require('express/lib/response');
+const { BALANCE_UPDATE_SUCCESS, PAYMENT_REPORT_FAILED, BALANCE_UPDATE_FAILED } = require('./var/reports');
 
 // SEARCH
 router.get('/search', verifyToken, allRoles, async (req, res) => {
@@ -100,7 +95,12 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
     // CHECK WHETHER OR NOT THE CARD EXISTS
     const cards = await pool.query(cardQueries.getCardById, [barcode]);
 
-    if (!cards.rows.length) return res.status(404).json('Card Not Found');
+    if (!cards.rows.length)
+      return res.render('notificationError', {
+        layout: 'layouts/main-layout',
+        title: 'Payment Error',
+        message: 'Card Not Found',
+      });
 
     if (cards.rows[0].customer_id !== customer_id)
       return res.render('notificationError', {
@@ -177,7 +177,7 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
           const action = 'pay';
           const payment_method = 'None';
 
-          await pool.query(paymentQueries.addPayment, [
+          const payments = await pool.query(paymentQueries.addPayment, [
             id,
             action,
             barcode,
@@ -209,15 +209,28 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
             message: 'Card Payment succeed.',
             data: updatedCards.rows[0],
             invoiceNumber: invoice_number,
-            isTopup: '',
+            status: 'payment',
+            payment: payments.rows[0],
           });
         } catch (error) {
           errorLog(paymentLogger, error, 'Error in HTTP POST / when calling paymentQueries.addPayment');
-          return res.status(500).json('Server Error');
+          return res.render('notificationErrorWithProgress', {
+            layout: 'layouts/main-layout',
+            title: 'Top-Up Error',
+            message: 'Please adjust the card balance before trying again.',
+            success: [BALANCE_UPDATE_SUCCESS],
+            failed: [PAYMENT_REPORT_FAILED],
+          });
         }
       } catch (error) {
         errorLog(paymentLogger, error, 'Error in HTTP POST / when calling cardQueries.updateBalance');
-        return res.status(500).json('Server Error');
+        return res.render('notificationErrorWithProgress', {
+          layout: 'layouts/main-layout',
+          title: 'Payment Error',
+          message: 'Please screenshot the error and contact the developer.',
+          success: [],
+          failed: [BALANCE_UPDATE_FAILED, PAYMENT_REPORT_FAILED],
+        });
       }
     } catch (error) {
       errorLog(paymentLogger, error, 'Error in HTTP POST / when calling crewQueries');

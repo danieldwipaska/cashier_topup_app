@@ -102,7 +102,14 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
           data: currentCards.rows[0],
         });
 
-      if (currentCards.rows[0].is_member != newCards.rows[0].is_member) return res.status(400).json('Both Current Card and New Card are not in the same type (member or non-member). Transferring Cards require the same type of cards');
+      if (currentCards.rows[0].is_member != newCards.rows[0].is_member)
+        return res.render('cardTransfer', {
+          layout: 'layouts/main-layout',
+          title: 'Card Transfer',
+          subtitle: 'Current Card',
+          alert: 'Both Current Card and New Card are not in the same type (member or non-member). Transferring Cards require the same type of cards',
+          data: currentCards.rows[0],
+        });
 
       try {
         // UPDATE NEW CARD

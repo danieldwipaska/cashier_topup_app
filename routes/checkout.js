@@ -10,6 +10,7 @@ const pool = require('../db');
 const { cashierAndDeveloper } = require('./middlewares/userRole');
 const verifyToken = require('./middlewares/verifyToken');
 const { convertTZ } = require('./functions/convertDateTimezone');
+const { CARD_UPDATE_FAILED, CARD_UPDATE_SUCCESS } = require('./var/reports');
 
 // Status MENU
 router.get('/search', verifyToken, cashierAndDeveloper, (req, res) => {
@@ -91,7 +92,7 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
 
       // UPDATE CARD
       try {
-        await pool.query(cardQueries.cardStatus, [false, null, null, 0, 0, cards.rows[0].barcode]);
+        const cardUpdated = await pool.query(cardQueries.cardStatus, [false, null, null, 0, 0, cards.rows[0].barcode]);
 
         infoLog(checkoutLogger, 'Card is_active was successfully updated into false', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);
 
@@ -109,7 +110,7 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
           const menu_discounts = []; // NO MENU
           const menu_discount_percents = []; // NO MENU
 
-          await pool.query(paymentQueries.addPayment, [
+          const payments = await pool.query(paymentQueries.addPayment, [
             id,
             action,
             barcode,
@@ -135,18 +136,34 @@ router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
           // SEND LOG
           infoLog(checkoutLogger, 'Payment was successfully added and invoice number was successfully generated', cards.rows[0].barcode, cards.rows[0].customer_name, cards.rows[0].customer_id, req.validUser.name);
 
-          return res.render('notificationSuccess', {
+          return res.render('notificationSuccessWithBalance', {
             layout: 'layouts/main-layout',
-            title: 'Check-Out',
+            title: 'Check-Out Success',
             message: 'Card has been checked out successfully.',
+            data: cardUpdated.rows[0],
+            invoiceNumber: invoice_number,
+            status: 'topup',
+            payment: payments.rows[0],
           });
         } catch (error) {
           errorLog(checkoutLogger, error, 'Error in HTTP POST / when calling paymentQueries.addPayment');
-          return res.status(500).json('Server Error');
+          return res.render('notificationErrorWithProgress', {
+            layout: 'layouts/main-layout',
+            title: 'Top-Up Error',
+            message: 'Please do these steps: (1) Top-up the card with the same balance as the checkout; (2) Try to checkout the card again.',
+            success: [CARD_UPDATE_SUCCESS],
+            failed: [PAYMENT_REPORT_FAILED],
+          });
         }
       } catch (error) {
         errorLog(checkoutLogger, error, 'Error in HTTP POST / when calling cardQueries.cardStatus');
-        return res.status(500).json('Server Error');
+        return res.render('notificationErrorWithProgress', {
+          layout: 'layouts/main-layout',
+          title: 'Checkout Error',
+          message: 'Please screenshot this error and send it to the developer.',
+          success: [],
+          failed: [CARD_UPDATE_FAILED, PAYMENT_REPORT_FAILED],
+        });
       }
     }
   } catch (error) {

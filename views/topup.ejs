@@ -87,7 +87,8 @@
 
               <div class="mb-1 col-auto">
                 <label for="addBalance" class="form-label text-secondary">Add Balance*</label>
-                <input type="number" class="form-control" id="addBalance" name="addBalance" required />
+                <input type="text" class="form-control input-element" id="inputBalance" name="inputBalance" required />
+                <input type="hidden" class="form-control" id="addBalance" name="addBalance" required />
               </div>
             </div>
             <div class="row">
@@ -149,6 +150,19 @@
     </div>
   </div>
 </div>
+<script>
+  const inputBalance = document.querySelector('#inputBalance');
+  const addBalance = document.querySelector('#addBalance');
+
+  const cleave = new Cleave('.input-element', {
+    numeral: true,
+    numeralThousandsGroupStyle: 'thousand',
+    onValueChanged: function (e) {
+      // e.target = { value: '5100-1234', rawValue: '51001234' }
+      addBalance.value = e.target.rawValue;
+    },
+  });
+</script>
 <!-- <script src="/public/script/mokaInvoices.js"></script>
 <script src="/public/script/copyMokaInvoices.js"></script> -->
 

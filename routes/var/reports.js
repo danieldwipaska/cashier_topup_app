@@ -1,6 +1,8 @@
 // SUCCESS
 const CARD_CHECKED_OUT = 'Card checked out.';
 const PAYMENT_REPORT_ADDED = 'Payment report added.';
+const BALANCE_UPDATE_SUCCESS = 'Card balance updated successfully.';
+const CARD_UPDATE_SUCCESS = 'Card updated successfully';
 
 // FAILED
 const PAYMENT_REPORT_FAILED = 'Payment report failed.';
@@ -8,6 +10,8 @@ const MEMBER_UPDATE_FAILED = 'Member update failed.';
 const ERROR_WHILE_SEARCHING = 'Error while searching. Please contact the developer.';
 const CHECKOUT_ERROR = 'Checkout Error. Please contact the developer.';
 const ACTIVATION_ERROR = 'Activation Error. Please contact the developer.';
+const BALANCE_UPDATE_FAILED = 'Card balance update failed';
+const CARD_UPDATE_FAILED = 'Card update failed';
 
 // ALERT
 const CARD_ACTIVATED = 'Card has been activated successfully.';
@@ -31,4 +35,8 @@ module.exports = {
   CARD_NOT_ACTIVE,
   CARD_NOT_MEMBER,
   CARD_BELONGS_TO_OTHER,
+  BALANCE_UPDATE_FAILED,
+  BALANCE_UPDATE_SUCCESS,
+  CARD_UPDATE_FAILED,
+  CARD_UPDATE_SUCCESS,
 };

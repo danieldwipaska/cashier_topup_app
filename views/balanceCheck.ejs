@@ -20,24 +20,23 @@
 <div class="container-md mt-1 mb-3">
   <div class="row my-1">
     <div class="col-md-9 mx-auto my-1 px-4">
-      <form action="/checkout" method="post">
-        <div class="row">
-          <div class="mb-1">
-            <label for="barcode" class="form-label text-secondary">Card</label>
-            <input type="text" class="form-control" id="barcode" name="barcode" readonly value="<%= data.barcode %>" />
-          </div>
+      <div class="row">
+        <div class="mb-1">
+          <label class="form-label text-secondary">Card</label>
+          <input type="text" class="form-control" readonly value="<%= data.barcode %>" />
+        </div>
 
-          <div class="mb-1">
-            <label for="customerName" class="form-label text-secondary">Name</label>
-            <input type="text" class="form-control" id="customerName" name="customerName" value="<%= data.customer_name %>" readonly />
-          </div>
+        <div class="mb-1">
+          <label for="customerName" class="form-label text-secondary">Name</label>
+          <input type="text" class="form-control" value="<%= data.customer_name %>" readonly />
+        </div>
 
-          <div class="mb-1 col-auto">
-            <label for="customerId" class="form-label text-secondary">Costumer ID</label>
-            <input type="text" class="form-control" id="customerId" name="customerId" value="<%= data.customer_id %>" readonly />
-          </div>
+        <div class="mb-1 col-auto">
+          <label class="form-label text-secondary">Costumer ID</label>
+          <input type="text" class="form-control" value="<%= data.customer_id %>" readonly />
+        </div>
 
-          <!-- <div class="mb-1 col-auto">
+        <!-- <div class="mb-1 col-auto">
                 <label for="servedBy" class="form-label text-secondary">Served By</label>
                 <input type="text" class="form-control" id="servedBy" name="servedBy" required />
               </div>
@@ -47,46 +46,115 @@
                 <input type="text" class="form-control" id="collectedBy" name="collectedBy" required />
               </div> -->
 
-          <div class="mb-1 col-auto">
-            <label for="balance" class="form-label text-secondary">Balance</label>
-            <input type="text" class="form-control" id="balance" name="balance" value="<%= Intl.NumberFormat('en-US').format(data.balance) %>" readonly />
-          </div>
-
-          <div class="mb-1 col-auto">
-            <label for="deposit" class="form-label text-secondary">Deposit</label>
-            <input type="text" class="form-control" id="deposit" name="deposit" value="<%= Intl.NumberFormat('en-US').format(data.deposit) %>" readonly />
-          </div>
-
-          <% if (data.is_member) { %>
-          <div class="mb-1 col-auto">
-            <label for="isMember" class="form-label text-secondary">Member Status</label>
-            <input type="text" class="form-control bg-success text-light" id="isMember" name="isMember" value="yes" readonly />
-          </div>
-          <% } else { %>
-          <div class="mb-1 col-auto">
-            <label for="isMember" class="form-label text-secondary">Member Status</label>
-            <input type="text" class="form-control bg-danger text-light" id="isMember" name="isMember" value="no" readonly />
-          </div>
-          <% } %> <% if (data.is_active) { %>
-          <div class="mb-1 col-auto">
-            <label for="isActive" class="form-label text-secondary">Activation</label>
-            <input type="text" class="form-control bg-success text-light" id="isActive" name="isActive" value="active" readonly />
-          </div>
-          <% } else { %>
-          <div class="mb-1 col-auto">
-            <label for="isActive" class="form-label text-secondary">Activation</label>
-            <input type="text" class="form-control bg-danger text-light" id="isActive" name="isActive" value="inactive" readonly />
-          </div>
-          <% } %>
+        <div class="mb-1 col-auto">
+          <label class="form-label text-secondary">Balance</label>
+          <input type="text" class="form-control" value="<%= Intl.NumberFormat('en-US').format(data.balance) %>" readonly />
         </div>
-        <div class="row my-5 multi-button">
-          <div class="col-lg-8 mx-auto text-center">
-            <a class="button shadow my-3" href="/card/search" role="button">Back</a>
 
-            <a class="button shadow my-3" href="/" role="button">Menu</a>
+        <div class="mb-1 col-auto">
+          <label class="form-label text-secondary">Deposit</label>
+          <input type="text" class="form-control" value="<%= Intl.NumberFormat('en-US').format(data.deposit) %>" readonly />
+        </div>
+
+        <% if (data.is_member) { %>
+        <div class="mb-1 col-auto">
+          <label class="form-label text-secondary">Member Status</label>
+          <input type="text" class="form-control text-success fw-bold" value="yes" readonly />
+        </div>
+        <% } else { %>
+        <div class="mb-1 col-auto">
+          <label class="form-label text-secondary">Member Status</label>
+          <input type="text" class="form-control text-danger fw-bold" value="no" readonly />
+        </div>
+        <% } %> <% if (data.is_active) { %>
+        <div class="mb-1 col-auto">
+          <label class="form-label text-secondary">Activation</label>
+          <input type="text" class="form-control text-success fw-bold" value="active" readonly />
+        </div>
+        <% } else { %>
+        <div class="mb-1 col-auto">
+          <label class="form-label text-secondary">Activation</label>
+          <input type="text" class="form-control text-danger fw-bold" value="inactive" readonly />
+        </div>
+        <% } %>
+
+        <div class="mt-3 col-auto">
+          <label for="receipt" class="text-secondary">Send To Customer</label>
+          <div class="d-flex flex-row mt-2">
+            <input type="text" class="form-control" id="receipt" name="receipt" value="<%= data.customer_id %>" required />
+            <div class="receipt">
+              <input type="hidden" class="form-control" id="customerName" name="customerName" value="<%= data.customer_name %>" required />
+              <input type="hidden" class="form-control" id="customerId" name="customerId" value="<%= data.customer_id %>" required />
+              <input type="hidden" class="form-control" id="balance" name="balance" value="<%= data.balance %>" required />
+            </div>
+            <button class="btn btn-secondary mx-1 send-receipt-button">Send</button>
+            <div class="sending-status"></div>
           </div>
         </div>
-      </form>
+      </div>
+      <div class="row my-5 multi-button">
+        <div class="col-lg-8 mx-auto text-center">
+          <a class="button shadow my-3" href="/card/search" role="button">Back</a>
+
+          <a class="button shadow my-3" href="/" role="button">Menu</a>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
+<script>
+  const sendReceiptButton = document.querySelector('.send-receipt-button');
+  const sendingStatus = document.querySelector('.sending-status');
+  const receipts = document.querySelector('.receipt');
+  const customerName = document.querySelector('#customerName');
+  const customerId = document.querySelector('#customerId');
+  const balance = document.querySelector('#balance');
+
+  sendReceiptButton.addEventListener('click', async () => {
+    sendingStatus.innerHTML = `<div class="spinner-border text-dark" role="status" style="height: 30px; width: 30px">
+                <span class="visually-hidden">Loading...</span>
+              </div>`;
+
+    const receiptData = {
+      customer_name: customerName.value,
+      customer_id: customerId.value,
+      balance: balance.value,
+    };
+
+    try {
+      const response = await fetch('http://localhost:3001/api/notification/send', {
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        mode: 'cors', // no-cors, *cors, same-origin
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+          'Content-Type': 'application/json',
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        redirect: 'follow', // manual, *follow, error
+        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        body: JSON.stringify(receiptData), // body data type must match "Content-Type" header
+      });
+
+      const data = await response.json();
+      console.log(data);
+
+      sendingStatus.innerHTML = `<svg style="height: 35px; width: 35px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier">
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M19.7071 6.29289C20.0976 6.68342 20.0976 7.31658 19.7071 7.70711L10.4142 17C9.63316 17.7811 8.36683 17.781 7.58579 17L3.29289 12.7071C2.90237 12.3166 2.90237 11.6834 3.29289 11.2929C3.68342 10.9024 4.31658 10.9024 4.70711 11.2929L9 15.5858L18.2929 6.29289C18.6834 5.90237 19.3166 5.90237 19.7071 6.29289Z"
+                    fill="#000000"
+                  ></path>
+                </g>
+              </svg>`;
+    } catch (error) {
+      console.log(error);
+      sendingStatus.innerHTML = 'Error';
+    }
+  });
+</script>
