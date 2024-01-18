@@ -152,4 +152,57 @@ router.get('/:id/delete', verifyToken, allRoles, async (req, res) => {
   }
 });
 
+// UPDATE DISCOUNT STATUS
+router.get('/discount/:id', verifyToken, allRoles, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const fnbs = await pool.query(fnbQueries.getFnbById, [id]);
+    if (!fnbs.rows.length)
+      return res.status(404).json({
+        response: {
+          status: 404,
+          message: 'Not Found',
+          url: req.originalUrl,
+        },
+        data: {},
+      });
+
+    try {
+      const updatedFnb = await pool.query(fnbQueries.updateDiscountStatusById, [!fnbs.rows[0].discount_status, id]);
+
+      infoLog(fnbLogger, 'Fnb discount status was successfully updated', '', '', '', req.validUser.name);
+
+      return res.status(200).json({
+        response: {
+          status: 200,
+          message: 'OK',
+          url: req.originalUrl,
+        },
+        data: updatedFnb.rows[0],
+      });
+    } catch (error) {
+      errorLog(fnbLogger, error, 'Error in GET /discount/:id when calling fnbQueries.updateDiscountStatusById');
+      return res.status(500).json({
+        response: {
+          status: 500,
+          message: 'Internal Server Error',
+          url: req.originalUrl,
+        },
+        data: {},
+      });
+    }
+  } catch (error) {
+    errorLog(fnbLogger, error, 'Error in GET /discount/:id when calling fnbQueries.getFnbById');
+    return res.status(500).json({
+      response: {
+        status: 500,
+        message: 'Internal Server Error',
+        url: req.originalUrl,
+      },
+      data: {},
+    });
+  }
+});
+
 module.exports = router;

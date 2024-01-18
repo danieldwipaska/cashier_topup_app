@@ -39,7 +39,6 @@
               <th scope="col">Name</th>
               <th scope="col">Variant</th>
               <th scope="col">Price</th>
-              <th scope="col">Discount Status</th>
               <th scope="col">Discount (%)</th>
               <th scope="col"></th>
             </tr>
@@ -50,12 +49,20 @@
               <th scope="row"><%= element.menu %></th>
               <td><%= element.kind %></td>
               <td><%= Intl.NumberFormat('en-US').format(element.price) %></td>
-              <% if (element.discount_status) { %>
-              <td class="text-success">active</td>
-              <% } else { %>
-              <td class="text-danger">inactive</td>
-              <% } %>
-              <td><%= element.discount_percent %></td>
+              <td>
+                <div class="d-flex flex-row">
+                  <% if (element.discount_status) { %>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input instant-discount" type="checkbox" name="instantDiscount" value="<%= element.id %>" checked />
+                  </div>
+                  <% } else { %>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input instant-discount" type="checkbox" name="instantDiscount" value="<%= element.id %>" />
+                  </div>
+                  <% } %>
+                  <div><%= element.discount_percent %></div>
+                </div>
+              </td>
               <td class="text-end">
                 <button class="border-0 bg-transparent edit-button" data-bs-toggle="modal" data-bs-target="#exampleModal">
                   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 20px">
@@ -110,12 +117,20 @@
               <th scope="row"><%= element.menu %></th>
               <td><%= element.kind %></td>
               <td><%= Intl.NumberFormat('en-US').format(element.price) %></td>
-              <% if (element.discount_status) { %>
-              <td class="text-success">active</td>
-              <% } else { %>
-              <td class="text-danger">inactive</td>
-              <% } %>
-              <td><%= element.discount_percent %></td>
+              <td>
+                <div class="d-flex flex-row">
+                  <% if (element.discount_status) { %>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input instant-discount" type="checkbox" name="instantDiscount" value="<%= element.id %>" checked />
+                  </div>
+                  <% } else { %>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input instant-discount" type="checkbox" name="instantDiscount" value="<%= element.id %>" />
+                  </div>
+                  <% } %>
+                  <div><%= element.discount_percent %></div>
+                </div>
+              </td>
               <td class="text-end">
                 <button class="border-0 bg-transparent edit-button" data-bs-toggle="modal" data-bs-target="#exampleModal">
                   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 20px">
@@ -222,11 +237,11 @@
 </div>
 
 <script>
-  async function fetchMemberData(fnbId) {
+  async function fetchFnbData(fnbId) {
     try {
-      const data = await fetch(`http://localhost:3000/fnb/${fnbId}`);
+      const response = await fetch(`http://localhost:3000/fnb/${fnbId}`);
 
-      const response = await data.json();
+      const data = await response.json();
 
       const menu = document.querySelector('.menu');
       const kind = document.querySelector('.kind');
@@ -234,37 +249,53 @@
       const discount = document.querySelector('#discount');
       const discountPercent = document.querySelector('#discountPercent');
 
-      let isDiscount;
-
       const form = document.querySelector('form');
 
-      menu.value = response.menu;
-      kind.value = response.kind;
-      price.value = response.price;
+      menu.value = data.menu;
+      kind.value = data.kind;
+      price.value = data.price;
 
-      if (response.discount_status) {
-        isDiscount = true;
+      if (data.discount_status) {
         discount.setAttribute('checked', 'checked');
-      } else {
-        isDiscount = false;
       }
 
-      discountPercent.value = response.discount_percent;
+      discountPercent.value = data.discount_percent;
 
-      form.setAttribute('action', `/fnb/${response.id}`);
+      form.setAttribute('action', `/fnb/${data.id}`);
     } catch (error) {
       console.log(error);
     }
   }
 
+  async function updateFnbData(fnbId) {
+    // console.log(fnbId);
+    try {
+      const response = await fetch(`http://localhost:3000/fnb/discount/${fnbId}`);
+
+      const data = await response.json();
+      if (data.response.status != 200) throw alert('Server Error. Please go back to Main Menu , and try again!');
+    } catch (error) {
+      return console.log(error);
+    }
+  }
+
   const editButtons = document.querySelectorAll('.edit-button');
+  const discountButtons = document.querySelectorAll('.instant-discount');
 
   editButtons.forEach((editButton) => {
     editButton.addEventListener('click', (e) => {
       const fnbId = editButton.querySelector('input').value;
 
       // console.log(memberId);
-      fetchMemberData(fnbId);
+      fetchFnbData(fnbId);
+    });
+  });
+
+  discountButtons.forEach((discountButton) => {
+    discountButton.addEventListener('click', (e) => {
+      const fnbId = e.target.value;
+
+      updateFnbData(fnbId);
     });
   });
 </script>
