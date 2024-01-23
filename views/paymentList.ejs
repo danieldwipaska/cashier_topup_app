@@ -551,6 +551,14 @@
       </thead>
       <tbody class="order-body"></tbody>
     </table>
+
+    <div class="row mt-5 mb-3">
+      <div class="col-md">
+        <h5>Send To The Customer</h5>
+        <div class="d-flex flex-row send-to-customer"></div>
+      </div>
+    </div>
+
     <button class="btn btn-secondary" data-bs-dismiss="offcanvas" aria-label="Close">Back</button>
   </div>
 </div>
@@ -609,6 +617,8 @@
   const customerId = offcanvasRight.querySelector('#customerId');
   const barcode = offcanvasRight.querySelector('#barcode');
   const payment = offcanvasRight.querySelector('#payment');
+  const sendToCustomer = offcanvasRight.querySelector('.send-to-customer');
+
   const orders = offcanvasRight.querySelector('.orders');
   const orderDetailButtons = document.querySelectorAll('.order-detail-button');
   const tableBody = offcanvasRight.querySelector('.order-body');
@@ -641,8 +651,6 @@
       const refundPayment = refundButton.querySelector('#payment');
       const refundPaymentId = refundButton.querySelector('#paymentId');
 
-      console.log(refundPayment);
-
       modalInvoiceNumber.value = refundInvoiceNumber.value;
       modalBarcode.value = refundBarcode.value;
       modalCustomerName.value = refundCustomerName.value;
@@ -667,6 +675,26 @@
         offcanvasHeader.innerHTML = `Payment Details<span class="mx-2 badge bg-danger">${response.action}</span>`;
       } else {
         offcanvasHeader.innerHTML = `Payment Details<span class="mx-2 badge bg-primary">${response.action}</span>`;
+      }
+
+      if (response.action === 'topup' || response.action === 'pay' || response.action === 'checkout') {
+        if (response.invoice_status === 'paid') {
+          sendToCustomer.innerHTML = `<input type="text" class="form-control border border-dark" id="receipt" name="receipt" style="width: 60%" required />
+          <div class="receipt">
+            <input type="hidden" class="form-control" id="paymentId" name="paymentId" required />
+          </div>
+          <button class="btn btn-secondary mx-1 send-receipt-button">Send</button>
+          <div class="sending-status"></div>`;
+
+          const paymentId = offcanvasRight.querySelector('#paymentId');
+          const whatsappNumber = offcanvasRight.querySelector('#receipt');
+          paymentId.value = response.id;
+          whatsappNumber.value = response.customer_id;
+        } else {
+          sendToCustomer.innerHTML = '<p class="text-secondary">Receipt Not Available for this report.</p>';
+        }
+      } else {
+        sendToCustomer.innerHTML = '<p class="text-secondary">Receipt Not Available for this report.</p>';
       }
 
       servedBy.value = response.served_by;
@@ -708,6 +736,39 @@
         orderHeader.classList.add('visually-hidden');
         orders.classList.add('visually-hidden');
       }
+      const sendReceiptButton = offcanvasRight.querySelector('.send-receipt-button');
+      const sendingStatus = offcanvasRight.querySelector('.sending-status');
+
+      sendReceiptButton.addEventListener('click', async () => {
+        const paymentId = offcanvasRight.querySelector('#paymentId');
+        const whatsappNumber = offcanvasRight.querySelector('#receipt');
+
+        sendingStatus.innerHTML = `<div class="spinner-border text-dark" role="status" style="height: 30px; width: 30px">
+                <span class="visually-hidden">Loading...</span>
+              </div>`;
+
+        try {
+          const response = await fetch(`http://localhost:3000/support/receipt/${paymentId.value}/whatsapp?number=${whatsappNumber.value}`);
+
+          const data = await response.json();
+
+          sendingStatus.innerHTML = `<svg style="height: 35px; width: 35px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier">
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M19.7071 6.29289C20.0976 6.68342 20.0976 7.31658 19.7071 7.70711L10.4142 17C9.63316 17.7811 8.36683 17.781 7.58579 17L3.29289 12.7071C2.90237 12.3166 2.90237 11.6834 3.29289 11.2929C3.68342 10.9024 4.31658 10.9024 4.70711 11.2929L9 15.5858L18.2929 6.29289C18.6834 5.90237 19.3166 5.90237 19.7071 6.29289Z"
+                    fill="#000000"
+                  ></path>
+                </g>
+              </svg>`;
+        } catch (error) {
+          console.log(error);
+          sendingStatus.innerHTML = 'Error';
+        }
+      });
     } catch (error) {
       console.log(error);
     }

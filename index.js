@@ -25,6 +25,7 @@ const analysisRoute = require('./routes/analysis');
 const transferRoute = require('./routes/transfer');
 const fnbRoute = require('./routes/fnbs');
 const adjustmentRoute = require('./routes/adjustment');
+const supportRoute = require('./routes/support');
 
 const app = express();
 
@@ -59,6 +60,7 @@ app.use('/analysis', analysisRoute);
 app.use('/transfer', transferRoute);
 app.use('/fnb', fnbRoute);
 app.use('/adjustment', adjustmentRoute);
+app.use('/support', supportRoute);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

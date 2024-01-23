@@ -89,20 +89,7 @@
           <div class="d-flex flex-row">
             <input type="text" class="form-control" id="receipt" name="receipt" value="<%= payment.customer_id %>" required />
             <div class="receipt">
-              <input type="hidden" class="form-control" id="action" name="action" value="<%= payment.action %>" required />
-              <input type="hidden" class="form-control" id="customerName" name="customerName" value="<%= payment.customer_name %>" required />
-              <input type="hidden" class="form-control" id="customerId" name="customerId" value="<%= payment.customer_id %>" required />
-              <input type="hidden" class="form-control" id="payment" name="payment" value="<%= payment.payment %>" required />
-              <input type="hidden" class="form-control" id="invoiceNumber" name="invoiceNumber" value="<%= payment.invoice_number %>" required />
-              <input type="hidden" class="form-control" id="initialBalance" name="initialBalance" value="<%= payment.initial_balance %>" required />
-              <input type="hidden" class="form-control" id="finalBalance" name="finalBalance" value="<%= payment.final_balance %>" required />
-              <input type="hidden" class="form-control" id="createdAt" name="createdAt" value="<%= payment.created_at %>" required />
-              <input type="hidden" class="form-control" id="menuNames" name="menuNames" value="<%= payment.menu_names %>" required />
-              <input type="hidden" class="form-control" id="menuAmount" name="menuAmount" value="<%= payment.menu_amount %>" required />
-              <input type="hidden" class="form-control" id="menuPrices" name="menuPrices" value="<%= payment.menu_prices %>" required />
-              <input type="hidden" class="form-control" id="menuKinds" name="menuKinds" value="<%= payment.menu_kinds %>" required />
-              <input type="hidden" class="form-control" id="menuDiscounts" name="menuDiscounts" value="<%= payment.menu_discounts %>" required />
-              <input type="hidden" class="form-control" id="menuDiscountPercents" name="menuDiscountPercents" value="<%= payment.menu_discount_percents %>" required />
+              <input type="hidden" class="form-control" id="paymentId" name="paymentId" value="<%= payment.id %>" required />
             </div>
             <button class="btn btn-secondary mx-1 send-receipt-button">Send</button>
             <div class="sending-status"></div>
@@ -119,60 +106,18 @@
   const sendReceiptButton = document.querySelector('.send-receipt-button');
   const sendingStatus = document.querySelector('.sending-status');
   const receipts = document.querySelector('.receipt');
-  const action = document.querySelector('#action');
-  const customerName = document.querySelector('#customerName');
-  const customerId = document.querySelector('#customerId');
-  const payment = document.querySelector('#payment');
-  const invoiceNumber = document.querySelector('#invoiceNumber');
-  const initialBalance = document.querySelector('#initialBalance');
-  const finalBalance = document.querySelector('#finalBalance');
-  const createdAt = document.querySelector('#createdAt');
-  const menuNames = document.querySelector('#menuNames');
-  const menuAmount = document.querySelector('#menuAmount');
-  const menuPrices = document.querySelector('#menuPrices');
-  const menuKinds = document.querySelector('#menuKinds');
-  const menuDiscounts = document.querySelector('#menuDiscounts');
-  const menuDiscountPercents = document.querySelector('#menuDiscountPercents');
+  const whatsappNumber = document.querySelector('#receipt');
+  const paymentId = document.querySelector('#paymentId').value;
 
   sendReceiptButton.addEventListener('click', async () => {
     sendingStatus.innerHTML = `<div class="spinner-border text-dark" role="status" style="height: 30px; width: 30px">
                 <span class="visually-hidden">Loading...</span>
               </div>`;
 
-    const receiptData = {
-      action: action.value,
-      customer_name: customerName.value,
-      customer_id: customerId.value,
-      payment: payment.value,
-      invoice_number: invoiceNumber.value,
-      initial_balance: initialBalance.value,
-      final_balance: finalBalance.value,
-      created_at: createdAt.value,
-      menu_names: menuNames.value,
-      menu_amount: menuAmount.value,
-      menu_prices: menuPrices.value,
-      menu_kinds: menuKinds.value,
-      menu_discounts: menuDiscounts.value,
-      menu_discount_percents: menuDiscountPercents.value,
-    };
-
     try {
-      const response = await fetch('http://localhost:3001/api/receipt/send', {
-        method: 'POST', // *GET, POST, PUT, DELETE, etc.
-        mode: 'cors', // no-cors, *cors, same-origin
-        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'same-origin', // include, *same-origin, omit
-        headers: {
-          'Content-Type': 'application/json',
-          // 'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        redirect: 'follow', // manual, *follow, error
-        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-        body: JSON.stringify(receiptData), // body data type must match "Content-Type" header
-      });
+      const response = await fetch(`http://localhost:3000/support/receipt/${paymentId}/whatsapp?number=${whatsappNumber.value}`);
 
       const data = await response.json();
-      console.log(data);
 
       sendingStatus.innerHTML = `<svg style="height: 35px; width: 35px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
