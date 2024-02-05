@@ -10,9 +10,27 @@
           <a class="button shadow menu-button-activation" href="/activation/search" role="button">Activation</a>
           <a class="button shadow menu-button-create" href="/create/search" role="button">Create a Card</a>
           <a class="button shadow menu-button-balance-check" href="/card/search" role="button">Balance Check</a>
-          <a class="button shadow menu-button-balance-adjustment" href="/adjustment/search" role="button">Adjustment</a>
-          <a class="button shadow menu-button-card-transfer" href="/transfer/search" role="button">Card Transfer</a>
-          <a class="button shadow menu-button-member-area" href="/member" role="button">Member Area</a>
+          <div class="button shadow menu-button-balance-adjustment" role="button">
+            <div class="position-relative">
+              <div class="position-absolute top-0 start-0 translate-middle px-2 on-progress fs-5">Upcoming</div>
+            </div>
+            <div>Adjustment</div>
+          </div>
+          <!-- href="/adjustment/search"  -->
+          <div class="button shadow menu-button-card-transfer" role="button">
+            <div class="position-relative">
+              <div class="position-absolute top-0 start-0 translate-middle px-2 on-progress fs-5">Upcoming</div>
+            </div>
+            <div>Card Transfer</div>
+          </div>
+          <!-- href="/transfer/search" -->
+          <div class="button shadow menu-button-member-area" role="button">
+            <div class="position-relative">
+              <div class="position-absolute top-0 start-0 translate-middle px-2 on-progress fs-5">Upcoming</div>
+            </div>
+            <div>Member Area</div>
+          </div>
+          <!-- href="/member" -->
 
           <!-- <a class="button shadow menu-button-create" href="/member/search" role="button">Add Member</a> -->
         </div>
@@ -45,8 +63,18 @@
                 </div>
                 <div class="col mx-3">
                   <div class="row py-3 blurred-box-violet-light">
-                    <div class="py-auto">
-                      <p class="fs-4 mx-2 mb-0 d-inline">Check-Out</p>
+                    <div class="py-auto d-flex align-items-center">
+                      <p class="fs-4 mx-2 mb-0">Checkout</p>
+                      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#77767b" style="width: 40px">
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g id="SVGRepo_iconCarrier"><path d="M12 9.5C13.3807 9.5 14.5 10.6193 14.5 12C14.5 13.3807 13.3807 14.5 12 14.5C10.6193 14.5 9.5 13.3807 9.5 12C9.5 10.6193 10.6193 9.5 12 9.5Z" fill="#77767b"></path></g>
+                      </svg>
+                      <div class="d-flex align-items-center">
+                        <p class="fs-5 mx-2 mb-0 text-secondary">Total :</p>
+                        <div class="text-secondary">IDR</div>
+                        <div class="text-secondary total-checkout-data"></div>
+                      </div>
                     </div>
                     <div class="col mt-2">
                       <div class="row d-flex flex-nowrap overflow-auto px-2 pt-1 pb-3">
@@ -87,8 +115,18 @@
             </div>
           </div>
           <div class="row py-3 blurred-box-violet-light">
-            <div class="py-auto">
-              <p class="fs-4 mx-2 mb-0 d-inline">Top-Up</p>
+            <div class="py-auto d-flex align-items-center">
+              <p class="fs-4 mx-2 mb-0">Top-Up</p>
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#77767b" style="width: 40px">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier"><path d="M12 9.5C13.3807 9.5 14.5 10.6193 14.5 12C14.5 13.3807 13.3807 14.5 12 14.5C10.6193 14.5 9.5 13.3807 9.5 12C9.5 10.6193 10.6193 9.5 12 9.5Z" fill="#77767b"></path></g>
+              </svg>
+              <div class="d-flex align-items-center">
+                <p class="fs-5 mx-2 mb-0 text-secondary">Total :</p>
+                <div class="text-secondary">IDR</div>
+                <div class="text-secondary total-topup-data"></div>
+              </div>
             </div>
             <div class="col-md mt-2">
               <div class="row d-flex flex-nowrap overflow-auto px-2 pt-1 pb-3">
@@ -208,6 +246,8 @@
 
 <script>
   const totalPaymentData = document.querySelector('.total-payment-data');
+  const totalTopupData = document.querySelector('.total-topup-data');
+  const totalCheckoutData = document.querySelector('.total-checkout-data');
   const totalTopupCashData = document.querySelector('.total-topup-cash-data');
   const totalTopupTransferBcaData = document.querySelector('.total-topup-transfer-bca-data');
   const totalTopupTransferMandiriData = document.querySelector('.total-topup-transfer-mandiri-data');
@@ -234,6 +274,24 @@
       totalPaymentData.innerHTML = totalPayment;
     } catch (error) {
       totalPaymentData.innerHTML = 'Not Available';
+    }
+  }
+
+  async function fetchTotalTopup() {
+    try {
+      const response = await fetch('https://baharimalangirishpub-app.com/analysis/topup');
+      const data = await response.json();
+
+      let totalTopup = 0;
+      data.forEach((element) => {
+        totalTopup = totalTopup + element.payment;
+      });
+
+      totalTopup = Intl.NumberFormat('en-US').format(totalTopup);
+
+      totalTopupData.innerHTML = totalTopup;
+    } catch (error) {
+      totalTopupData.innerHTML = 'Not Available';
     }
   }
 
@@ -363,6 +421,24 @@
     }
   }
 
+  async function fetchTotalCheckout() {
+    try {
+      const response = await fetch('https://baharimalangirishpub-app.com/analysis/checkout');
+      const data = await response.json();
+
+      let totalCheckout = 0;
+      data.forEach((element) => {
+        totalCheckout = totalCheckout + element.payment;
+      });
+
+      totalCheckout = Intl.NumberFormat('en-US').format(totalCheckout);
+
+      totalCheckoutData.innerHTML = totalCheckout;
+    } catch (error) {
+      totalCheckoutData.innerHTML = 'Not Available';
+    }
+  }
+
   async function fetchTotalCheckoutCash() {
     try {
       const response = await fetch('https://baharimalangirishpub-app.com/analysis/checkout/cash');
@@ -429,6 +505,8 @@
     // fetchTotalCheckoutCash();
     // fetchTotalCheckoutTransferBca();
     // fetchTotalCheckoutTransferMandiri();
+    // fetchTotalTopup();
+    // fetchTotalCheckout();
   }, 1000);
 </script>
 

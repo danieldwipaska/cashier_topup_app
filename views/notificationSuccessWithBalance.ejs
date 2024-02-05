@@ -77,21 +77,24 @@
           <input type="text" class="form-control" id="name" name="name" value="<%= data.customer_name %>" readonly />
         </div>
 
-        <div class="mb-1 col-auto">
+        <div class="mb-3 col-auto">
           <label for="balance" class="form-label text-secondary">Balance</label>
           <input type="text" class="form-control" id="balance" name="balance" value="<%= Intl.NumberFormat('en-US').format(data.balance) %>" readonly />
         </div>
 
         <% if (status === 'topup' || status === 'payment' || status === 'checkout') { %>
 
-        <div class="mb-3 col-auto">
-          <label for="receipt" class="form-label text-secondary">Send Receipt (WA)</label>
+        <div class="mb-3 col-auto" style="opacity: 0.5">
+          <label for="receipt" class="form-label text-secondary d-flex">
+            <div class="px-2 on-progress">Upcoming</div>
+            <div class="mx-1">Send Receipt (WA)</div>
+          </label>
           <div class="d-flex flex-row">
             <input type="text" class="form-control" id="receipt" name="receipt" value="<%= payment.customer_id %>" required />
             <div class="receipt">
               <input type="hidden" class="form-control" id="paymentId" name="paymentId" value="<%= payment.id %>" required />
             </div>
-            <button class="btn btn-secondary mx-1 send-receipt-button">Send</button>
+            <button class="btn btn-secondary mx-1 send-receipt-button" disabled>Send</button>
             <div class="sending-status"></div>
           </div>
         </div>
@@ -109,31 +112,31 @@
   const whatsappNumber = document.querySelector('#receipt');
   const paymentId = document.querySelector('#paymentId').value;
 
-  sendReceiptButton.addEventListener('click', async () => {
-    sendingStatus.innerHTML = `<div class="spinner-border text-dark" role="status" style="height: 30px; width: 30px">
-                <span class="visually-hidden">Loading...</span>
-              </div>`;
+  // sendReceiptButton.addEventListener('click', async () => {
+  //   sendingStatus.innerHTML = `<div class="spinner-border text-dark" role="status" style="height: 30px; width: 30px">
+  //               <span class="visually-hidden">Loading...</span>
+  //             </div>`;
 
-    try {
-      const response = await fetch(`http://localhost:3000/support/receipt/${paymentId}/whatsapp?number=${whatsappNumber.value}`);
+  //   try {
+  //     const response = await fetch(`http://localhost:3000/support/receipt/${paymentId}/whatsapp?number=${whatsappNumber.value}`);
 
-      const data = await response.json();
+  //     const data = await response.json();
 
-      sendingStatus.innerHTML = `<svg style="height: 35px; width: 35px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                <g id="SVGRepo_iconCarrier">
-                  <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M19.7071 6.29289C20.0976 6.68342 20.0976 7.31658 19.7071 7.70711L10.4142 17C9.63316 17.7811 8.36683 17.781 7.58579 17L3.29289 12.7071C2.90237 12.3166 2.90237 11.6834 3.29289 11.2929C3.68342 10.9024 4.31658 10.9024 4.70711 11.2929L9 15.5858L18.2929 6.29289C18.6834 5.90237 19.3166 5.90237 19.7071 6.29289Z"
-                    fill="#000000"
-                  ></path>
-                </g>
-              </svg>`;
-    } catch (error) {
-      console.log(error);
-      sendingStatus.innerHTML = 'Error';
-    }
-  });
+  //     sendingStatus.innerHTML = `<svg style="height: 35px; width: 35px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  //               <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+  //               <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+  //               <g id="SVGRepo_iconCarrier">
+  //                 <path
+  //                   fill-rule="evenodd"
+  //                   clip-rule="evenodd"
+  //                   d="M19.7071 6.29289C20.0976 6.68342 20.0976 7.31658 19.7071 7.70711L10.4142 17C9.63316 17.7811 8.36683 17.781 7.58579 17L3.29289 12.7071C2.90237 12.3166 2.90237 11.6834 3.29289 11.2929C3.68342 10.9024 4.31658 10.9024 4.70711 11.2929L9 15.5858L18.2929 6.29289C18.6834 5.90237 19.3166 5.90237 19.7071 6.29289Z"
+  //                   fill="#000000"
+  //                 ></path>
+  //               </g>
+  //             </svg>`;
+  //   } catch (error) {
+  //     console.log(error);
+  //     sendingStatus.innerHTML = 'Error';
+  //   }
+  // });
 </script>

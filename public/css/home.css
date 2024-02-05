@@ -298,3 +298,26 @@ form {
   -webkit-backdrop-filter: blur(5px);
   border: 1px solid rgba(253, 233, 255, 0.3);
 }
+
+@keyframes onprogress {
+  0% {
+    background-color: #ffffff;
+  }
+  25% {
+    background-color: #ffea9e;
+  }
+  50% {
+    background-color: #ffda55;
+  }
+  100% {
+    background-color: #ffcb0d;
+  }
+}
+
+/* The element to apply the animation to */
+.on-progress {
+  background-color: #ffffff;
+  animation-name: onprogress;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+}

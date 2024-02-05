@@ -43,6 +43,23 @@ router.get('/payment', async (req, res) => {
   }
 });
 
+// TOTAL TOP-UP
+router.get('/topup', async (req, res) => {
+  try {
+    const dateFrom = OpenAndCloseTimeConverter.open();
+    const dateTo = OpenAndCloseTimeConverter.close();
+
+    try {
+      const payments = await pool.query(paymentQueries.getPaymentWithDateRange, ['topup', dateFrom, dateTo]);
+      return res.status(200).json(payments.rows);
+    } catch (error) {
+      return res.status(500).json('Server Error');
+    }
+  } catch (error) {
+    return res.status(500).json('Server Error');
+  }
+});
+
 // TOP-UP CASH
 router.get('/topup/cash', async (req, res) => {
   try {
