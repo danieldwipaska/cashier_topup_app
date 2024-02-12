@@ -7,13 +7,13 @@ const paymentQueries = require('../database/payments/queries');
 const verifyToken = require('./middlewares/verifyToken');
 const { memberLogger } = require('../config/logger/childLogger');
 const { errorLog, infoLog } = require('../config/logger/functions');
-const { cashierAndDeveloper, allRoles } = require('./middlewares/userRole');
+const { cashierAndDeveloper, allRoles, developerOnly } = require('./middlewares/userRole');
 const { v4 } = require('uuid');
 const { convertTZ } = require('./functions/convertDateTimezone');
 const { CARD_NOT_EXIST, CARD_NOT_ACTIVE, CARD_NOT_MEMBER, CARD_BELONGS_TO_OTHER } = require('./var/reports');
 
 // MEMBER ASSESSMENT
-router.get('/assessment', async (req, res) => {
+router.get('/assessment', verifyToken, developerOnly, async (req, res) => {
   return res.render('memberAssessment', {
     layout: 'layouts/main-layout',
     title: 'Member Assessment',
@@ -23,7 +23,7 @@ router.get('/assessment', async (req, res) => {
 });
 
 // PAYMENT DATA
-router.get('/assessment/search', async (req, res) => {
+router.get('/assessment/search', verifyToken, developerOnly, async (req, res) => {
   const { id: customerId } = req.query;
   try {
     const payments = await pool.query(paymentQueries.getPaymentWithActionByCustomerId, ['pay', customerId]);
@@ -38,7 +38,7 @@ router.get('/assessment/search', async (req, res) => {
 });
 
 // GET ALL MEMBER
-router.get('/list', verifyToken, cashierAndDeveloper, async (req, res) => {
+router.get('/list', verifyToken, developerOnly, async (req, res) => {
   try {
     const members = await pool.query(memberQueries.getMembers, []);
 
@@ -56,7 +56,7 @@ router.get('/list', verifyToken, cashierAndDeveloper, async (req, res) => {
 });
 
 // SEARCH CARD
-router.get('/new', async (req, res) => {
+router.get('/new', verifyToken, developerOnly, async (req, res) => {
   const { customerId, barcode } = req.query;
 
   if (!customerId && !barcode)
@@ -191,7 +191,7 @@ router.get('/new', async (req, res) => {
 });
 
 // ADD MEMBER WITH NEW CARD
-router.post('/new', verifyToken, cashierAndDeveloper, async (req, res) => {
+router.post('/new', verifyToken, developerOnly, async (req, res) => {
   const { barcode, identityNumber: identity_number, name: fullname, birthDate, customerId: customer_id, address, email, instagram, facebook, twitter } = req.body;
 
   // CHECK THE CARD
@@ -321,7 +321,7 @@ router.post('/new', verifyToken, cashierAndDeveloper, async (req, res) => {
 });
 
 // DELETE MEMBER
-router.get('/:id/delete', verifyToken, cashierAndDeveloper, async (req, res) => {
+router.get('/:id/delete', verifyToken, developerOnly, async (req, res) => {
   const { id } = req.params;
 
   // GET MEMBER
@@ -349,7 +349,7 @@ router.get('/:id/delete', verifyToken, cashierAndDeveloper, async (req, res) => 
 });
 
 // MEMBER AREA
-router.get('/', (req, res) => {
+router.get('/', verifyToken, developerOnly, (req, res) => {
   return res.render('memberArea', {
     layout: 'layouts/main-layout',
     title: 'Member Area',
@@ -357,7 +357,7 @@ router.get('/', (req, res) => {
 });
 
 // GET ALL MEMBERS
-router.get('/details', async (req, res) => {
+router.get('/details', verifyToken, developerOnly, async (req, res) => {
   // GET MEMBERS
   try {
     const members = await pool.query(memberQueries.getMembers, []);
@@ -370,7 +370,7 @@ router.get('/details', async (req, res) => {
 });
 
 // GET A MEMBER
-router.get('/details/:id', async (req, res) => {
+router.get('/details/:id', verifyToken, developerOnly, async (req, res) => {
   const { id } = req.params;
 
   // GET MEMBER BY ID
@@ -392,7 +392,7 @@ router.get('/details/:id', async (req, res) => {
 });
 
 // UPDATE A MEMBER
-router.post('/details/:id', verifyToken, cashierAndDeveloper, async (req, res) => {
+router.post('/details/:id', verifyToken, developerOnly, async (req, res) => {
   const { id } = req.params;
   const { customerId: customer_id, name: fullname, barcode, identityNumber: identity_number, birthDate: birth_date, isActive, email, address, instagram, facebook, twitter } = req.body;
 
@@ -422,7 +422,7 @@ router.post('/details/:id', verifyToken, cashierAndDeveloper, async (req, res) =
 });
 
 // SEARCH TO CHECKOUT
-router.get('/abort', verifyToken, cashierAndDeveloper, async (req, res) => {
+router.get('/abort', verifyToken, developerOnly, async (req, res) => {
   const { card: barcode } = req.query;
   if (!barcode)
     return res.render('search', {
@@ -473,7 +473,7 @@ router.get('/abort', verifyToken, cashierAndDeveloper, async (req, res) => {
 });
 
 //CHECKOUT MEMBER
-router.post('/abort', verifyToken, cashierAndDeveloper, async (req, res) => {
+router.post('/abort', verifyToken, developerOnly, async (req, res) => {
   const { barcode, paymentMethod: payment_method, notes } = req.body;
 
   const served_by = 'Greeter';
