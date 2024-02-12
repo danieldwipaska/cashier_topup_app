@@ -9,7 +9,7 @@ const verifyToken = require('./middlewares/verifyToken');
 const { v4 } = require('uuid');
 const { errorLog, infoLog } = require('../config/logger/functions');
 const { paymentLogger } = require('../config/logger/childLogger');
-const { allRoles, cashierAndDeveloper } = require('./middlewares/userRole');
+const { allRoles, cashierAndDeveloper, developerOnly } = require('./middlewares/userRole');
 const fastcsv = require('fast-csv');
 const fs = require('fs');
 const { convertTZ } = require('./functions/convertDateTimezone');
@@ -395,7 +395,7 @@ router.get('/invoices/number/recent', async (req, res) => {
   }
 });
 
-router.post('/list/refund', verifyToken, allRoles, async (req, res) => {
+router.post('/list/refund', verifyToken, developerOnly, async (req, res) => {
   const { paymentId, serverCode, notes } = req.body;
 
   try {

@@ -6,11 +6,11 @@ const cardQueries = require('../database/cards/queries');
 const memberQueries = require('../database/members/queries');
 const paymentQueries = require('../database/payments/queries');
 const { errorLog, infoLog } = require('../config/logger/functions');
-const { cashierAndDeveloper, allRoles } = require('./middlewares/userRole');
+const { cashierAndDeveloper, allRoles, developerOnly } = require('./middlewares/userRole');
 const { v4 } = require('uuid');
 const { transferLogger } = require('../config/logger/childLogger');
 
-router.get('/search', verifyToken, allRoles, async (req, res) => {
+router.get('/search', verifyToken, developerOnly, async (req, res) => {
   const { card: barcode } = req.query;
   if (!barcode)
     return res.render('search', {
@@ -60,7 +60,7 @@ router.get('/search', verifyToken, allRoles, async (req, res) => {
 });
 
 // BALANCE ADJUSTMENT
-router.post('/', verifyToken, allRoles, async (req, res) => {
+router.post('/', verifyToken, developerOnly, async (req, res) => {
   const { barcode, adjustedBalance, notes } = req.body;
 
   try {

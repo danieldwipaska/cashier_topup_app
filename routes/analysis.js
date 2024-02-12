@@ -51,6 +51,7 @@ router.get('/topup', async (req, res) => {
 
     try {
       const payments = await pool.query(paymentQueries.getPaymentWithDateRange, ['topup', dateFrom, dateTo]);
+
       return res.status(200).json(payments.rows);
     } catch (error) {
       return res.status(500).json('Server Error');
@@ -176,6 +177,24 @@ router.get('/topup/qris/mandiri', async (req, res) => {
 
     try {
       const payments = await pool.query(paymentQueries.getPaymentWithMethodDateRange, ['topup', 'QRIS MANDIRI', dateFrom, dateTo]);
+
+      return res.status(200).json(payments.rows);
+    } catch (error) {
+      return res.status(500).json('Server Error');
+    }
+  } catch (error) {
+    return res.status(500).json('Server Error');
+  }
+});
+
+// TOTAL CHECKOUT
+router.get('/checkout', async (req, res) => {
+  try {
+    const dateFrom = OpenAndCloseTimeConverter.open();
+    const dateTo = OpenAndCloseTimeConverter.close();
+
+    try {
+      const payments = await pool.query(paymentQueries.getPaymentWithDateRange, ['checkout', dateFrom, dateTo]);
 
       return res.status(200).json(payments.rows);
     } catch (error) {
