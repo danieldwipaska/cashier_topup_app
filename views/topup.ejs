@@ -12,177 +12,250 @@
 <% } %>
 <div class="container my-1">
   <div class="row">
-    <div class="col-md-9 mx-auto">
+    <div class="col-md-11 mx-auto">
       <h3>Top-Up Card</h3>
     </div>
   </div>
 </div>
+
+<!-- Top-up Form -->
 <div class="container-md mt-1 mb-3">
   <div class="row my-1">
-    <div class="col-md-9 mx-auto my-1 px-4">
-      <form action="/topup" method="post">
-        <div class="row">
-          <div class="px-3 pb-3">
-            <div class="row pb-2 rounded-3 shadow-sm blurred-box">
-              <h3 class="mb-2 py-3 px-3 mx-0 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Card Details</strong></h3>
-              <% if (data.is_member) { %>
-              <div class="mb-1 col-auto">
-                <label for="isMember" class="form-label text-secondary">Member Status</label>
-                <input type="text" class="form-control text-success fw-bolder" id="isMember" name="isMember" value="yes" readonly />
-              </div>
-              <% } else { %>
-              <div class="mb-1 col-auto">
-                <label for="isMember" class="form-label text-secondary">Member Status</label>
-                <input type="text" class="form-control text-danger fw-bolder" id="isMember" name="isMember" value="no" readonly />
-              </div>
-              <% } %> <% if (data.is_active) { %>
-              <div class="mb-1 col-auto">
-                <label for="isActive" class="form-label text-secondary">Activation</label>
-                <input type="text" class="form-control text-success fw-bolder" id="isActive" name="isActive" value="active" readonly />
-              </div>
-              <% } else { %>
-              <div class="mb-1 col-auto">
-                <label for="isActive" class="form-label text-secondary">Activation</label>
-                <input type="text" class="form-control text-danger fw-bolder" id="isActive" name="isActive" value="inactive" readonly />
-              </div>
-              <% } %>
+    <div class="col-md-11 mx-auto my-1 px-4">
+      <div class="row">
+        <!-- Input -->
+        <div class="px-3 pb-3">
+          <div class="row pb-2 rounded-3 shadow-sm blurred-box">
+            <h3 class="mb-2 py-3 px-3 mx-0 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Card Details</strong></h3>
 
-              <div class="mb-1">
-                <label for="barcode" class="form-label text-secondary">Barcode</label>
-                <input type="text" class="form-control" id="barcode" name="barcode" readonly value="<%= data.barcode %>" />
+            <!-- is member -->
+            <% if (data.is_member) { %>
+            <div class="mb-1 col-auto">
+              <label for="isMember" class="form-label text-secondary">Member Status</label>
+              <input type="text" class="form-control text-success fw-bolder" id="isMember" name="isMember" value="yes" readonly />
+            </div>
+            <% } else { %>
+            <div class="mb-1 col-auto">
+              <label for="isMember" class="form-label text-secondary">Member Status</label>
+              <input type="text" class="form-control text-danger fw-bolder" id="isMember" name="isMember" value="no" readonly />
+            </div>
+            <% } %>
+
+            <!-- is active -->
+            <% if (data.is_active) { %>
+            <div class="mb-1 col-auto">
+              <label for="isActive" class="form-label text-secondary">Activation</label>
+              <input type="text" class="form-control text-success fw-bolder" id="isActive" name="isActive" value="active" readonly />
+            </div>
+            <% } else { %>
+            <div class="mb-1 col-auto">
+              <label for="isActive" class="form-label text-secondary">Activation</label>
+              <input type="text" class="form-control text-danger fw-bolder" id="isActive" name="isActive" value="inactive" readonly />
+            </div>
+            <% } %>
+
+            <!-- barcode -->
+            <div class="mb-1">
+              <label for="barcodeInput" class="form-label text-secondary">Barcode</label>
+              <input type="text" class="form-control barcode-input" id="barcodeInput" readonly value="<%= data.barcode %>" />
+            </div>
+
+            <!-- customer name -->
+            <div class="mb-2 col-auto">
+              <label for="customerNameInput" class="form-label text-secondary">Name*</label>
+              <input type="text" class="form-control customer-name-input" id="customerNameInput" value="<%= data.customer_name %>" placeholder="ex. John Dalton" />
+            </div>
+
+            <!-- customer id -->
+            <div class="mb-2 col-auto">
+              <label for="customerIdInput" class="form-label text-secondary">ID (Phone Number)*</label>
+              <input type="text" class="form-control customer-id-input" id="customerIdInput" value="<%= data.customer_id %>" placeholder="ex. 08123456789" />
+            </div>
+
+            <!-- balance -->
+            <div class="mb-1 col-auto">
+              <label for="balanceInput" class="form-label text-secondary">balance</label>
+              <input type="text" class="form-control" id="balanceInput" value="<%= Intl.NumberFormat('en-US').format(data.balance) %>" readonly />
+            </div>
+
+            <!-- deposit -->
+            <% if (data.is_member) { %>
+            <div class="mb-1 col-auto">
+              <label for="depositInput" class="form-label text-secondary">Add Deposit</label>
+              <input type="number" class="form-control" id="depositInput" value="0" readonly />
+            </div>
+            <% } else if (!data.is_member && data.customer_id) { %>
+            <div class="mb-1 col-auto">
+              <label for="depositInput" class="form-label text-secondary">Add Deposit</label>
+              <input type="number" class="form-control" id="depositInput" value="0" readonly />
+            </div>
+            <% } else if (!data.is_member && !data.customer_id) { %>
+            <div class="mb-1 col-auto">
+              <label for="depositInput" class="form-label text-secondary">Add Deposit</label>
+              <input type="number" class="form-control" id="depositInput" value="5000" required />
+            </div>
+
+            <% } %>
+
+            <!-- add balance -->
+            <div class="mb-1 col-auto">
+              <label for="addBalanceInput" class="form-label text-secondary">Add Balance*</label>
+              <input type="text" class="form-control input-element" id="addBalanceInput" />
+            </div>
+          </div>
+          <div class="row">
+            <!-- payment method -->
+            <div class="px-0 mt-4 pb-3 rounded-3 shadow-sm col-auto blurred-box">
+              <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Payment Method</strong></h3>
+
+              <div class="mb-1 px-3">
+                <label for="paymentMethodInput" class="form-label text-secondary">Method</label>
+                <select class="form-select" id="paymentMethodInput" aria-label="Default select example">
+                  <option value="" selected disabled hidden>Pilih metode</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Transfer BCA">Transfer BCA</option>
+                  <option value="Transfer MANDIRI">Transfer MANDIRI</option>
+                  <option value="EDC BCA">EDC BCA</option>
+                  <option value="EDC MANDIRI">EDC MANDIRI</option>
+                  <option value="QRIS BCA">QRIS BCA</option>
+                  <option value="QRIS MANDIRI">QRIS MANDIRI</option>
+                  <option value="Other">Other</option>
+                </select>
               </div>
 
-              <div class="mb-2 col-auto">
-                <label for="customerName" class="form-label text-secondary">Name*</label>
-                <input type="text" class="form-control customer-name-input" id="customerName" name="customerName" value="<%= data.customer_name %>" placeholder="ex. John Dalton" required />
-              </div>
-
-              <div class="mb-2 col-auto">
-                <label for="customerId" class="form-label text-secondary">ID (Phone Number)*</label>
-                <input type="text" class="form-control customer-name-input" id="customerId" name="customerId" value="<%= data.customer_id %>" placeholder="ex. 08123456789" required />
-              </div>
-
-              <div class="mb-1 col-auto">
-                <label for="balance" class="form-label text-secondary">Balance</label>
-                <input type="text" class="form-control" id="balance" name="balance" value="<%= Intl.NumberFormat('en-US').format(data.balance) %>" readonly />
-              </div>
-
-              <% if (data.is_member) { %>
-              <div class="mb-1 col-auto">
-                <label for="deposit" class="form-label text-secondary">Add Deposit</label>
-                <input type="number" class="form-control" id="deposit" name="deposit" value="0" readonly />
-              </div>
-              <% } else if (!data.is_member && data.customer_id) { %>
-              <div class="mb-1 col-auto">
-                <label for="deposit" class="form-label text-secondary">Add Deposit</label>
-                <input type="number" class="form-control" id="deposit" name="deposit" value="0" readonly />
-              </div>
-              <% } else if (!data.is_member && !data.customer_id) { %>
-              <div class="mb-1 col-auto">
-                <label for="deposit" class="form-label text-secondary">Add Deposit</label>
-                <input type="number" class="form-control" id="deposit" name="deposit" value="5000" required />
-              </div>
-
-              <% } %>
-
-              <div class="mb-1 col-auto">
-                <label for="addBalance" class="form-label text-secondary">Add Balance*</label>
-                <input type="text" class="form-control input-element" id="inputBalance" name="inputBalance" required />
-                <input type="hidden" class="form-control" id="addBalance" name="addBalance" required />
+              <div class="mb-1 px-3">
+                <input type="hidden" class="form-control" id="collectedBy" value="Kasir Bahari" required />
               </div>
             </div>
-            <div class="row">
-              <div class="px-0 mt-4 pb-3 rounded-3 shadow-sm col-auto blurred-box">
-                <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Payment Method</strong></h3>
-                <!-- <div class="mb-1" id="notificationPopup"></div> -->
+            <!-- notes -->
+            <div class="px-0 mt-4 mx-4 pb-3 rounded-3 shadow-sm col-auto blurred-box">
+              <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)">Note (optional)</h3>
 
-                <div class="mb-1 px-3">
-                  <label for="paymentMethod" class="form-label text-secondary">Method</label>
-                  <select class="form-select" id="paymentMethod" name="paymentMethod" aria-label="Default select example" required>
-                    <option value="" selected disabled hidden>Pilih metode</option>
-                    <option value="Cash">Cash</option>
-                    <option value="Transfer BCA">Transfer BCA</option>
-                    <option value="Transfer MANDIRI">Transfer MANDIRI</option>
-                    <option value="EDC BCA">EDC BCA</option>
-                    <option value="EDC MANDIRI">EDC MANDIRI</option>
-                    <option value="QRIS BCA">QRIS BCA</option>
-                    <option value="QRIS MANDIRI">QRIS MANDIRI</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-
-                <div class="mb-1 px-3">
-                  <!-- <label for="collectedBy" class="form-label text-secondary">Collected By*</label> -->
-                  <input type="hidden" class="form-control" id="collectedBy" name="collectedBy" value="Kasir Bahari" required />
-                </div>
-              </div>
-              <div class="px-0 mt-4 mx-4 pb-3 rounded-3 shadow-sm col-auto blurred-box">
-                <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)">Note (optional)</h3>
-                <!-- <div class="mb-1" id="notificationPopup"></div> -->
-
-                <div class="mb-1 px-3">
-                  <label for="notes" class="form-label text-secondary">Note</label>
-                  <input type="text" class="form-control" id="notes" name="notes" placeholder="Kosongkan bila tidak perlu" />
-                </div>
-
-                <div class="mb-1 px-3">
-                  <!-- <label for="collectedBy" class="form-label text-secondary">Collected By*</label> -->
-                  <input type="hidden" class="form-control" id="collectedBy" name="collectedBy" value="Kasir Bahari" required />
-                </div>
+              <div class="mb-1 px-3">
+                <label for="notesInput" class="form-label text-secondary">Note</label>
+                <input type="text" class="form-control" id="notesInput" placeholder="Kosongkan bila tidak perlu" />
               </div>
             </div>
           </div>
         </div>
-        <!-- <div class="row my-4">
-          <h3>Moka POS >>></h3>
-          <div class="mb-1 d-grid gap-2 moka-data"></div>
-        </div> -->
-        <div class="row my-5 multi-button">
-          <div class="col-lg-8 mx-auto text-center">
-            <a class="button shadow my-3" href="/topup/search" role="button">Back</a>
+      </div>
 
-            <button class="button shadow my-3" type="submit">Top-Up Now!</button>
+      <div class="row my-5 multi-button">
+        <div class="col-lg-8 mx-auto text-center">
+          <a class="button shadow my-3" href="/topup/search" role="button">Back</a>
 
-            <a class="button shadow my-3" href="/" role="button">Menu</a>
+          <button type="button" class="button shadow my-3 top-up-button" data-bs-toggle="modal" data-bs-target="#exampleModal">Top-Up Now!</button>
+
+          <a class="button shadow my-3" href="/" role="button">Menu</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form action="/topup" method="post">
+        <div class="modal-header text-white bg-secondary">
+          <h5 class="modal-title" id="exampleModalLabel">Summary</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="px-4">
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                <p class="fs-5 fw-normal mb-0">Top-up</p>
+                <div class="d-flex align-items-center">
+                  <p class="fs-6 text-secondary fw-normal mb-0" id="customerNameDisplay"></p>
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#77767b" style="width: 20px">
+                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                    <g id="SVGRepo_iconCarrier"><path d="M12 9.5C13.3807 9.5 14.5 10.6193 14.5 12C14.5 13.3807 13.3807 14.5 12 14.5C10.6193 14.5 9.5 13.3807 9.5 12C9.5 10.6193 10.6193 9.5 12 9.5Z" fill="#77767b"></path></g>
+                  </svg>
+                  <p class="fs-6 text-secondary fw-normal mb-0" id="customerIdDisplay"></p>
+                </div>
+              </div>
+              <div class="d-flex">
+                <p class="fs-6 fw-normal">IDR</p>
+                <p class="fs-6 fw-normal ms-2" id="addBalanceDisplay"></p>
+              </div>
+            </div>
           </div>
+          <br />
+
+          <div class="px-4 py-2 border-top">
+            <!-- subtotal -->
+            <div class="d-flex align-items-center justify-content-between">
+              <p class="fs-6 fw-normal mb-0">Subtotal</p>
+              <div class="d-flex">
+                <p class="fs-6 fw-normal mb-0">IDR</p>
+                <p class="fs-6 fw-normal mb-0 ms-2" id="subtotalDisplay"></p>
+              </div>
+            </div>
+
+            <!-- service -->
+            <div class="d-flex align-items-center justify-content-between">
+              <p class="fs-6 fw-normal mb-0">Service</p>
+              <div class="d-flex">
+                <p class="fs-6 fw-normal mb-0">IDR</p>
+                <p class="fs-6 fw-normal mb-0 ms-2">0</p>
+              </div>
+            </div>
+
+            <!-- Tax -->
+            <div class="d-flex align-items-center justify-content-between">
+              <p class="fs-6 fw-normal mb-0">Tax</p>
+              <div class="d-flex">
+                <p class="fs-6 fw-normal mb-0">IDR</p>
+                <p class="fs-6 fw-normal mb-0 ms-2">0</p>
+              </div>
+            </div>
+
+            <!-- Payment Method -->
+            <div class="d-flex align-items-center justify-content-between mt-2 text-secondary">
+              <p class="fs-6 fw-normal mb-0">Payment Method</p>
+              <div class="d-flex">
+                <p class="fs-6 fw-normal mb-0" id="paymentMethodDisplay"></p>
+              </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="d-flex align-items-center justify-content-between text-secondary">
+              <p class="fs-6 fw-normal mb-0">Notes</p>
+              <div class="d-flex">
+                <p class="fs-6 fw-normal mb-0 ms-5" id="notesDisplay"></p>
+              </div>
+            </div>
+
+            <!-- Total -->
+            <div class="d-flex align-items-center justify-content-between mt-3">
+              <p class="fs-6 fw-bolder mb-0">Total</p>
+              <div class="d-flex">
+                <p class="fs-6 fw-bolder mb-0">IDR</p>
+                <p class="fs-6 fw-bolder mb-0 ms-2" id="totalDisplay"></p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <!-- Confirmed Inputs -->
+            <input type="hidden" name="barcode" id="barcode" />
+            <input type="hidden" name="addBalance" id="addBalance" />
+            <input type="hidden" name="deposit" id="deposit" />
+            <input type="hidden" name="customerName" id="customerName" />
+            <input type="hidden" name="customerId" id="customerId" />
+            <input type="hidden" name="paymentMethod" id="paymentMethod" />
+            <input type="hidden" name="notes" id="notes" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary confirm-topup-button">Confirm</button>
         </div>
       </form>
     </div>
   </div>
 </div>
-<script>
-  const inputBalance = document.querySelector('#inputBalance');
-  const addBalance = document.querySelector('#addBalance');
-
-  const cleave = new Cleave('.input-element', {
-    numeral: true,
-    numeralThousandsGroupStyle: 'thousand',
-    onValueChanged: function (e) {
-      // e.target = { value: '5100-1234', rawValue: '51001234' }
-      addBalance.value = e.target.rawValue;
-    },
-  });
-</script>
-<!-- <script src="/public/script/mokaInvoices.js"></script>
-<script src="/public/script/copyMokaInvoices.js"></script> -->
-
-<!-- <script>
-  const memberInput = document.querySelector('.member-input');
-  const memberArea = document.querySelector('.member-area');
-  const inputs = memberArea.querySelectorAll('input');
-  const customerNameInput = document.querySelector('.customer-name-input');
-
-  memberInput.addEventListener('click', () => {
-    memberArea.classList.toggle('visually-hidden');
-
-    inputs.forEach((e) => {
-      if (e.getAttribute('disabled')) {
-        e.removeAttribute('disabled');
-        e.setAttribute('required', 'required');
-      } else {
-        e.removeAttribute('required');
-        e.setAttribute('disabled', 'disabled');
-      }
-    });
-  });
-</script> -->
+<script src="/public/script/topUpScript.js"></script>

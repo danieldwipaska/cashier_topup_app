@@ -69,6 +69,8 @@ router.get('/search', verifyToken, cashierAndDeveloper, (req, res) => {
 router.post('/', verifyToken, cashierAndDeveloper, async (req, res) => {
   const { barcode, addBalance, deposit, customerName: customer_name, customerId: customer_id, paymentMethod: payment_method, notes } = req.body;
 
+  console.log(req.body);
+
   const addBalanceInt = parseInt(addBalance, 10);
   if (addBalanceInt > 10000000)
     return res.render('notificationError', {
