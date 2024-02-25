@@ -14,318 +14,283 @@
 <div class="container-md mt-1 mb-3">
   <div class="row my-1">
     <div class="col-md mx-auto my-1 px-4">
-      <form action="/payment" method="post">
-        <div class="row mt-2">
-          <div class="px-0 pb-3 rounded-3 shadow-sm blurred-box">
-            <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Card Details</strong></h3>
+      <div class="row mt-2">
+        <div class="px-0 pb-3 rounded-3 shadow-sm blurred-box">
+          <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Card Details</strong></h3>
+
+          <div class="mb-1 px-3">
+            <label for="barcodeInput" class="form-label text-secondary">Barcode</label>
+            <input type="text" class="form-control" id="barcodeInput" readonly value="<%= data.barcode %>" />
+          </div>
+
+          <div class="mb-1 px-3 col-auto">
+            <label for="customerNameInput" class="form-label text-secondary">Name</label>
+            <input type="text" class="form-control" id="customerNameInput" value="<%= data.customer_name %>" readonly />
+          </div>
+
+          <div class="mb-1 px-3 col-auto">
+            <label for="customerIdInput" class="form-label text-secondary">Customer ID</label>
+            <input type="text" class="form-control" id="customerIdInput" value="<%= data.customer_id %>" readonly />
+          </div>
+
+          <div class="mb-1 px-3">
+            <label for="balanceInput" class="form-label text-secondary">Balance</label>
+            <input type="text" class="form-control" id="balanceInput" value="<%= Intl.NumberFormat('en-US').format(data.balance) %>" readonly />
+          </div>
+
+          <% if (data.is_member) { %>
+          <div class="mb-1 px-3 col-auto">
+            <label for="isMember" class="form-label text-secondary">Member Status</label>
+            <input type="text" class="form-control text-success fw-bolder" id="isMember" name="isMember" value="yes" readonly />
+          </div>
+          <% } else { %>
+          <div class="mb-1 px-3 col-auto">
+            <label for="isMember" class="form-label text-secondary">Member Status</label>
+            <input type="text" class="form-control text-danger fw-bolder" id="isMember" name="isMember" value="no" readonly />
+          </div>
+          <% } %> <% if (data.is_active) { %>
+          <div class="mb-1 px-3 col-auto">
+            <label for="isActive" class="form-label text-secondary">Activation</label>
+            <input type="text" class="form-control text-success fw-bolder" id="isActive" name="isActive" value="active" readonly />
+          </div>
+          <% } else { %>
+          <div class="mb-1 px-3 col-auto">
+            <label for="isActive" class="form-label text-secondary">Activation</label>
+            <input type="text" class="form-control text-danger fw-bolder" id="isActive" name="isActive" value="inactive" readonly />
+          </div>
+          <% } %>
+        </div>
+
+        <div class="px-0 mt-4 pb-3 fs-3">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="inputMoka" name="inputMoka" />
+            <label class="form-check-label" for="inputMoka">Bills from Moka</label>
+          </div>
+        </div>
+
+        <div class="px-0" id="appInvoice">
+          <div class="px-0 mt-4 pb-3 rounded-3 shadow-sm blurred-box">
+            <h3 class="px-3 py-3 mb-0 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Menu</strong></h3>
+
+            <div style="background-color: rgb(224, 224, 224)">
+              <div class="row px-4 py-2">
+                <div class="col p-2 fs-5 fw-bolder">Name</div>
+                <div class="col p-2 fs-5 fw-bolder">Variant</div>
+                <div class="col p-2 fs-5 fw-bolder">Discount</div>
+                <div class="col p-2 fs-5 fw-bolder">Price</div>
+                <!-- <div class="p-2 fs-5 fw-normal">Flex item</div> -->
+                <div class="col-2 p-2 fs-5 fw-bolder">Amount</div>
+              </div>
+            </div>
+
+            <div class="overflow-auto" style="max-height: 500px; width: 100%">
+              <% fnbs.forEach((fnb) => { %>
+
+              <div class="row px-4 py-3 menu border-bottom border-2 border-dark">
+                <div class="col p-2 fs-5 fw-normal menu-name"><%= fnb.menu %></div>
+                <div class="col p-2 fs-5 fw-normal menu-kind"><%= fnb.kind %></div>
+                <% if (fnb.discount_status) { %>
+                <div class="col p-2 fs-5 fw-normal menu-discount"><%= fnb.discount_percent %><span class="ms-1">%</span></div>
+                <% } else { %>
+                <div class="col p-2 fs-5 fw-normal menu-discount">No</div>
+                <% } %>
+                <div class="col p-2 fs-5 fw-normal menu-price"><%= fnb.price %></div>
+                <div class="col p-2 fs-5 fw-normal menu-id visually-hidden"><%= fnb.id %></div>
+                <!-- <div class="p-2 fs-5 fw-normal">Flex item</div> -->
+                <div class="col-2 p-2 fs-5 fw-normal">
+                  <div class="input-group">
+                    <button type="button" class="btn btn-secondary h-20 px-3 py-1 negative" style="display: inline">-</button>
+                    <input type="text" aria-label="First name" value="0" class="form-control amount text-center" readonly />
+                    <button type="button" class="btn btn-primary h-20 px-3 py-1 positive" style="display: inline">+</button>
+                  </div>
+                </div>
+              </div>
+
+              <% }); %>
+            </div>
+
+            <div class="menu-names-and-amount">
+              <input type="hidden" class="form-control" id="menuAmount" name="menuAmount" required />
+              <input type="hidden" class="form-control" id="menuIds" name="menuIds" required />
+            </div>
+
+            <div class="mb-1 px-3 pt-4">
+              <label for="payment" class="form-label text-secondary">Payment (IDR)*</label>
+              <input type="text" class="form-control" id="paymentShown" readonly />
+              <input type="hidden" class="form-control" id="payment" name="payment" readonly />
+            </div>
+          </div>
+        </div>
+
+        <div class="px-0 visually-hidden" id="mokaInvoice">
+          <div class="px-0 mt-4 pb-3 rounded-3 shadow-sm blurred-box">
+            <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Invoice Details</strong></h3>
 
             <div class="mb-1 px-3">
-              <label for="barcode" class="form-label text-secondary">Barcode</label>
-              <input type="text" class="form-control" id="barcode" name="barcode" readonly value="<%= data.barcode %>" />
-            </div>
-
-            <div class="mb-1 px-3 col-auto">
-              <label for="customerName" class="form-label text-secondary">Name</label>
-              <input type="text" class="form-control" id="customerName" name="customerName" value="<%= data.customer_name %>" readonly />
-            </div>
-
-            <div class="mb-1 px-3 col-auto">
-              <label for="customerId" class="form-label text-secondary">Customer ID</label>
-              <input type="text" class="form-control" id="customerId" name="customerId" value="<%= data.customer_id %>" readonly />
+              <label for="invoiceNumber" class="form-label text-secondary">Payment Number*</label>
+              <input type="text" class="form-control" id="invoiceNumber" name="invoiceNumber" required disabled />
             </div>
 
             <div class="mb-1 px-3">
-              <label for="balance" class="form-label text-secondary">Balance</label>
-              <input type="text" class="form-control" id="balance" name="balance" value="<%= Intl.NumberFormat('en-US').format(data.balance) %>" readonly />
-            </div>
-
-            <% if (data.is_member) { %>
-            <div class="mb-1 px-3 col-auto">
-              <label for="isMember" class="form-label text-secondary">Member Status</label>
-              <input type="text" class="form-control text-success fw-bolder" id="isMember" name="isMember" value="yes" readonly />
-            </div>
-            <% } else { %>
-            <div class="mb-1 px-3 col-auto">
-              <label for="isMember" class="form-label text-secondary">Member Status</label>
-              <input type="text" class="form-control text-danger fw-bolder" id="isMember" name="isMember" value="no" readonly />
-            </div>
-            <% } %> <% if (data.is_active) { %>
-            <div class="mb-1 px-3 col-auto">
-              <label for="isActive" class="form-label text-secondary">Activation</label>
-              <input type="text" class="form-control text-success fw-bolder" id="isActive" name="isActive" value="active" readonly />
-            </div>
-            <% } else { %>
-            <div class="mb-1 px-3 col-auto">
-              <label for="isActive" class="form-label text-secondary">Activation</label>
-              <input type="text" class="form-control text-danger fw-bolder" id="isActive" name="isActive" value="inactive" readonly />
-            </div>
-            <% } %>
-          </div>
-
-          <div class="px-0 mt-4 pb-3 fs-3">
-            <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" id="inputMoka" name="inputMoka" />
-              <label class="form-check-label" for="inputMoka">Bills from Moka</label>
+              <label for="payment" class="form-label text-secondary">Payment (IDR)*</label>
+              <input type="number" class="form-control" id="payment" name="payment" required disabled />
             </div>
           </div>
 
-          <div class="px-0" id="appInvoice">
-            <div class="px-0 mt-4 pb-3 rounded-3 shadow-sm blurred-box">
-              <h3 class="px-3 py-3 mb-0 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Menu</strong></h3>
-
-              <div style="background-color: rgb(224, 224, 224)">
-                <div class="row px-4 py-2">
-                  <div class="col p-2 fs-5 fw-bolder">Name</div>
-                  <div class="col p-2 fs-5 fw-bolder">Variant</div>
-                  <div class="col p-2 fs-5 fw-bolder">Discount</div>
-                  <div class="col p-2 fs-5 fw-bolder">Price</div>
-                  <!-- <div class="p-2 fs-5 fw-normal">Flex item</div> -->
-                  <div class="col-2 p-2 fs-5 fw-bolder">Amount</div>
-                </div>
-              </div>
-
-              <div class="overflow-auto" style="max-height: 500px; width: 100%">
-                <% fnbs.forEach((fnb) => { %>
-
-                <div class="row px-4 py-3 menu border-bottom border-2 border-dark">
-                  <div class="col p-2 fs-5 fw-normal menu-name"><%= fnb.menu %></div>
-                  <div class="col p-2 fs-5 fw-normal menu-kind"><%= fnb.kind %></div>
-                  <% if (fnb.discount_status) { %>
-                  <div class="col p-2 fs-5 fw-normal menu-discount"><%= fnb.discount_percent %><span class="ms-1">%</span></div>
-                  <% } else { %>
-                  <div class="col p-2 fs-5 fw-normal menu-discount">No</div>
-                  <% } %>
-                  <div class="col p-2 fs-5 fw-normal menu-price"><%= fnb.price %></div>
-                  <div class="col p-2 fs-5 fw-normal menu-id visually-hidden"><%= fnb.id %></div>
-                  <!-- <div class="p-2 fs-5 fw-normal">Flex item</div> -->
-                  <div class="col-2 p-2 fs-5 fw-normal">
-                    <div class="input-group">
-                      <button type="button" class="btn btn-secondary h-20 px-3 py-1 negative" style="display: inline">-</button>
-                      <input type="text" aria-label="First name" value="0" class="form-control amount text-center" readonly />
-                      <button type="button" class="btn btn-primary h-20 px-3 py-1 positive" style="display: inline">+</button>
-                    </div>
-                  </div>
-                </div>
-
-                <% }); %>
-              </div>
-
-              <!-- <div class="mb-1 px-3 pt-4 row">
-                <div class="col-md">
-                  <div class="form-check mb-3 form-switch fs-6 text-secondary">
-                    <input class="form-check-input" type="checkbox" id="inputDiscount" name="inputDiscount" />
-                    <label class="form-check-label" for="inputDiscount">Discount</label>
-                  </div>
-
-                  <div class="mb-1 px-3 text-secondary form-select-discount">
-                    <select class="form-select" aria-label="Default select example">
-                      <option value="percent" selected>Percentage</option>
-                      <option value="value">Fixed Value</option>
-                    </select>
-                  </div>
-
-                  <div class="input-group mb-1 ms-3 form-percent-discount" style="width: 80%">
-                    <input type="text" class="form-control" id="inputDiscountPercent" name="inputDiscountPercent" />
-                  </div>
-                </div>
-                <div class="col-md">
-                  <div class="form-check form-switch fs-6 text-secondary">
-                    <input class="form-check-input" type="checkbox" id="inputService" name="inputService" checked />
-                    <label class="form-check-label" for="inputService">Service (5%)</label>
-                  </div>
-
-                  <div class="form-check form-switch fs-6 text-secondary">
-                    <input class="form-check-input" type="checkbox" id="inputTax" name="inputTax" checked />
-                    <label class="form-check-label" for="inputTax">Tax (10%)</label>
-                  </div>
-                </div>
-              </div> -->
-
-              <div class="menu-names-and-amount">
-                <input type="hidden" class="form-control" id="menuAmount" name="menuAmount" required />
-                <input type="hidden" class="form-control" id="menuIds" name="menuIds" required />
-              </div>
-
-              <div class="mb-1 px-3 pt-4">
-                <label for="payment" class="form-label text-secondary">Payment (IDR)*</label>
-                <input type="text" class="form-control" id="paymentShown" readonly />
-                <input type="hidden" class="form-control" id="payment" name="payment" readonly />
-              </div>
-            </div>
-          </div>
-
-          <div class="px-0 visually-hidden" id="mokaInvoice">
-            <div class="px-0 mt-4 pb-3 rounded-3 shadow-sm blurred-box">
-              <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Invoice Details</strong></h3>
-
-              <div class="mb-1 px-3">
-                <label for="invoiceNumber" class="form-label text-secondary">Payment Number*</label>
-                <input type="text" class="form-control" id="invoiceNumber" name="invoiceNumber" required disabled />
-              </div>
-
-              <div class="mb-1 px-3">
-                <label for="payment" class="form-label text-secondary">Payment (IDR)*</label>
-                <input type="number" class="form-control" id="payment" name="payment" required disabled />
-              </div>
-            </div>
-
-            <!-- <div class="row my-4">
+          <!-- <div class="row my-4">
               <h3>Moka POS >>></h3>
               <div class="mb-1 d-grid gap-2 moka-data overflow-auto" style="max-height: 300px"></div>
             </div> -->
-          </div>
-
-          <div class="px-0 mt-4 pb-3 rounded-3 shadow-sm col-auto blurred-box">
-            <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Server Code</strong></h3>
-            <!-- <div class="mb-1" id="notificationPopup"></div> -->
-
-            <div class="mb-1 px-3">
-              <label for="serverCode" class="form-label text-secondary">Code*</label>
-              <input type="password" class="form-control" id="serverCode" name="serverCode" placeholder="Masukkan kode server" required />
-            </div>
-
-            <div class="mb-1 px-3">
-              <!-- <label for="collectedBy" class="form-label text-secondary">Collected By*</label> -->
-              <input type="hidden" class="form-control" id="collectedBy" name="collectedBy" value="Kasir Bahari" required />
-            </div>
-
-            <div class="mb-1 px-3 col-auto">
-              <!-- <label for="invoiceStatus" class="form-label text-secondary">Payment Status*</label> -->
-              <input type="hidden" class="form-control" id="invoiceStatus" name="invoiceStatus" value="paid" readonly />
-            </div>
-          </div>
-          <div class="px-0 mt-4 mx-4 pb-3 rounded-3 shadow-sm col-auto blurred-box">
-            <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)">Note (optional)</h3>
-            <!-- <div class="mb-1" id="notificationPopup"></div> -->
-
-            <div class="mb-1 px-3">
-              <label for="notes" class="form-label text-secondary">Note</label>
-              <input type="text" class="form-control" id="notes" name="notes" placeholder="Kosongkan bila tidak perlu" />
-            </div>
-          </div>
         </div>
 
-        <div class="row my-3 multi-button">
-          <div class="col-lg-8 mx-auto text-center">
-            <a class="button shadow my-3" href="/payment/search" role="button">Back</a>
-            <button class="button shadow my-3" type="submit">Pay Now!</button>
-            <a class="button shadow my-3" href="/" role="button">Menu</a>
+        <div class="px-0 mt-4 pb-3 rounded-3 shadow-sm col-auto blurred-box">
+          <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Server Code</strong></h3>
+          <!-- <div class="mb-1" id="notificationPopup"></div> -->
+
+          <div class="mb-1 px-3">
+            <label for="serverCode" class="form-label text-secondary">Code*</label>
+            <input type="password" class="form-control" id="serverCode" name="serverCode" placeholder="Masukkan kode server" required />
+          </div>
+
+          <div class="mb-1 px-3">
+            <!-- <label for="collectedBy" class="form-label text-secondary">Collected By*</label> -->
+            <input type="hidden" class="form-control" id="collectedBy" name="collectedBy" value="Kasir Bahari" required />
+          </div>
+
+          <div class="mb-1 px-3 col-auto">
+            <!-- <label for="invoiceStatus" class="form-label text-secondary">Payment Status*</label> -->
+            <input type="hidden" class="form-control" id="invoiceStatus" name="invoiceStatus" value="paid" readonly />
           </div>
         </div>
-      </form>
+        <div class="px-0 mt-4 mx-4 pb-3 rounded-3 shadow-sm col-auto blurred-box">
+          <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)">Note (optional)</h3>
+          <!-- <div class="mb-1" id="notificationPopup"></div> -->
+
+          <div class="mb-1 px-3">
+            <label for="notes" class="form-label text-secondary">Note</label>
+            <input type="text" class="form-control" id="notes" name="notes" placeholder="Kosongkan bila tidak perlu" />
+          </div>
+        </div>
+      </div>
+
+      <div class="row my-3 multi-button">
+        <div class="col-lg-8 mx-auto text-center">
+          <a class="button shadow my-3" href="/payment/search" role="button">Back</a>
+          <button class="button shadow my-3" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">Pay Now!</button>
+          <a class="button shadow my-3" href="/" role="button">Menu</a>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-secondary">
+        <h5 class="modal-title text-light" id="exampleModalLabel">Summary</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="px-4">
+          <p class="fs-5 fw-normal mb-0">Pay</p>
+          <div class="d-flex align-items-center">
+            <p class="fs-6 text-secondary fw-normal mb-0" id="customerNameDisplay">Daniel D Kamasi</p>
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#77767b" style="width: 20px">
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+              <g id="SVGRepo_iconCarrier"><path d="M12 9.5C13.3807 9.5 14.5 10.6193 14.5 12C14.5 13.3807 13.3807 14.5 12 14.5C10.6193 14.5 9.5 13.3807 9.5 12C9.5 10.6193 10.6193 9.5 12 9.5Z" fill="#77767b"></path></g>
+            </svg>
+            <p class="fs-6 text-secondary fw-normal mb-0" id="customerIdDisplay">089123333333</p>
+          </div>
+        </div>
+        <div class="px-5 d-flex align-items-center justify-content-between">
+          <div class="d-flex">
+            <p class="mb-0 fs-6 fw-normal">FASHION VODKA</p>
+            <p class="mb-0 mx-2 fs-6 fw-normal">x</p>
+            <p class="mb-0 fs-6 fw-normal">2</p>
+          </div>
+          <div class="d-flex">
+            <p class="mb-0 fs-6 fw-normal">IDR</p>
+            <p class="mb-0 mx-2 fs-6 fw-normal">1,200,000</p>
+          </div>
+        </div>
+        <br />
+
+        <div class="px-4 py-2 border-top">
+          <!-- subtotal -->
+          <div class="d-flex align-items-center justify-content-between">
+            <p class="fs-6 fw-normal mb-0">Subtotal</p>
+            <div class="d-flex">
+              <p class="fs-6 fw-normal mb-0">IDR</p>
+              <p class="fs-6 fw-normal mb-0 ms-2" id="subtotalDisplay"></p>
+            </div>
+          </div>
+
+          <!-- service -->
+          <div class="d-flex align-items-center justify-content-between">
+            <p class="fs-6 fw-normal mb-0">Service</p>
+            <div class="d-flex">
+              <p class="fs-6 fw-normal mb-0">IDR</p>
+              <p class="fs-6 fw-normal mb-0 ms-2">0</p>
+            </div>
+          </div>
+
+          <!-- Tax -->
+          <div class="d-flex align-items-center justify-content-between">
+            <p class="fs-6 fw-normal mb-0">Tax</p>
+            <div class="d-flex">
+              <p class="fs-6 fw-normal mb-0">IDR</p>
+              <p class="fs-6 fw-normal mb-0 ms-2">0</p>
+            </div>
+          </div>
+
+          <!-- Payment Method -->
+          <div class="d-flex align-items-center justify-content-between mt-2 text-secondary">
+            <p class="fs-6 fw-normal mb-0">Payment Method</p>
+            <div class="d-flex">
+              <p class="fs-6 fw-normal mb-0" id="paymentMethodDisplay"></p>
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div class="d-flex align-items-center justify-content-between text-secondary">
+            <p class="fs-6 fw-normal mb-0">Notes</p>
+            <div class="d-flex">
+              <p class="fs-6 fw-normal mb-0 ms-5" id="notesDisplay"></p>
+            </div>
+          </div>
+
+          <!-- Total -->
+          <div class="d-flex align-items-center justify-content-between mt-3">
+            <p class="fs-6 fw-bolder mb-0">Total</p>
+            <div class="d-flex">
+              <p class="fs-6 fw-bolder mb-0">IDR</p>
+              <p class="fs-6 fw-bolder mb-0 ms-2" id="totalDisplay"></p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <!-- Confirmed Inputs -->
+          <input type="hidden" name="barcode" id="barcode" />
+          <input type="hidden" name="addBalance" id="addBalance" />
+          <input type="hidden" name="deposit" id="deposit" />
+          <input type="hidden" name="customerName" id="customerName" />
+          <input type="hidden" name="customerId" id="customerId" />
+          <input type="hidden" name="paymentMethod" id="paymentMethod" />
+          <input type="hidden" name="notes" id="notes" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- <script src="/public/script/mokaInvoices.js"></script>
 <script src="/public/script/copyMokaInvoices.js"></script> -->
-<!-- <script>
-  async function getFact() {
-    try {
-      const response = await axios.get('https://catfact.ninja/fact');
-      const mokaData = document.querySelector('.moka-data');
-      mokaData.innerHTML = response.data.fact;
-    } catch (error) {
-      const mokaData = document.querySelector('.moka-data');
-      mokaData.innerHTML = `${error}`;
-    }
-  }
-
-  getFact();
-</script> -->
-<script>
-  const inputMoka = document.querySelector('#inputMoka');
-  const mokaInvoice = document.querySelector('#mokaInvoice');
-  const appInvoice = document.querySelector('#appInvoice');
-  const invoiceNumberMoka = mokaInvoice.querySelector('#invoiceNumber');
-  const paymentMoka = mokaInvoice.querySelector('#payment');
-  const paymentShownApp = appInvoice.querySelector('#paymentShown');
-  const paymentApp = appInvoice.querySelector('#payment');
-  const menuAmount = document.querySelector('#menuAmount');
-  const menuIds = document.querySelector('#menuIds');
-
-  inputMoka.addEventListener('click', () => {
-    appInvoice.classList.toggle('visually-hidden');
-    paymentShownApp.toggleAttribute('disabled');
-    paymentApp.toggleAttribute('disabled');
-    menuAmount.toggleAttribute('disabled');
-    menuIds.toggleAttribute('disabled');
-
-    mokaInvoice.classList.toggle('visually-hidden');
-    invoiceNumberMoka.toggleAttribute('disabled');
-    paymentMoka.toggleAttribute('disabled');
-  });
-</script>
-<script>
-  const menus = document.querySelectorAll('.menu');
-
-  // MENU NAMES, AMOUNT, PRICES, AND PAYMENT DECLARATION
-  const allMenuPrices = [];
-  const allMenuAmount = [];
-  const allMenuIds = [];
-  let payment = 0;
-
-  // MAPPING FOR allMenuNames, allMenuAmount, and allMenuPrices
-  menus.forEach((menu) => {
-    const inputAmount = menu.querySelector('input');
-    const menuName = menu.querySelector('.menu-name');
-    const menuPrice = menu.querySelector('.menu-price');
-    const menuKind = menu.querySelector('.menu-kind');
-    const menuId = menu.querySelector('.menu-id');
-
-    // INITIAL AMOUNT FROM AMOUNT INPUT
-    let count = parseInt(inputAmount.value);
-
-    // PUSH INITIAL MENU DATA TO allMenuNames, allMenuAmount, and allMenuPrices
-    allMenuPrices.push(menuPrice.innerHTML); // REQUIRED PURE NUMBER (NOT IN U.S. CURRENCY FORMAT)
-    allMenuAmount.push(0);
-    allMenuIds.push(menuId.innerHTML);
-
-    // CLICKING EVENT (+) AND (-) TO OVERWRITE allMenuNames, allMenuAmount, allMenuPrices, and payment
-    menu.addEventListener('click', (element) => {
-      // IF CLICKING (+) OR (-)
-      if (element.target.className.includes('positive')) {
-        // INCREASE count
-        count++;
-      } else if (element.target.className.includes('negative')) {
-        // AVOIDING NEGATIVE NUMBER
-        if (count > 0) {
-          // DECREASE count
-          count--;
-        }
-      }
-
-      if (count > 0) {
-        menu.classList.add('bg-info');
-      } else {
-        menu.classList.remove('bg-info');
-      }
-
-      // DISPLAY count IN HTML
-      inputAmount.value = count;
-
-      // CHANGE allMenuAmount WITH NEW count
-      allMenuAmount[allMenuIds.indexOf(menuId.innerHTML)] = count;
-      // OVERWRITE HTML AMOUNT INPUT BY NEW allMenuAmount
-      menuAmount.value = allMenuAmount;
-
-      // TOTAL PAYMENT CALCULATION
-      let amountTimesPrices = 0;
-      allMenuAmount.forEach((amount, i) => {
-        amountTimesPrices += amount * allMenuPrices[i];
-      });
-
-      // WRITE THE RESULT TO TOTAL PAYMENT
-      payment = amountTimesPrices;
-
-      // OVERWRITE HTML PAYMENT INPUT BY payment
-      paymentApp.value = payment;
-      paymentShownApp.value = Intl.NumberFormat('en-US').format(payment);
-    });
-  });
-
-  // ADD INITIAL VALUE TO FORM INPUTS
-  menuAmount.value = allMenuAmount;
-  menuIds.value = allMenuIds;
-  paymentApp.value = payment;
-  paymentShownApp.value = Intl.NumberFormat('en-US').format(payment);
-</script>
+<script src="/public/script/paymentScript.js"></script>
