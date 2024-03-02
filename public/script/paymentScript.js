@@ -1,28 +1,51 @@
-const inputMoka = document.querySelector('#inputMoka');
 const mokaInvoice = document.querySelector('#mokaInvoice');
 const appInvoice = document.querySelector('#appInvoice');
-const invoiceNumberMoka = mokaInvoice.querySelector('#invoiceNumber');
-const paymentMoka = mokaInvoice.querySelector('#payment');
-const paymentShownApp = appInvoice.querySelector('#paymentShown');
-const paymentApp = appInvoice.querySelector('#payment');
-const menuAmount = document.querySelector('#menuAmount');
-const menuIds = document.querySelector('#menuIds');
+const paymentMokaInput = mokaInvoice.querySelector('#paymentInput');
+const paymentShownInput = appInvoice.querySelector('#paymentShownInput');
+const paymentAppInput = appInvoice.querySelector('#paymentInput');
 
-inputMoka.addEventListener('click', () => {
+const confirmPaymentButton = document.querySelector('.confirm-payment-button');
+const orderList = document.querySelector('.order-list');
+
+const barcodeInput = document.querySelector('#barcodeInput');
+const customerNameInput = document.querySelector('#customerNameInput');
+const customerIdInput = document.querySelector('#customerIdInput');
+const invoiceNumberMokaInput = mokaInvoice.querySelector('#invoiceNumberInput');
+const menuAmountInput = document.querySelector('#menuAmountInput');
+const menuIdsInput = document.querySelector('#menuIdsInput');
+const isFromMokaInput = document.querySelector('#isFromMokaInput');
+
+const modal = document.querySelector('.modal');
+const barcode = modal.querySelector('#barcode');
+const customerName = modal.querySelector('#customerName');
+const customerId = modal.querySelector('#customerId');
+const confirmedPayment = modal.querySelector('#confirmedPayment');
+const invoiceNumber = modal.querySelector('#invoiceNumber');
+const menuAmount = modal.querySelector('#menuAmount');
+const menuIds = modal.querySelector('#menuIds');
+const inputMoka = modal.querySelector('#inputMoka');
+
+const customerNameDisplay = modal.querySelector('#customerNameDisplay');
+const customerIdDisplay = modal.querySelector('#customerIdDisplay');
+const subTotalDisplay = modal.querySelector('#subtotalDisplay');
+const totalDisplay = modal.querySelector('#totalDisplay');
+
+isFromMokaInput.addEventListener('click', () => {
   appInvoice.classList.toggle('visually-hidden');
-  paymentShownApp.toggleAttribute('disabled');
-  paymentApp.toggleAttribute('disabled');
-  menuAmount.toggleAttribute('disabled');
-  menuIds.toggleAttribute('disabled');
+  paymentShownInput.toggleAttribute('disabled');
+  paymentAppInput.toggleAttribute('disabled');
+  menuAmountInput.toggleAttribute('disabled');
+  menuIdsInput.toggleAttribute('disabled');
 
   mokaInvoice.classList.toggle('visually-hidden');
-  invoiceNumberMoka.toggleAttribute('disabled');
-  paymentMoka.toggleAttribute('disabled');
+  invoiceNumberMokaInput.toggleAttribute('disabled');
+  paymentMokaInput.toggleAttribute('disabled');
 });
 
 const menus = document.querySelectorAll('.menu');
 
 // MENU NAMES, AMOUNT, PRICES, AND PAYMENT DECLARATION
+const allMenuNames = [];
 const allMenuPrices = [];
 const allMenuAmount = [];
 const allMenuIds = [];
@@ -40,6 +63,7 @@ menus.forEach((menu) => {
   let count = parseInt(inputAmount.value);
 
   // PUSH INITIAL MENU DATA TO allMenuNames, allMenuAmount, and allMenuPrices
+  allMenuNames.push(menuName.innerHTML);
   allMenuPrices.push(menuPrice.innerHTML); // REQUIRED PURE NUMBER (NOT IN U.S. CURRENCY FORMAT)
   allMenuAmount.push(0);
   allMenuIds.push(menuId.innerHTML);
@@ -70,7 +94,7 @@ menus.forEach((menu) => {
     // CHANGE allMenuAmount WITH NEW count
     allMenuAmount[allMenuIds.indexOf(menuId.innerHTML)] = count;
     // OVERWRITE HTML AMOUNT INPUT BY NEW allMenuAmount
-    menuAmount.value = allMenuAmount;
+    menuAmountInput.value = allMenuAmount;
 
     // TOTAL PAYMENT CALCULATION
     let amountTimesPrices = 0;
@@ -82,13 +106,66 @@ menus.forEach((menu) => {
     payment = amountTimesPrices;
 
     // OVERWRITE HTML PAYMENT INPUT BY payment
-    paymentApp.value = payment;
-    paymentShownApp.value = Intl.NumberFormat('en-US').format(payment);
+    paymentAppInput.value = payment;
+    paymentShownInput.value = Intl.NumberFormat('en-US').format(payment);
   });
 });
 
 // ADD INITIAL VALUE TO FORM INPUTS
-menuAmount.value = allMenuAmount;
-menuIds.value = allMenuIds;
-paymentApp.value = payment;
-paymentShownApp.value = Intl.NumberFormat('en-US').format(payment);
+menuAmountInput.value = allMenuAmount;
+menuIdsInput.value = allMenuIds;
+paymentAppInput.value = payment;
+paymentShownInput.value = Intl.NumberFormat('en-US').format(payment);
+
+// CONFIRM PAYMENT BUTTON
+confirmPaymentButton.addEventListener('click', () => {
+  barcode.value = barcodeInput.value;
+  customerName.value = customerNameInput.value;
+  customerId.value = customerIdInput.value;
+  invoiceNumber.value = invoiceNumberMokaInput.value;
+  menuAmount.value = menuAmountInput.value;
+  menuIds.value = menuIdsInput.value;
+  inputMoka.checked = isFromMokaInput.checked;
+
+  customerNameDisplay.innerHTML = customerName.value;
+  customerIdDisplay.innerHTML = customerId.value;
+
+  let orderListString = '';
+  if (isFromMokaInput.checked) {
+    confirmedPayment.value = paymentMokaInput.value;
+    subTotalDisplay.innerHTML = Intl.NumberFormat('en-US').format(paymentMokaInput.value);
+    totalDisplay.innerHTML = Intl.NumberFormat('en-US').format(paymentMokaInput.value);
+
+    orderListString = `<div class="px-5 d-flex align-items-center justify-content-between">
+    <div class="d-flex">
+      <p class="mb-0 fs-6 fw-normal">${invoiceNumber.value}</p>
+    </div>
+    <div class="d-flex">
+      <p class="mb-0 fs-6 fw-normal">IDR</p>
+      <p class="mb-0 mx-2 fs-6 fw-normal">${Intl.NumberFormat('en-US').format(paymentMokaInput.value)}</p>
+    </div>
+  </div>`;
+  } else {
+    confirmedPayment.value = paymentAppInput.value;
+    subTotalDisplay.innerHTML = Intl.NumberFormat('en-US').format(payment);
+    totalDisplay.innerHTML = Intl.NumberFormat('en-US').format(payment);
+
+    allMenuAmount.forEach((amount, i) => {
+      if (amount > 0) {
+        orderListString += `<div class="px-5 d-flex align-items-center justify-content-between">
+        <div class="d-flex">
+          <p class="mb-0 fs-6 fw-normal">${allMenuNames[i]}</p>
+          <p class="mb-0 mx-2 fs-6 fw-normal">x</p>
+          <p class="mb-0 fs-6 fw-normal">${allMenuAmount[i]}</p>
+        </div>
+        <div class="d-flex">
+          <p class="mb-0 fs-6 fw-normal">IDR</p>
+          <p class="mb-0 mx-2 fs-6 fw-normal">${Intl.NumberFormat('en-US').format(allMenuPrices[i])}</p>
+        </div>
+      </div>`;
+      }
+    });
+  }
+
+  orderList.innerHTML = orderListString;
+});

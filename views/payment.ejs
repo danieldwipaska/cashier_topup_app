@@ -63,8 +63,8 @@
 
         <div class="px-0 mt-4 pb-3 fs-3">
           <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="inputMoka" name="inputMoka" />
-            <label class="form-check-label" for="inputMoka">Bills from Moka</label>
+            <input class="form-check-input" type="checkbox" id="isFromMokaInput" name="isFromMokaInput" />
+            <label class="form-check-label" for="isFromMokaInput">Bills from Moka</label>
           </div>
         </div>
 
@@ -110,14 +110,14 @@
             </div>
 
             <div class="menu-names-and-amount">
-              <input type="hidden" class="form-control" id="menuAmount" name="menuAmount" required />
-              <input type="hidden" class="form-control" id="menuIds" name="menuIds" required />
+              <input type="hidden" class="form-control" id="menuAmountInput" name="menuAmountInput" required />
+              <input type="hidden" class="form-control" id="menuIdsInput" name="menuIdsInput" required />
             </div>
 
             <div class="mb-1 px-3 pt-4">
               <label for="payment" class="form-label text-secondary">Payment (IDR)*</label>
-              <input type="text" class="form-control" id="paymentShown" readonly />
-              <input type="hidden" class="form-control" id="payment" name="payment" readonly />
+              <input type="text" class="form-control" id="paymentShownInput" readonly />
+              <input type="hidden" class="form-control" id="paymentInput" name="paymentInput" readonly />
             </div>
           </div>
         </div>
@@ -128,12 +128,12 @@
 
             <div class="mb-1 px-3">
               <label for="invoiceNumber" class="form-label text-secondary">Payment Number*</label>
-              <input type="text" class="form-control" id="invoiceNumber" name="invoiceNumber" required disabled />
+              <input type="text" class="form-control" id="invoiceNumberInput" name="invoiceNumberInput" required disabled />
             </div>
 
             <div class="mb-1 px-3">
               <label for="payment" class="form-label text-secondary">Payment (IDR)*</label>
-              <input type="number" class="form-control" id="payment" name="payment" required disabled />
+              <input type="number" class="form-control" id="paymentInput" name="paymentInput" required disabled />
             </div>
           </div>
 
@@ -142,41 +142,12 @@
               <div class="mb-1 d-grid gap-2 moka-data overflow-auto" style="max-height: 300px"></div>
             </div> -->
         </div>
-
-        <div class="px-0 mt-4 pb-3 rounded-3 shadow-sm col-auto blurred-box">
-          <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)"><strong>Server Code</strong></h3>
-          <!-- <div class="mb-1" id="notificationPopup"></div> -->
-
-          <div class="mb-1 px-3">
-            <label for="serverCode" class="form-label text-secondary">Code*</label>
-            <input type="password" class="form-control" id="serverCode" name="serverCode" placeholder="Masukkan kode server" required />
-          </div>
-
-          <div class="mb-1 px-3">
-            <!-- <label for="collectedBy" class="form-label text-secondary">Collected By*</label> -->
-            <input type="hidden" class="form-control" id="collectedBy" name="collectedBy" value="Kasir Bahari" required />
-          </div>
-
-          <div class="mb-1 px-3 col-auto">
-            <!-- <label for="invoiceStatus" class="form-label text-secondary">Payment Status*</label> -->
-            <input type="hidden" class="form-control" id="invoiceStatus" name="invoiceStatus" value="paid" readonly />
-          </div>
-        </div>
-        <div class="px-0 mt-4 mx-4 pb-3 rounded-3 shadow-sm col-auto blurred-box">
-          <h3 class="mb-2 px-3 py-3 rounded-top" style="background-color: rgba(139, 196, 250, 0.863)">Note (optional)</h3>
-          <!-- <div class="mb-1" id="notificationPopup"></div> -->
-
-          <div class="mb-1 px-3">
-            <label for="notes" class="form-label text-secondary">Note</label>
-            <input type="text" class="form-control" id="notes" name="notes" placeholder="Kosongkan bila tidak perlu" />
-          </div>
-        </div>
       </div>
 
       <div class="row my-3 multi-button">
         <div class="col-lg-8 mx-auto text-center">
           <a class="button shadow my-3" href="/payment/search" role="button">Back</a>
-          <button class="button shadow my-3" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">Pay Now!</button>
+          <button class="button shadow my-3 confirm-payment-button" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">Pay Now!</button>
           <a class="button shadow my-3" href="/" role="button">Menu</a>
         </div>
       </div>
@@ -188,105 +159,97 @@
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
-      <div class="modal-header bg-secondary">
-        <h5 class="modal-title text-light" id="exampleModalLabel">Summary</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="px-4">
-          <p class="fs-5 fw-normal mb-0">Pay</p>
-          <div class="d-flex align-items-center">
-            <p class="fs-6 text-secondary fw-normal mb-0" id="customerNameDisplay">Daniel D Kamasi</p>
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#77767b" style="width: 20px">
-              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-              <g id="SVGRepo_iconCarrier"><path d="M12 9.5C13.3807 9.5 14.5 10.6193 14.5 12C14.5 13.3807 13.3807 14.5 12 14.5C10.6193 14.5 9.5 13.3807 9.5 12C9.5 10.6193 10.6193 9.5 12 9.5Z" fill="#77767b"></path></g>
-            </svg>
-            <p class="fs-6 text-secondary fw-normal mb-0" id="customerIdDisplay">089123333333</p>
-          </div>
+      <form action="/payment" method="post">
+        <div class="modal-header bg-secondary">
+          <h5 class="modal-title text-light" id="exampleModalLabel">Summary</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="px-5 d-flex align-items-center justify-content-between">
-          <div class="d-flex">
-            <p class="mb-0 fs-6 fw-normal">FASHION VODKA</p>
-            <p class="mb-0 mx-2 fs-6 fw-normal">x</p>
-            <p class="mb-0 fs-6 fw-normal">2</p>
-          </div>
-          <div class="d-flex">
-            <p class="mb-0 fs-6 fw-normal">IDR</p>
-            <p class="mb-0 mx-2 fs-6 fw-normal">1,200,000</p>
-          </div>
-        </div>
-        <br />
-
-        <div class="px-4 py-2 border-top">
-          <!-- subtotal -->
-          <div class="d-flex align-items-center justify-content-between">
-            <p class="fs-6 fw-normal mb-0">Subtotal</p>
-            <div class="d-flex">
-              <p class="fs-6 fw-normal mb-0">IDR</p>
-              <p class="fs-6 fw-normal mb-0 ms-2" id="subtotalDisplay"></p>
+        <div class="modal-body">
+          <div class="px-4">
+            <p class="fs-5 fw-normal mb-0">Pay</p>
+            <div class="d-flex align-items-center">
+              <p class="fs-6 text-secondary fw-normal mb-0" id="customerNameDisplay">Daniel D Kamasi</p>
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#77767b" style="width: 20px">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier"><path d="M12 9.5C13.3807 9.5 14.5 10.6193 14.5 12C14.5 13.3807 13.3807 14.5 12 14.5C10.6193 14.5 9.5 13.3807 9.5 12C9.5 10.6193 10.6193 9.5 12 9.5Z" fill="#77767b"></path></g>
+              </svg>
+              <p class="fs-6 text-secondary fw-normal mb-0" id="customerIdDisplay">089123333333</p>
             </div>
+            <input type="checkbox" class="form-check-input" id="inputMoka" name="inputMoka" disabled />
+            <label class="form-check-label">Bill from Moka</label>
           </div>
+          <div class="order-list"></div>
 
-          <!-- service -->
-          <div class="d-flex align-items-center justify-content-between">
+          <br />
+
+          <div class="px-4 py-2 border-top">
+            <!-- subtotal -->
+            <div class="d-flex align-items-center justify-content-between">
+              <p class="fs-6 fw-normal mb-0">Subtotal</p>
+              <div class="d-flex">
+                <p class="fs-6 fw-normal mb-0">IDR</p>
+                <p class="fs-6 fw-normal mb-0 ms-2" id="subtotalDisplay"></p>
+              </div>
+            </div>
+
+            <!-- service -->
+            <!-- <div class="d-flex align-items-center justify-content-between">
             <p class="fs-6 fw-normal mb-0">Service</p>
             <div class="d-flex">
               <p class="fs-6 fw-normal mb-0">IDR</p>
               <p class="fs-6 fw-normal mb-0 ms-2">0</p>
             </div>
-          </div>
+          </div> -->
 
-          <!-- Tax -->
-          <div class="d-flex align-items-center justify-content-between">
+            <!-- Tax -->
+            <!-- <div class="d-flex align-items-center justify-content-between">
             <p class="fs-6 fw-normal mb-0">Tax</p>
             <div class="d-flex">
               <p class="fs-6 fw-normal mb-0">IDR</p>
               <p class="fs-6 fw-normal mb-0 ms-2">0</p>
             </div>
-          </div>
+          </div> -->
 
-          <!-- Payment Method -->
-          <div class="d-flex align-items-center justify-content-between mt-2 text-secondary">
-            <p class="fs-6 fw-normal mb-0">Payment Method</p>
-            <div class="d-flex">
-              <p class="fs-6 fw-normal mb-0" id="paymentMethodDisplay"></p>
+            <!-- Total -->
+            <div class="d-flex align-items-center justify-content-between mt-3">
+              <p class="fs-6 fw-bolder mb-0">Total</p>
+              <div class="d-flex">
+                <p class="fs-6 fw-bolder mb-0">IDR</p>
+                <p class="fs-6 fw-bolder mb-0 ms-2" id="totalDisplay"></p>
+              </div>
+            </div>
+
+            <div class="d-flex mt-3">
+              <div class="mb-1">
+                <input type="text" class="form-control" id="notes" name="notes" placeholder="Note..." />
+              </div>
             </div>
           </div>
 
-          <!-- Notes -->
-          <div class="d-flex align-items-center justify-content-between text-secondary">
-            <p class="fs-6 fw-normal mb-0">Notes</p>
-            <div class="d-flex">
-              <p class="fs-6 fw-normal mb-0 ms-5" id="notesDisplay"></p>
-            </div>
-          </div>
-
-          <!-- Total -->
-          <div class="d-flex align-items-center justify-content-between mt-3">
-            <p class="fs-6 fw-bolder mb-0">Total</p>
-            <div class="d-flex">
-              <p class="fs-6 fw-bolder mb-0">IDR</p>
-              <p class="fs-6 fw-bolder mb-0 ms-2" id="totalDisplay"></p>
-            </div>
+          <div class="confirmed-inputs">
+            <!-- Confirmed Inputs -->
+            <input type="hidden" name="barcode" id="barcode" />
+            <input type="hidden" name="customerName" id="customerName" />
+            <input type="hidden" name="customerId" id="customerId" />
+            <input type="hidden" name="payment" id="confirmedPayment" />
+            <input type="hidden" name="invoiceNumber" id="invoiceNumber" />
+            <input type="hidden" id="collectedBy" name="collectedBy" value="Kasir Bahari" />
+            <input type="hidden" id="invoiceStatus" name="invoiceStatus" value="paid" readonly />
+            <input type="hidden" name="notes" id="notes" />
+            <input type="hidden" id="menuAmount" name="menuAmount" />
+            <input type="hidden" id="menuIds" name="menuIds" />
           </div>
         </div>
+        <div class="modal-footer">
+          <div class="px-3" style="max-width: 200px">
+            <input type="password" class="form-control" id="serverCode" name="serverCode" placeholder="Kode Server" required />
+          </div>
 
-        <div>
-          <!-- Confirmed Inputs -->
-          <input type="hidden" name="barcode" id="barcode" />
-          <input type="hidden" name="addBalance" id="addBalance" />
-          <input type="hidden" name="deposit" id="deposit" />
-          <input type="hidden" name="customerName" id="customerName" />
-          <input type="hidden" name="customerId" id="customerId" />
-          <input type="hidden" name="paymentMethod" id="paymentMethod" />
-          <input type="hidden" name="notes" id="notes" />
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Confirm</button>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary">Confirm</button>
-      </div>
+      </form>
     </div>
   </div>
 </div>
