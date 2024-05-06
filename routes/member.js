@@ -7,10 +7,9 @@ const paymentQueries = require('../database/payments/queries');
 const verifyToken = require('./middlewares/verifyToken');
 const { memberLogger } = require('../config/logger/childLogger');
 const { errorLog, infoLog } = require('../config/logger/functions');
-const { cashierAndDeveloper, allRoles, developerOnly } = require('./middlewares/userRole');
+const { developerOnly } = require('./middlewares/userRole');
 const { v4 } = require('uuid');
-const { convertTZ } = require('./functions/convertDateTimezone');
-const { CARD_NOT_EXIST, CARD_NOT_ACTIVE, CARD_NOT_MEMBER, CARD_BELONGS_TO_OTHER } = require('./var/reports');
+const { CARD_NOT_EXIST, CARD_NOT_ACTIVE, CARD_NOT_MEMBER } = require('./var/reports');
 
 // MEMBER ASSESSMENT
 router.get('/assessment', verifyToken, developerOnly, async (req, res) => {

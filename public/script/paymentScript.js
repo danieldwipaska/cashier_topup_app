@@ -10,6 +10,7 @@ const orderList = document.querySelector('.order-list');
 const barcodeInput = document.querySelector('#barcodeInput');
 const customerNameInput = document.querySelector('#customerNameInput');
 const customerIdInput = document.querySelector('#customerIdInput');
+const balanceInputNumber = document.querySelector('#balanceInputNumber');
 const invoiceNumberMokaInput = mokaInvoice.querySelector('#invoiceNumberInput');
 const menuAmountInput = document.querySelector('#menuAmountInput');
 const menuIdsInput = document.querySelector('#menuIdsInput');
@@ -24,6 +25,8 @@ const invoiceNumber = modal.querySelector('#invoiceNumber');
 const menuAmount = modal.querySelector('#menuAmount');
 const menuIds = modal.querySelector('#menuIds');
 const inputMoka = modal.querySelector('#inputMoka');
+
+const submitPaymentButton = modal.querySelector('.submit-payment-button');
 
 const customerNameDisplay = modal.querySelector('#customerNameDisplay');
 const customerIdDisplay = modal.querySelector('#customerIdDisplay');
@@ -46,6 +49,7 @@ const menus = document.querySelectorAll('.menu');
 
 // MENU NAMES, AMOUNT, PRICES, AND PAYMENT DECLARATION
 const allMenuNames = [];
+const allMenuKinds = [];
 const allMenuPrices = [];
 const allMenuAmount = [];
 const allMenuIds = [];
@@ -64,6 +68,7 @@ menus.forEach((menu) => {
 
   // PUSH INITIAL MENU DATA TO allMenuNames, allMenuAmount, and allMenuPrices
   allMenuNames.push(menuName.innerHTML);
+  allMenuKinds.push(menuKind.innerHTML);
   allMenuPrices.push(menuPrice.innerHTML); // REQUIRED PURE NUMBER (NOT IN U.S. CURRENCY FORMAT)
   allMenuAmount.push(0);
   allMenuIds.push(menuId.innerHTML);
@@ -145,6 +150,14 @@ confirmPaymentButton.addEventListener('click', () => {
       <p class="mb-0 mx-2 fs-6 fw-normal">${Intl.NumberFormat('en-US').format(paymentMokaInput.value)}</p>
     </div>
   </div>`;
+
+    console.log(typeof +balanceInputNumber.value, +balanceInputNumber.value);
+    // Verify Balance and Total Payment
+    if (+balanceInputNumber.value < +paymentMokaInput.value || +paymentMokaInput.value === 0) {
+      submitPaymentButton.setAttribute('disabled', 'disabled');
+    } else {
+      submitPaymentButton.removeAttribute('disabled');
+    }
   } else {
     confirmedPayment.value = paymentAppInput.value;
     subTotalDisplay.innerHTML = Intl.NumberFormat('en-US').format(payment);
@@ -155,6 +168,7 @@ confirmPaymentButton.addEventListener('click', () => {
         orderListString += `<div class="px-5 d-flex align-items-center justify-content-between">
         <div class="d-flex">
           <p class="mb-0 fs-6 fw-normal">${allMenuNames[i]}</p>
+          <p class="mb-0 fs-6 fw-normal mx-1">(${allMenuKinds[i]})</p>
           <p class="mb-0 mx-2 fs-6 fw-normal">x</p>
           <p class="mb-0 fs-6 fw-normal">${allMenuAmount[i]}</p>
         </div>
@@ -165,6 +179,13 @@ confirmPaymentButton.addEventListener('click', () => {
       </div>`;
       }
     });
+
+    // Verify Balance and Total Payment
+    if (+balanceInputNumber.value < +paymentAppInput.value || +paymentAppInput.value === 0) {
+      submitPaymentButton.setAttribute('disabled', 'disabled');
+    } else {
+      submitPaymentButton.removeAttribute('disabled');
+    }
   }
 
   orderList.innerHTML = orderListString;
