@@ -42,12 +42,14 @@ router.post('/analytics', async (req, res) => {
           [crews.rows[i].name, dateFrom, dateTo]
         );
 
+        const purchases = payments.rows.filter((payment) => {
+          return payment.invoice_number.indexOf('PAY') === 0 && payment.invoice_number.length > 6;
+        });
+
         const crewPurchase = {
           name: crews.rows[i].name,
-          purchases: payments.rows.filter((payment) => {
-            return payment.invoice_number.indexOf('PAY') === 0 && payment.invoice_number.length > 6;
-          }),
-          totalPayment: payments.rows.reduce((acc, payment) => {
+          purchases,
+          totalPayment: purchases.reduce((acc, payment) => {
             return acc + payment.payment;
           }, 0),
         };
