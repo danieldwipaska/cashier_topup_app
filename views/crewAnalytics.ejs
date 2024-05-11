@@ -1,0 +1,102 @@
+<div class="container my-1">
+  <div class="row">
+    <div class="col-md-12 mx-auto">
+      <div class="d-flex justify-content-between">
+        <div>
+          <h3 class="mb-0">Crew's Purchasing Analytics</h3>
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-11 mx-auto">
+      <% if (messages) { %>
+      <div class="alert alert-dismissible alert-success fade show mb-3">
+        <button type="button" class="btn-close" data-mdb-toggle="animation" data-mdb-animation="slide-right" data-mdb-animation-start="onLoad" data-bs-dismiss="alert"></button>
+        <strong>Congrats!</strong> <%= messages %>
+      </div>
+      <% } %> <% if (alert) { %>
+
+      <div class="alert alert-dismissible alert-warning fade show mb-3">
+        <button type="button" class="btn-close" data-mdb-toggle="animation" data-mdb-animation="slide-right" data-mdb-animation-start="onLoad" data-bs-dismiss="alert"></button>
+        <strong>Oh no!</strong> <%= alert %>
+      </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-8">
+      <form action="/crew/analytics" method="post" class="row g-3 float-end">
+        <div class="mb-1 col-md"><p class="m-0">from</p></div>
+        <div class="mb-1 col-md">
+          <input class="form-control" type="datetime-local" name="analyticFrom" id="analyticFrom" value="<%= analyticFrom %>" />
+        </div>
+        <div class="mb-1 col-md"><p class="m-0">to</p></div>
+        <div class="mb-1 col-md">
+          <input class="form-control" type="datetime-local" name="analyticTo" id="analyticTo" value="<%= analyticTo %>" />
+        </div>
+        <div class="mb-1 col-md"><button type="submit" class="btn btn-info">Apply</button></div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="container my-3">
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th scope="col">No.</th>
+        <th scope="col">Crew</th>
+        <th scope="col">Bottle</th>
+        <th scope="col">Any Drinks</th>
+        <th scope="col">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (data) { %> <% data.forEach((crew, i) => { %> <% if(crew.name === 'Guest') { %> <% } else { %>
+      <tr>
+        <th scope="row"><%= i + 1 %></th>
+        <td><%= crew.name %></td>
+        <td><%= Intl.NumberFormat('en-US').format(crew.totalPayment) %></td>
+        <% if(crew.name === 'Agil') { %>
+        <td><%= Intl.NumberFormat('en-US').format(moka_data[1].total_purchases) %></td>
+        <td><%= Intl.NumberFormat('en-US').format(crew.totalPayment + moka_data[1].total_purchases) %></td>
+        <% } %> <% if(crew.name === 'Sisi') { %>
+        <td><%= Intl.NumberFormat('en-US').format(moka_data[6].total_purchases) %></td>
+        <td><%= Intl.NumberFormat('en-US').format(crew.totalPayment + moka_data[6].total_purchases) %></td>
+        <% } %> <% if(crew.name === 'Michael') { %>
+        <td><%= Intl.NumberFormat('en-US').format(moka_data[3].total_purchases) %></td>
+        <td><%= Intl.NumberFormat('en-US').format(crew.totalPayment + moka_data[3].total_purchases) %></td>
+        <% } %> <% if(crew.name === 'Putri') { %>
+        <td><%= Intl.NumberFormat('en-US').format(moka_data[8].total_purchases) %></td>
+        <td><%= Intl.NumberFormat('en-US').format(crew.totalPayment + moka_data[8].total_purchases) %></td>
+        <% } %> <% if(crew.name === 'Joel') { %>
+        <td><%= Intl.NumberFormat('en-US').format(moka_data[7].total_purchases) %></td>
+        <td><%= Intl.NumberFormat('en-US').format(crew.totalPayment + moka_data[7].total_purchases) %></td>
+        <% } %> <% if(crew.name === 'Dody') { %>
+        <td><%= Intl.NumberFormat('en-US').format(moka_data[5].total_purchases) %></td>
+        <td><%= Intl.NumberFormat('en-US').format(crew.totalPayment + moka_data[5].total_purchases) %></td>
+        <% } %> <% if(crew.name === 'Albert') { %>
+        <td><%= Intl.NumberFormat('en-US').format(moka_data[2].total_purchases) %></td>
+        <td><%= Intl.NumberFormat('en-US').format(crew.totalPayment + moka_data[2].total_purchases) %></td>
+        <% } %> <% if(crew.name === 'Inka') { %>
+        <td><%= Intl.NumberFormat('en-US').format(moka_data[4].total_purchases) %></td>
+        <td><%= Intl.NumberFormat('en-US').format(crew.totalPayment + moka_data[4].total_purchases) %></td>
+        <% } %>
+
+        <td></td>
+      </tr>
+      <% } %> <% }) %> <% } %>
+    </tbody>
+  </table>
+</div>
+<div class="container my-1">
+  <div class="row my-5 multi-button">
+    <div class="col-md-8 mx-auto text-center">
+      <a class="button shadow" href="/advanced" role="button">Back</a>
+    </div>
+  </div>
+</div>

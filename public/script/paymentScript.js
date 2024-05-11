@@ -25,6 +25,7 @@ const invoiceNumber = modal.querySelector('#invoiceNumber');
 const menuAmount = modal.querySelector('#menuAmount');
 const menuIds = modal.querySelector('#menuIds');
 const inputMoka = modal.querySelector('#inputMoka');
+const isFromMoka = modal.querySelector('#isFromMoka');
 
 const submitPaymentButton = modal.querySelector('.submit-payment-button');
 
@@ -131,12 +132,14 @@ confirmPaymentButton.addEventListener('click', () => {
   menuAmount.value = menuAmountInput.value;
   menuIds.value = menuIdsInput.value;
   inputMoka.checked = isFromMokaInput.checked;
+  isFromMoka.checked = isFromMokaInput.checked;
 
   customerNameDisplay.innerHTML = customerName.value;
   customerIdDisplay.innerHTML = customerId.value;
 
   let orderListString = '';
   if (isFromMokaInput.checked) {
+    isFromMoka.value = 'true';
     confirmedPayment.value = paymentMokaInput.value;
     subTotalDisplay.innerHTML = Intl.NumberFormat('en-US').format(paymentMokaInput.value);
     totalDisplay.innerHTML = Intl.NumberFormat('en-US').format(paymentMokaInput.value);
@@ -159,6 +162,7 @@ confirmPaymentButton.addEventListener('click', () => {
       submitPaymentButton.removeAttribute('disabled');
     }
   } else {
+    isFromMoka.value = '';
     confirmedPayment.value = paymentAppInput.value;
     subTotalDisplay.innerHTML = Intl.NumberFormat('en-US').format(payment);
     totalDisplay.innerHTML = Intl.NumberFormat('en-US').format(payment);

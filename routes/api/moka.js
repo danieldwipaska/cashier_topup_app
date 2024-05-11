@@ -48,7 +48,9 @@ async function getNewAccessToken(refreshToken) {
       console.log(response);
       const accessTokenExpiresAt = Date.now() + response.data.expires_in * 1000;
 
-      await pool.query(tokenQueries.updateToken, [response.data.access_token, response.data.expires_in, accessTokenExpiresAt, response.data.refresh_token, 'bearer']);
+      const updatedToken = await pool.query(tokenQueries.updateToken, [response.data.access_token, response.data.expires_in, accessTokenExpiresAt, response.data.refresh_token, 'bearer']);
+
+      return updatedToken;
     } catch (error) {
       errorLog(mokaLogger, error, 'Error in function getNewAccessToken() when calling tokenQueries.updateToken');
     }
@@ -82,7 +84,9 @@ async function getPaymentData() {
     // }
 
     if (tokens.rows[0].expires_at - now < 60 * 60 * 1000) {
-      await getNewAccessToken(tokens.rows[0].refresh_token);
+      const updatedToken = await getNewAccessToken(tokens.rows[0].refresh_token);
+
+      tokens.rows[0].access_token = updatedToken.rows[0].access_token;
     }
 
     const data = await getPaymentDataFromMoka(tokens.rows[0].access_token);
@@ -94,4 +98,5 @@ async function getPaymentData() {
 
 module.exports = {
   getPaymentData,
+  getNewAccessToken,
 };

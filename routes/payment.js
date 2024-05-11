@@ -89,7 +89,9 @@ router.get('/search', verifyToken, allRoles, async (req, res) => {
 
 // PAYMENTS
 router.post('/', verifyToken, allRoles, async (req, res) => {
-  const { barcode, customerName: customer_name, customerId: customer_id, payment, invoiceNumber, invoiceStatus: invoice_status, serverCode, collectedBy: collected_by, notes, menuAmount, menuIds, inputMoka } = req.body;
+  const { barcode, customerName: customer_name, customerId: customer_id, payment, invoiceNumber, invoiceStatus: invoice_status, serverCode, collectedBy: collected_by, notes, menuAmount, menuIds, isFromMoka } = req.body;
+
+  console.log(isFromMoka);
 
   try {
     // CHECK WHETHER OR NOT THE CARD EXISTS
@@ -144,7 +146,7 @@ router.post('/', verifyToken, allRoles, async (req, res) => {
         menu_discount_percents = [];
 
       // IF THE INVOICE IS NOT FROM MOKA, GENERATE A NEW INVOICE NUMBER AND FILL IN THE MENU
-      if (!inputMoka) {
+      if (!isFromMoka) {
         invoice_number = `PAY${Date.now()}`;
 
         menuAmount.split(',').forEach(async (amount, i) => {
