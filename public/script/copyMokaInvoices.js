@@ -2,9 +2,9 @@ const mokaData = document.querySelector('.moka-data');
 
 mokaData.addEventListener('click', (event) => {
   const mokaInvoice = document.querySelector('#mokaInvoice');
-  const invoiceNumber = mokaInvoice.querySelector('#invoiceNumber');
+  const invoiceNumber = mokaInvoice.querySelector('#invoiceNumberInput');
   const collectedBy = document.querySelector('#collectedBy');
-  const payment = mokaInvoice.querySelector('#payment');
+  const payment = mokaInvoice.querySelector('#paymentInput');
   const notification = document.querySelector('#notificationPopup');
 
   invoiceNumber.value = dataCollection[event.target.id].payment_no;
