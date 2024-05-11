@@ -76,6 +76,9 @@ router.post('/analytics', async (req, res) => {
 
       const mokaCrewPurchases = await getCrewTransactions(epochArchiveFrom, epochArchiveTo);
 
+      console.log(crewPurchases);
+      console.log(mokaCrewPurchases);
+
       return res.render('crewAnalytics', {
         layout: 'layouts/main-layout',
         title: 'Crew Analytics',
