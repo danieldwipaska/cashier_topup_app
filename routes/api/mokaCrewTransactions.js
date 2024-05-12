@@ -23,7 +23,7 @@ async function getCrewTransactions(since, until) {
     }
 
     try {
-      const response = await axios.get(`https://api.mokapos.com/v3/outlets/${process.env.MOKA_OUTLET_ID}/reports/get_latest_transactions?since=${since}&until=${until}&per_page=500`, {
+      const response = await axios.get(`https://api.mokapos.com/v3/outlets/${process.env.MOKA_OUTLET_ID}/reports/get_latest_transactions?since=${since}&until=${until}&per_page=1000`, {
         headers: {
           Authorization: `Bearer ${tokens.rows[0].access_token}`,
         },
