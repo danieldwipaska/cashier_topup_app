@@ -239,7 +239,7 @@
 <script>
   async function fetchFnbData(fnbId) {
     try {
-      const response = await fetch(`http://localhost:3000/fnb/${fnbId}`);
+      const response = await fetch(`https://baharimalangirishpub-app.com/fnb/${fnbId}`);
 
       const data = await response.json();
 
@@ -270,7 +270,7 @@
   async function updateFnbData(fnbId) {
     // console.log(fnbId);
     try {
-      const response = await fetch(`http://localhost:3000/fnb/discount/${fnbId}`);
+      const response = await fetch(`https://baharimalangirishpub-app.com/fnb/discount/${fnbId}`);
 
       const data = await response.json();
       if (data.response.status != 200) throw alert('Server Error. Please go back to Main Menu , and try again!');

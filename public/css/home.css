@@ -212,6 +212,14 @@ a {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
+  animation-delay: 0.3s;
+  animation-fill-mode: both;
+}
+
+.menu-button-fnb-list {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
   animation-delay: 0.4s;
   animation-fill-mode: both;
 }
