@@ -201,6 +201,18 @@
                     </div>
                   </div>
                 </div>
+                <div class="col-md-2 mx-2 shadow blurred-box-orange rounded-4">
+                  <p class="mt-2 mb-0 fs-6 text-secondary">EDC</p>
+                  <p class="fs-6 text-secondary">BNI</p>
+                  <p class="mb-0 mt-2 fs-6 text-secondary mt-3">IDR</p>
+                  <div class="mb-3 text-secondary total-topup-edc-bni-data">
+                    <div class="text-secondary fs-6 mb-3">
+                      <div class="spinner-border text-secondary" role="status" style="max-width: 19px; max-height: 19px">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <div class="col-md-2 mx-2 shadow blurred-box-yellow rounded-4">
                   <p class="mt-2 mb-0 fs-6 text-secondary">QRIS</p>
                   <p class="fs-6 text-secondary">MANDIRI</p>
@@ -253,6 +265,7 @@
   const totalTopupTransferMandiriData = document.querySelector('.total-topup-transfer-mandiri-data');
   const totalTopupEdcBcaData = document.querySelector('.total-topup-edc-bca-data');
   const totalTopupEdcMandiriData = document.querySelector('.total-topup-edc-mandiri-data');
+  const totalTopupEdcBNIData = document.querySelector('.total-topup-edc-bni-data');
   const totalTopupQrisBcaData = document.querySelector('.total-topup-qris-bca-data');
   const totalTopupQrisMandiriData = document.querySelector('.total-topup-qris-mandiri-data');
   const totalCheckoutCashData = document.querySelector('.total-checkout-cash-data');
@@ -382,6 +395,24 @@
       totalTopupEdcMandiriData.innerHTML = totalTopupEdcMandiri;
     } catch (error) {
       totalTopupEdcMandiriData.innerHTML = 'Not Available';
+    }
+  }
+
+  async function fetchTotalTopupEdcBNI() {
+    try {
+      const response = await fetch('https://baharimalangirishpub-app.com/analysis/topup/edc/bni');
+      const data = await response.json();
+
+      let totalTopupEdcBNI = 0;
+      data.forEach((element) => {
+        totalTopupEdcBNI = totalTopupEdcBNI + element.payment;
+      });
+
+      totalTopupEdcBNI = Intl.NumberFormat('en-US').format(totalTopupEdcBNI);
+
+      totalTopupEdcBNIData.innerHTML = totalTopupEdcBNI;
+    } catch (error) {
+      totalTopupEdcBNIData.innerHTML = 'Not Available';
     }
   }
 

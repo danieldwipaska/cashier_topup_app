@@ -133,7 +133,7 @@ router.get('/topup/edc/bca', async (req, res) => {
   }
 });
 
-// TOP-UP EDC BCA
+// TOP-UP EDC MANDIRI
 router.get('/topup/edc/mandiri', async (req, res) => {
   try {
     const dateFrom = OpenAndCloseTimeConverter.open();
@@ -141,6 +141,24 @@ router.get('/topup/edc/mandiri', async (req, res) => {
 
     try {
       const payments = await pool.query(paymentQueries.getPaymentWithMethodDateRange, ['topup', 'EDC MANDIRI', dateFrom, dateTo]);
+
+      return res.status(200).json(payments.rows);
+    } catch (error) {
+      return res.status(500).json('Server Error');
+    }
+  } catch (error) {
+    return res.status(500).json('Server Error');
+  }
+});
+
+// TOP-UP EDC BNI
+router.get('/topup/edc/bni', async (req, res) => {
+  try {
+    const dateFrom = OpenAndCloseTimeConverter.open();
+    const dateTo = OpenAndCloseTimeConverter.close();
+
+    try {
+      const payments = await pool.query(paymentQueries.getPaymentWithMethodDateRange, ['topup', 'EDC BNI', dateFrom, dateTo]);
 
       return res.status(200).json(payments.rows);
     } catch (error) {
