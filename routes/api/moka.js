@@ -83,17 +83,14 @@ async function getPaymentData() {
       await getFirstAuth();
     }
 
-    setTimeout(() => {
-      return null;
-    }, 5000);
+    if (tokens.rows[0].expires_at - now < 60 * 60 * 1000) {
+      const updatedToken = await getNewAccessToken(tokens.rows[0].refresh_token);
 
-    // if (tokens.rows[0].expires_at - now < 60 * 60 * 1000) {
-    //   const updatedToken = await getNewAccessToken(tokens.rows[0].refresh_token);
+      tokens.rows[0].access_token = updatedToken.rows[0].access_token;
+    }
 
-    //   tokens.rows[0].access_token = updatedToken.rows[0].access_token;
-    // }
-
-    // const data = await getPaymentDataFromMoka(tokens.rows[0].access_token);
+    const data = await getPaymentDataFromMoka(tokens.rows[0].access_token);
+    return data;
   } catch (error) {
     errorLog(mokaLogger, error, 'Error in function getPaymentData() when calling tokenQueries.getLatestToken');
   }

@@ -57,7 +57,6 @@ async function getMokaInvoices() {
 
   try {
     const response = await axios.get('https://baharimalangirishpub-app.com/thirdparty/moka');
-    console.log(response)
 
     let dataString = '';
 

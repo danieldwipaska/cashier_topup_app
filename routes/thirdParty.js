@@ -8,7 +8,6 @@ const router = express.Router();
 router.get('/moka', async (req, res) => {
   try {
     const data = await getPaymentData();
-    console.log(data)
     return res.json(data);
   } catch (error) {
     errorLog(mokaLogger, error, 'Error in GET /moka when calling getPaymentData()');
