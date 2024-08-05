@@ -18,7 +18,7 @@ async function getFirstAuth() {
       redirect_uri: 'https://www.google.com',
     });
 
-    console.log(response);
+    console.log(response, 'hey');
 
     try {
       const token_id = v4();
