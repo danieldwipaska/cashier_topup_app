@@ -83,9 +83,9 @@ async function getPaymentData() {
       await getFirstAuth();
     }
 
-    setInterval(() => {
+    setTimeout(() => {
       return null;
-    }, 6000);
+    }, 5000);
 
     // if (tokens.rows[0].expires_at - now < 60 * 60 * 1000) {
     //   const updatedToken = await getNewAccessToken(tokens.rows[0].refresh_token);
