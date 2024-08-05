@@ -18,6 +18,8 @@ async function getFirstAuth() {
       redirect_uri: 'https://www.google.com',
     });
 
+    console.log('say hello')
+
     try {
       const token_id = v4();
       const accessTokenExpiresAt = Date.now() + response.data.expires_in * 1000;
@@ -78,7 +80,6 @@ async function getPaymentData() {
     const now = Date.now();
 
     if (!tokens.rows.length) {
-      console.log('hello')
       await getFirstAuth();
     }
 
