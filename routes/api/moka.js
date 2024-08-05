@@ -77,7 +77,7 @@ async function getPaymentData() {
 
     const now = Date.now();
 
-    console.log('hitted')
+    console.log(tokens)
 
     if (!tokens.rows.length) {
       await getFirstAuth();
