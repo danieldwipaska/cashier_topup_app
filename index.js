@@ -26,7 +26,7 @@ const transferRoute = require('./routes/transfer');
 const fnbRoute = require('./routes/fnbs');
 const adjustmentRoute = require('./routes/adjustment');
 const supportRoute = require('./routes/support');
-const crewRoute = require('./routes/crew');
+// const crewRoute = require('./routes/crew');
 
 const app = express();
 
@@ -62,7 +62,7 @@ app.use('/transfer', transferRoute);
 app.use('/fnb', fnbRoute);
 app.use('/adjustment', adjustmentRoute);
 app.use('/support', supportRoute);
-app.use('/crew', crewRoute);
+// app.use('/crew', crewRoute);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
