@@ -26,6 +26,8 @@ router.post('/analytics', async (req, res) => {
 
     crews.rows = crews.rows.filter((crew) => crew.name !== 'Sisi' || crew.name !== 'Putri')
 
+    console.log(crews.rows);
+
     const crewPurchases = [];
 
     for (let i = 0; i < crews.rows.length; i++) {
