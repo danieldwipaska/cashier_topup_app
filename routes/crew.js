@@ -24,13 +24,11 @@ router.post('/analytics', async (req, res) => {
     const crews = await pool.query('SELECT name FROM crews', []);
     if (!crews.rows.length) return res.status(404).json('Crew Not Found');
 
-    const filteredGuests = crews.rows.filter(waiter => waiter.name !== 'Sisi' && waiter.name !== 'Putri');
-
-    console.log(filteredGuests);
+    const filteredCrews = crews.rows.filter(waiter => waiter.name !== 'Sisi' && waiter.name !== 'Putri');
 
     const crewPurchases = [];
 
-    for (let i = 0; i < crews.rows.length; i++) {
+    for (let i = 0; i < filteredCrews.length; i++) {
       try {
         const dateArchiveFrom = new Date(analyticFrom);
         const dateArchiveTo = new Date(analyticTo);
@@ -43,7 +41,7 @@ router.post('/analytics', async (req, res) => {
 
         const payments = await pool.query(
           'SELECT id, barcode, customer_name, customer_id, payment, invoice_number, created_at, updated_at, notes, menu_names, menu_amount, menu_prices, menu_kinds, menu_discounts, menu_discount_percents FROM payments WHERE served_by = $1 AND created_at >= $2 AND created_at <= $3',
-          [crews.rows[i].name, dateFrom, dateTo]
+          [filteredCrews[i].name, dateFrom, dateTo]
         );
 
         const purchases = payments.rows.filter((payment) => {
@@ -51,7 +49,7 @@ router.post('/analytics', async (req, res) => {
         });
 
         const crewPurchase = {
-          name: crews.rows[i].name,
+          name: filteredCrews[i].name,
           purchases,
           totalPayment: purchases.reduce((acc, payment) => {
             return acc + payment.payment;
