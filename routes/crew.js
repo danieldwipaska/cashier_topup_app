@@ -21,12 +21,14 @@ router.post('/analytics', async (req, res) => {
   const { analyticFrom, analyticTo } = req.body;
 
   try {
-    let crews = await pool.query('SELECT name FROM crews', []);
+    const crews = await pool.query('SELECT name FROM crews', []);
     if (!crews.rows.length) return res.status(404).json('Crew Not Found');
 
-    crews.rows = crews.rows.filter((crew) => crew.name !== 'Sisi' || crew.name !== 'Putri')
+    const crewFiltered = crews.rows.filter(function (crew) {
+      crew.name !== 'Sisi' || crew.name !== 'Putri';
+    });
 
-    console.log(crews.rows);
+    console.log(crewFiltered);
 
     const crewPurchases = [];
 
