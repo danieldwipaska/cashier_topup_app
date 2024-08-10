@@ -25,7 +25,7 @@ router.post('/analytics', async (req, res) => {
     if (!crews.rows.length) return res.status(404).json('Crew Not Found');
 
     const crewFiltered = crews.rows.filter(function (crew) {
-      crew.name !== 'Sisi' || crew.name !== 'Putri';
+      return crew.name !== 'Sisi' || crew.name !== 'Putri';
     });
 
     console.log(crewFiltered);
