@@ -24,7 +24,7 @@ router.post('/analytics', async (req, res) => {
     let crews = await pool.query('SELECT name FROM crews', []);
     if (!crews.rows.length) return res.status(404).json('Crew Not Found');
 
-    crews.rows = crews.rows.filter((crew) => crew !== 'Sisi' || crew !== 'Putri')
+    crews.rows = crews.rows.filter((crew) => crew.name !== 'Sisi' || crew.name !== 'Putri')
 
     const crewPurchases = [];
 
