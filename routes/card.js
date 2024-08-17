@@ -13,36 +13,76 @@ const fs = require('fs');
 
 // GET ALL CARDS
 router.get('/list', verifyToken, allRoles, async (req, res) => {
-  try {
-    const cards = await pool.query(cardQueries.getCards, []);
+  const { search } = req.query;
 
-    let debtBalance = 0;
-    let debtDeposit = 0;
+  if (search) {
+    try {
+      const cards = await pool.query(cardQueries.getCardByCustomerIdOrName, [`%${search.trim().toLowerCase()}%`]);
 
-    let totalActiveCard = 0;
+      let debtBalance = 0;
+      let debtDeposit = 0;
 
-    cards.rows.forEach((result) => {
-      debtBalance += result.balance;
-      debtDeposit += result.deposit;
-      result.updated_at = convertTZ(result.updated_at, 'Asia/Jakarta');
-      if (result.is_active) {
-        totalActiveCard += 1;
-      }
-    });
+      let totalActiveCard = 0;
 
-    let debtTotal = debtBalance + debtDeposit;
+      cards.rows.forEach((card) => {
+        debtBalance += card.balance;
+        debtDeposit += card.deposit;
+        card.updated_at = convertTZ(card.updated_at, 'Asia/Jakarta');
+      
+        if (card.is_active) {
+          totalActiveCard += 1;
+        }
+      });
 
-    return res.render('card', {
-      layout: 'layouts/main-layout',
-      title: 'Card List',
-      data: cards.rows,
-      debtBalance,
-      debtDeposit,
-      debtTotal,
-      totalActiveCard,
-    });
-  } catch (error) {
-    errorLog(cardLogger, error, 'Error in HTTP GET /list when calling cardQueries.getCards');
+      let debtTotal = debtBalance + debtDeposit;
+
+      return res.render('card', {
+        layout: 'layouts/main-layout',
+        title: 'Card List',
+        data: cards.rows,
+        debtBalance,
+        debtDeposit,
+        debtTotal,
+        totalActiveCard,
+        search,
+      });
+    } catch (error) {
+      errorLog(cardLogger, error, 'Error in HTTP GET /list when calling cardQueries.getCardByCustomerIdOrName');
+      return res.status(500).json('Server Error');
+    }
+  } else {
+    try {
+      const cards = await pool.query(cardQueries.getCards, []);
+
+      let debtBalance = 0;
+      let debtDeposit = 0;
+
+      let totalActiveCard = 0;
+
+      cards.rows.forEach((result) => {
+        debtBalance += result.balance;
+        debtDeposit += result.deposit;
+        result.updated_at = convertTZ(result.updated_at, 'Asia/Jakarta');
+        if (result.is_active) {
+          totalActiveCard += 1;
+        }
+      });
+
+      let debtTotal = debtBalance + debtDeposit;
+
+      return res.render('card', {
+        layout: 'layouts/main-layout',
+        title: 'Card List',
+        data: cards.rows,
+        debtBalance,
+        debtDeposit,
+        debtTotal,
+        totalActiveCard,
+        search: '',
+      });
+    } catch (error) {
+      errorLog(cardLogger, error, 'Error in HTTP GET /list when calling cardQueries.getCards');
+    }
   }
 });
 

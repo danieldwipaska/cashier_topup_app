@@ -1,13 +1,23 @@
-<div class="container my-1">
+<div class="container-fluid my-1 px-5">
   <div class="row">
-    <div class="col-md-9 mx-auto">
+    <div class="col-md">
       <h3>Card List</h3>
     </div>
   </div>
 </div>
-<div class="container-fluid">
+<div class="container-fluid px-5">
   <div class="row">
-    <div class="col-md-4"></div>
+    <div class="col-md-4">
+      <form action="/card/list" method="get" class="d-flex">
+        <% if (search) { %>
+        <input class="form-control w-50" type="text" name="search" id="search" placeholder="CustomerName/Phone" value="<%= search %>" />
+        <% } else { %>
+        <input class="form-control w-50" type="text" name="search" id="search" placeholder="CustomerName/Phone" />
+        <% } %>
+        <button type="submit" class="btn btn-info mx-2">Search</button>
+        <a type="button" class="btn btn-secondary" href="/card/list">Clear</a>
+      </form>
+    </div>
     <div class="col-md-8">
       <form action="/card/download" method="post" class="row g-3 float-end">
         <div class="mb-1 col-md"><p class="m-0">from</p></div>
@@ -23,7 +33,7 @@
     </div>
   </div>
 </div>
-<div class="container my-1">
+<div class="container mb-1 mt-3">
   <div class="row">
     <div class="col-md mx-auto">
       <div class="table-responsive" style="max-height: 550px">

@@ -1,6 +1,6 @@
-<div class="container my-1">
+<div class="container-fluid my-1 px-5">
   <div class="row">
-    <div class="col-md-9 mx-auto">
+    <div class="col-md">
       <h3>Payment List</h3>
     </div>
   </div>
@@ -21,9 +21,19 @@
     </div>
   </div>
 </div>
-<div class="container-fluid">
+<div class="container-fluid px-5">
   <div class="row">
-    <div class="col-md-4"></div>
+    <div class="col-md-4">
+      <form action="/payment/list" method="get" class="d-flex">
+        <% if (search) { %>
+        <input class="form-control w-50" type="text" name="search" id="search" placeholder="CustomerName/Phone" value="<%= search %>" />
+        <% } else { %>
+        <input class="form-control w-50" type="text" name="search" id="search" placeholder="CustomerName/Phone" />
+        <% } %>
+        <button type="submit" class="btn btn-info mx-2">Search</button>
+        <a type="button" class="btn btn-secondary" href="/payment/list">Clear</a>
+      </form>
+    </div>
     <div class="col-md-8">
       <form action="/payment/download" method="post" class="row g-3 float-end">
         <div class="mb-1 col-md"><p class="m-0">from</p></div>
@@ -39,15 +49,14 @@
     </div>
   </div>
 </div>
-<div class="container-fluid my-1">
+<div class="container-fluid my-1 px-5">
   <div class="row">
-    <div class="col-md mx-auto">
-      <table class="table" style="font-size: small">
+    <div class="col-md mx-auto table-responsive" style="max-height: 550px">
+      <table class="table table-sm" style="font-size: small">
         <thead>
-          <tr class="table-warning">
+          <tr class="table-warning" style="position: sticky; top: 0">
             <th scope="col">Served By</th>
             <th scope="col">Type</th>
-            <th scope="col">Status</th>
             <th scope="col">Invoice</th>
             <th scope="col">Method</th>
             <th scope="col">Barcode</th>
@@ -64,7 +73,6 @@
           <tr class="table-info text-danger">
             <th scope="row"><%= element.served_by %></th>
             <td><%= element.action %></td>
-            <td><%= element.invoice_status %></td>
             <td><%= element.invoice_number %></td>
             <td><%= element.payment_method %></td>
             <td><%= element.barcode %></td>
@@ -144,7 +152,6 @@
           <tr class="table-info">
             <th scope="row"><%= element.served_by %></th>
             <td><%= element.action %></td>
-            <td><%= element.invoice_status %></td>
             <td><%= element.invoice_number %></td>
             <td><%= element.payment_method %></td>
             <td><%= element.barcode %></td>
@@ -224,7 +231,6 @@
           <tr class="table-light text-danger">
             <th scope="row"><%= element.served_by %></th>
             <td><%= element.action %></td>
-            <td><%= element.invoice_status %></td>
             <td><%= element.invoice_number %></td>
             <td><%= element.payment_method %></td>
             <td><%= element.barcode %></td>
@@ -304,7 +310,6 @@
           <tr class="table-light">
             <th scope="row"><%= element.served_by %></th>
             <td><%= element.action %></td>
-            <td><%= element.invoice_status %></td>
             <td><%= element.invoice_number %></td>
             <td><%= element.payment_method %></td>
             <td><%= element.barcode %></td>
@@ -385,6 +390,7 @@
       </table>
     </div>
   </div>
+  <% if (page) { %>
   <div class="row my-3">
     <div class="col-md">
       <nav aria-label="...">
@@ -395,7 +401,7 @@
           </li>
           <% } else { %>
           <li class="page-item">
-            <a class="page-link" href="/payment/list?page=<%= parseInt(page,10) - 1 %>">Previous</a>
+            <a class="page-link" href="/payment/list?search=<%= search %>&page=<%= parseInt(page,10) - 1 %>">Previous</a>
           </li>
           <% } %> <% if (page === '1') { %>
           <li class="page-item active" aria-current="page">
@@ -403,7 +409,7 @@
           </li>
           <% } else { %>
           <li class="page-item">
-            <a class="page-link" href="/payment/list?page=1">1</a>
+            <a class="page-link" href="/payment/list?search=<%= search %>&page=1">1</a>
           </li>
           <% } %> <% if (page === '2') { %>
           <li class="page-item active" aria-current="page">
@@ -411,7 +417,7 @@
           </li>
           <% } else { %>
           <li class="page-item">
-            <a class="page-link" href="/payment/list?page=2">2</a>
+            <a class="page-link" href="/payment/list?search=<%= search %>&page=2">2</a>
           </li>
           <% } %> <% if (page === '3') { %>
           <li class="page-item active" aria-current="page">
@@ -419,7 +425,7 @@
           </li>
           <% } else { %>
           <li class="page-item">
-            <a class="page-link" href="/payment/list?page=3">3</a>
+            <a class="page-link" href="/payment/list?search=<%= search %>&page=3">3</a>
           </li>
           <% } %> <% if (page === '4') { %>
           <li class="page-item active" aria-current="page">
@@ -427,7 +433,7 @@
           </li>
           <% } else { %>
           <li class="page-item">
-            <a class="page-link" href="/payment/list?page=4">4</a>
+            <a class="page-link" href="/payment/list?search=<%= search %>&page=4">4</a>
           </li>
           <% } %> <% if (page === '5') { %>
           <li class="page-item active" aria-current="page">
@@ -435,7 +441,7 @@
           </li>
           <% } else { %>
           <li class="page-item">
-            <a class="page-link" href="/payment/list?page=5">5</a>
+            <a class="page-link" href="/payment/list?search=<%= search %>&page=5">5</a>
           </li>
           <% } %> <% if (page === '6') { %>
           <li class="page-item active" aria-current="page">
@@ -443,7 +449,7 @@
           </li>
           <% } else { %>
           <li class="page-item">
-            <a class="page-link" href="/payment/list?page=6">6</a>
+            <a class="page-link" href="/payment/list?search=<%= search %>&page=6">6</a>
           </li>
           <% } %> <% if (page === '7') { %>
           <li class="page-item active" aria-current="page">
@@ -451,7 +457,7 @@
           </li>
           <% } else { %>
           <li class="page-item">
-            <a class="page-link" href="/payment/list?page=7">7</a>
+            <a class="page-link" href="/payment/list?search=<%= search %>&page=7">7</a>
           </li>
           <% } %> <% if (page === '8') { %>
           <li class="page-item active" aria-current="page">
@@ -459,7 +465,7 @@
           </li>
           <% } else { %>
           <li class="page-item">
-            <a class="page-link" href="/payment/list?page=8">8</a>
+            <a class="page-link" href="/payment/list?search=<%= search %>&page=8">8</a>
           </li>
           <% } %> <% if (page === '9') { %>
           <li class="page-item active" aria-current="page">
@@ -467,7 +473,7 @@
           </li>
           <% } else { %>
           <li class="page-item">
-            <a class="page-link" href="/payment/list?page=9">9</a>
+            <a class="page-link" href="/payment/list?search=<%= search %>&page=9">9</a>
           </li>
           <% } %> <% if (page === '10') { %>
           <li class="page-item active" aria-current="page">
@@ -475,7 +481,7 @@
           </li>
           <% } else { %>
           <li class="page-item">
-            <a class="page-link" href="/payment/list?page=10">10</a>
+            <a class="page-link" href="/payment/list?search=<%= search %>&page=10">10</a>
           </li>
           <% } %> <% if (page === '10') { %>
           <li class="page-item disabled">
@@ -484,13 +490,14 @@
 
           <% } else { %>
           <li class="page-item">
-            <a class="page-link" href="/payment/list?page=<%= parseInt(page,10) + 1 %>">Next</a>
+            <a class="page-link" href="/payment/list?search=<%= search %>&page=<%= parseInt(page,10) + 1 %>">Next</a>
           </li>
           <% } %>
         </ul>
       </nav>
     </div>
   </div>
+  <% } %>
   <div class="row my-5 multi-button">
     <div class="col-md-8 mx-auto text-center">
       <a class="button shadow" href="/advanced" role="button">Back</a>

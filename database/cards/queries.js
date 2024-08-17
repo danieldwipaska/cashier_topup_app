@@ -3,6 +3,7 @@ const getCards = 'SELECT * FROM cards ORDER BY updated_at DESC';
 const getCardById = 'SELECT * FROM cards WHERE barcode = $1';
 const getCardByCardId = 'SELECT * FROM cards WHERE id = $1';
 const getCardByIdAndCustomerId = 'SELECT * FROM cards WHERE barcode = $1 AND customer_id = $2';
+const getCardByCustomerIdOrName = 'SELECT * FROM cards WHERE LOWER(customer_id) LIKE $1 OR LOWER(customer_name) LIKE $1 ORDER BY updated_at DESC';
 // const checkEmailExists = 'SELECT s FROM students s WHERE s.email = $1';
 // const removeStudent = 'DELETE FROM students WHERE id = $1';
 const cardActivate = 'UPDATE cards SET is_active = $1, updated_at = NOW() WHERE barcode = $2';
@@ -19,6 +20,7 @@ module.exports = {
   getCardById,
   getCardByCardId,
   getCardByIdAndCustomerId,
+  getCardByCustomerIdOrName,
   cardActivate,
   cardDeactivate,
   cardStatus,

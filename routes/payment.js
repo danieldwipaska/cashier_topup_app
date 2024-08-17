@@ -271,34 +271,58 @@ router.get('/invoice/:num', verifyToken, allRoles, (req, res) => {
 
 // PAYMENT LIST
 router.get('/list', verifyToken, allRoles, async (req, res) => {
-  let { page } = req.query;
+  let { page, search } = req.query;
 
   if (!page) {
     page = '1';
   }
 
   const pageInt = parseInt(page, 10);
-  const limit = 20;
+  const limit = 50;
   const offset = (pageInt - 1) * limit;
 
-  try {
-    const payments = await pool.query(paymentQueries.getPayments, [limit, offset]);
+  if (search) {
+    try {
+      const payments = await pool.query(paymentQueries.getPaymentByCustomerIdOrName, [`%${search.trim().toLowerCase()}%`, limit, offset]);
 
-    payments.rows.forEach((payment) => {
-      payment.created_at = convertTZ(payment.created_at, 'Asia/Jakarta');
-    });
+      payments.rows.forEach((payment) => {
+        payment.created_at = convertTZ(payment.created_at, 'Asia/Jakarta');
+      });
 
-    return res.render('paymentList', {
-      layout: 'layouts/main-layout',
-      title: 'Payment List',
-      data: payments.rows,
-      messages: '',
-      alert: '',
-      page: page,
-    });
-  } catch (error) {
-    errorLog(paymentLogger, error, 'Error in HTTP GET /list when calling paymentQueries.getPaymentByPaidOff');
-    return res.status(500).json('Server Error');
+      return res.render('paymentList', {
+        layout: 'layouts/main-layout',
+        title: 'Payment List',
+        data: payments.rows,
+        messages: '',
+        alert: '',
+        page,
+        search,
+      });
+    } catch (error) {
+      errorLog(paymentLogger, error, 'Error in HTTP GET /list when calling paymentQueries.getPaymentByPaidOff');
+      return res.status(500).json('Server Error');
+    }
+  } else {
+    try {
+      const payments = await pool.query(paymentQueries.getPayments, [limit, offset]);
+
+      payments.rows.forEach((payment) => {
+        payment.created_at = convertTZ(payment.created_at, 'Asia/Jakarta');
+      });
+
+      return res.render('paymentList', {
+        layout: 'layouts/main-layout',
+        title: 'Payment List',
+        data: payments.rows,
+        messages: '',
+        alert: '',
+        page,
+        search,
+      });
+    } catch (error) {
+      errorLog(paymentLogger, error, 'Error in HTTP GET /list when calling paymentQueries.getPaymentByPaidOff');
+      return res.status(500).json('Server Error');
+    }
   }
 });
 
