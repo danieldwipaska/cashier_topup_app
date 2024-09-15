@@ -82,6 +82,9 @@
         <% } %> <% if(crew.name === 'Teguh') { %>
         <td><%= Intl.NumberFormat('en-US').format(moka_data[7].total_purchases) %></td>
         <td><%= Intl.NumberFormat('en-US').format(crew.totalPayment + moka_data[7].total_purchases) %></td>
+        <% } %> <% if(crew.name === 'Nopal') { %>
+        <td><%= Intl.NumberFormat('en-US').format(moka_data[8].total_purchases) %></td>
+        <td><%= Intl.NumberFormat('en-US').format(crew.totalPayment + moka_data[8].total_purchases) %></td>
         <% } %>
       </tr>
       <% } %> <% }) %> <% } %>
