@@ -71,4 +71,45 @@ async function getCrewTransactions(since, until) {
   }
 }
 
-module.exports = { getCrewTransactions };
+async function calculateTransactions(since, until) {
+  try {
+    const tokens = await pool.query(tokenQueries.getLatestToken, []);
+
+    const now = Date.now();
+
+    // if (!tokens.rows.length) {
+    //   await getFirstAuth();
+    // }
+
+    if (tokens.rows[0].expires_at - now < 60 * 60 * 1000) {
+      const updatedToken = await getNewAccessToken(tokens.rows[0].refresh_token);
+
+      tokens.rows[0].access_token = updatedToken.rows[0].access_token;
+    }
+
+    try {
+      const response = await axios.get(`https://api.mokapos.com/v3/outlets/${process.env.MOKA_OUTLET_ID}/reports/get_latest_transactions?since=${since}&until=${until}&per_page=500`, {
+        headers: {
+          Authorization: `Bearer ${tokens.rows[0].access_token}`,
+        },
+      });
+
+      const transactions = response.data.data.payments;
+      let totalPurchases = 0;
+
+      transactions.forEach((transaction) => {
+        for (let i = 0; i < transaction.checkouts.length; i++) {
+          totalPurchases = transaction.checkouts[i].total_price - transaction.checkouts[i].refunded_quantity * transaction.checkouts[i].item_price;
+        }
+      });
+
+      return totalPurchases;
+    } catch (error) {
+      errorLog(mokaLogger, error, 'Error in function calculateTransactions() when calling api https://api.mokapos.com/v3/outlets/${process.env.MOKA_OUTLET_ID}/reports/get_latest_transactions?since=${since}&until=${until}&per_page=500');
+    }
+  } catch (error) {
+    errorLog(mokaLogger, error, 'Error in function calculateTransactions() when calling tokenQueries.getLatestToken');
+  }
+}
+
+module.exports = { getCrewTransactions, calculateTransactions };

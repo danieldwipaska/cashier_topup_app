@@ -3,6 +3,7 @@ const { convertTZ } = require('./functions/convertDateTimezone');
 const pool = require('../db');
 const paymentQueries = require('../database/payments/queries');
 const { OpenAndCloseTimeConverter } = require('./classes/openAndCloseTimeConverter');
+const { calculateTransactions } = require('./api/mokaCrewTransactions');
 const router = express.Router();
 
 router.get('/', (req, res) => {
@@ -38,6 +39,43 @@ router.get('/payment', async (req, res) => {
     // const yearNow = dateJakarta.getFullYear();
 
     // const dateFrom = new Date(yearNow, monthNow, dateNow, 13, 0, 0);
+  } catch (error) {
+    return res.status(500).json('Server Error');
+  }
+});
+
+// TOTAL PAYMENT OF MOKA AND BCM
+router.get('/total-payments', async (req, res) => {
+  try {
+    const dateFrom = OpenAndCloseTimeConverter.open();
+    const dateTo = OpenAndCloseTimeConverter.close();
+
+    const dateFromTime = dateFrom.getTime() + 7 * 60 * 60 * 1000;
+    const dateToTime = dateTo.getTime() + 7 * 60 * 60 * 1000;
+
+    const totalMokaPurchases = await calculateTransactions(dateFromTime, dateToTime);
+
+    try {
+      const bcmPayments = await pool.query(paymentQueries.getPaymentWithDateRange, ['pay', dateFrom, dateTo]);
+
+      let totalBcmPurchases = 0;
+
+      bcmPayments.rows.forEach((payment) => {
+        // SKIP BOTTLE PAYMENTS
+        if (payment.invoice_number.indexOf('PAY') !== 0) {
+          totalBcmPurchases += payment.payment;
+        }
+      });
+
+      const context = {
+        moka: totalMokaPurchases,
+        bcm: totalBcmPurchases,
+      };
+
+      return res.status(200).json(context);
+    } catch (error) {
+      return res.status(500).json('Server Error');
+    }
   } catch (error) {
     return res.status(500).json('Server Error');
   }

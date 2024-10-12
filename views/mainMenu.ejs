@@ -230,6 +230,34 @@
           </div>
           <div class="row my-3">
             <div class="col-md">
+              <p class="fs-4 mb-0">Total Payments (without bottle payment)</p>
+              <p class="text-secondary">not real-time, please refresh page to update</p>
+              <p class="text-secondary mb-0">IDR</p>
+              <div class="text-secondary total-payment-from-bcm">
+                <div class="text-secondary fs-6 mb-3">
+                  <div class="spinner-border text-secondary" role="status" style="max-width: 19px; max-height: 19px">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row my-3">
+            <div class="col-md">
+              <p class="fs-4 mb-0">Total Payments (from MOKA POS)</p>
+              <p class="text-secondary">not real-time, please refresh page to update</p>
+              <p class="text-secondary mb-0">IDR</p>
+              <div class="text-secondary total-payment-from-moka">
+                <div class="text-secondary fs-6 mb-3">
+                  <div class="spinner-border text-secondary" role="status" style="max-width: 19px; max-height: 19px">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row my-3">
+            <div class="col-md">
               <p class="text-end mb-0 text-secondary">The report calculates only at 01.00 PM - 04.00 AM</p>
               <p class="text-end text-secondary">and will be reset daily at 01.00 PM</p>
             </div>
@@ -271,6 +299,8 @@
   const totalCheckoutCashData = document.querySelector('.total-checkout-cash-data');
   const totalCheckoutTransferBcaData = document.querySelector('.total-checkout-transfer-bca-data');
   const totalCheckoutTransferMandiriData = document.querySelector('.total-checkout-transfer-mandiri-data');
+  const totalPaymentFromMoka = document.querySelector('.total-payment-from-moka');
+  const totalPaymentFromBcm = document.querySelector('.total-payment-from-bcm');
 
   async function fetchTotalPayment() {
     try {
@@ -285,6 +315,21 @@
       totalPayment = Intl.NumberFormat('en-US').format(totalPayment);
 
       totalPaymentData.innerHTML = totalPayment;
+    } catch (error) {
+      totalPaymentData.innerHTML = 'Not Available';
+    }
+  }
+
+  async function fetchTotalPaymentFromMoka() {
+    try {
+      const response = await fetch('https://baharimalangirishpub-app.com/analysis/total-payments');
+      const data = await response.json();
+
+      let totalPurchasesMoka = Intl.NumberFormat('en-US').format(data.moka);
+      let totalPurchasesBcm = Intl.NumberFormat('en-US').format(data.bcm);
+
+      totalPaymentFromMoka.innerHTML = totalPurchasesMoka;
+      totalPaymentFromBcm.innerHTML = totalPurchasesBcm;
     } catch (error) {
       totalPaymentData.innerHTML = 'Not Available';
     }
@@ -523,6 +568,9 @@
       totalCheckoutTransferMandiriData.innerHTML = 'Not Available';
     }
   }
+
+  // DO NOT REAL-TIME FETCH MOKA TRANSACTIONS
+  fetchTotalPaymentFromMoka();
 
   setInterval(() => {
     fetchTotalPayment();
