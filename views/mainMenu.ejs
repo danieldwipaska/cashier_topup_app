@@ -230,8 +230,8 @@
           </div>
           <div class="row my-3">
             <div class="col-md">
-              <p class="fs-4 mb-0">Total Payments (without bottle payment)</p>
-              <p class="text-secondary">not real-time, please refresh page to update</p>
+              <p class="fs-6 mb-0">Total Payments (without bottle payment)</p>
+              <p class="text-secondary" style="font-size: 8px">not real-time, please refresh page to update</p>
               <p class="text-secondary mb-0">IDR</p>
               <div class="text-secondary total-payment-from-bcm">
                 <div class="text-secondary fs-6 mb-3">
@@ -244,8 +244,8 @@
           </div>
           <div class="row my-3">
             <div class="col-md">
-              <p class="fs-4 mb-0">Total Payments (from MOKA POS)</p>
-              <p class="text-secondary">not real-time, please refresh page to update</p>
+              <p class="fs-6 mb-0">Total Payments (from MOKA POS)</p>
+              <p class="text-secondary" style="font-size: 8px">not real-time, please refresh page to update</p>
               <p class="text-secondary mb-0">IDR</p>
               <div class="text-secondary total-payment-from-moka">
                 <div class="text-secondary fs-6 mb-3">
@@ -331,7 +331,8 @@
       totalPaymentFromMoka.innerHTML = totalPurchasesMoka;
       totalPaymentFromBcm.innerHTML = totalPurchasesBcm;
     } catch (error) {
-      totalPaymentData.innerHTML = 'Not Available';
+      totalPaymentFromMoka.innerHTML = 'Not Available';
+      totalPaymentFromBcm.innerHTML = 'Not Available';
     }
   }
 
