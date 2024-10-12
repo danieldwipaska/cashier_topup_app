@@ -96,14 +96,16 @@ async function calculateTransactions(since, until) {
 
       const transactions = response.data.data.payments;
       let totalPurchases = 0;
+      let totalRefunds = 0;
 
       transactions.forEach((transaction) => {
         for (let i = 0; i < transaction.checkouts.length; i++) {
-          totalPurchases = transaction.checkouts[i].total_price - transaction.checkouts[i].refunded_quantity * transaction.checkouts[i].item_price;
+          totalPurchases += transaction.checkouts[i].total_price;
+          totalRefunds += transaction.checkouts[i].refunded_quantity * transaction.checkouts[i].item_price;
         }
       });
 
-      return totalPurchases;
+      return { totalPurchases, totalRefunds };
     } catch (error) {
       errorLog(mokaLogger, error, 'Error in function calculateTransactions() when calling api https://api.mokapos.com/v3/outlets/${process.env.MOKA_OUTLET_ID}/reports/get_latest_transactions?since=${since}&until=${until}&per_page=500');
     }

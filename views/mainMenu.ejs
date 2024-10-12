@@ -10,26 +10,26 @@
           <a class="button shadow menu-button-activation" href="/activation/search" role="button">Activation</a>
           <a class="button shadow menu-button-create" href="/create/search" role="button">Create a Card</a>
           <a class="button shadow menu-button-balance-check" href="/card/search" role="button">Balance Check</a>
-          <div class="button shadow menu-button-balance-adjustment" role="button">
+          <!-- <div class="button shadow menu-button-balance-adjustment" role="button">
             <div class="position-relative">
               <div class="position-absolute top-0 start-0 translate-middle px-2 on-progress fs-5">Upcoming</div>
             </div>
             <div>Adjustment</div>
-          </div>
+          </div> -->
           <!-- href="/adjustment/search"  -->
-          <div class="button shadow menu-button-card-transfer" role="button">
+          <!-- <div class="button shadow menu-button-card-transfer" role="button">
             <div class="position-relative">
               <div class="position-absolute top-0 start-0 translate-middle px-2 on-progress fs-5">Upcoming</div>
             </div>
             <div>Card Transfer</div>
-          </div>
+          </div> -->
           <!-- href="/transfer/search" -->
-          <div class="button shadow menu-button-member-area" role="button">
+          <!-- <div class="button shadow menu-button-member-area" role="button">
             <div class="position-relative">
               <div class="position-absolute top-0 start-0 translate-middle px-2 on-progress fs-5">Upcoming</div>
             </div>
             <div>Member Area</div>
-          </div>
+          </div> -->
           <!-- href="/member" -->
 
           <!-- <a class="button shadow menu-button-create" href="/member/search" role="button">Add Member</a> -->
@@ -245,7 +245,7 @@
           </div>
           <div class="row my-3">
             <div class="col-md">
-              <p class="fs-6 mb-0">Total Payments (from MOKA POS) <span class="text-secondary" style="font-size: 10px">not real-time, please refresh page to update</span></p>
+              <p class="fs-6 mb-0">Total Payments (from MOKA POS) <span class="text-secondary" style="font-size: 10px">*not real-time</span></p>
               <p class="text-secondary mb-0">IDR</p>
               <div class="text-secondary total-payment-from-moka">
                 <div class="text-secondary fs-6 mb-3">
@@ -258,8 +258,22 @@
           </div>
           <div class="row my-3">
             <div class="col-md">
-              <p class="text-end mb-0 text-secondary">The report calculates only at 01.00 PM - 04.00 AM</p>
-              <p class="text-end text-secondary">and will be reset daily at 01.00 PM</p>
+              <p class="fs-6 mb-0">Total Refunds (from MOKA POS) <span class="text-secondary" style="font-size: 10px">*not real-time</span></p>
+              <p class="text-secondary mb-0">IDR</p>
+              <div class="text-secondary total-refund-from-moka">
+                <div class="text-secondary fs-6 mb-3">
+                  <div class="spinner-border text-secondary" role="status" style="max-width: 19px; max-height: 19px">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row my-3">
+            <div class="col-md">
+              <p class="text-end mb-0 text-secondary" style="font-size: 10px">The report calculates only at 01.00 PM - 04.00 AM</p>
+              <p class="text-end text-secondary" style="font-size: 10px">and will be reset daily at 01.00 PM</p>
+              <p class="text-end text-secondary" style="font-size: 10px">*not real-time means you have to refresh page to update</p>
             </div>
           </div>
         </div>
@@ -294,6 +308,7 @@
   const totalCheckoutTransferBcaData = document.querySelector('.total-checkout-transfer-bca-data');
   const totalCheckoutTransferMandiriData = document.querySelector('.total-checkout-transfer-mandiri-data');
   const totalPaymentFromMoka = document.querySelector('.total-payment-from-moka');
+  const totalRefundFromMoka = document.querySelector('.total-refund-from-moka');
   const totalPaymentFromBcm = document.querySelector('.total-payment-from-bcm');
 
   async function fetchTotalPayment() {
@@ -319,13 +334,16 @@
       const response = await fetch('https://baharimalangirishpub-app.com/analysis/total-payments');
       const data = await response.json();
 
-      let totalPurchasesMoka = Intl.NumberFormat('en-US').format(data.moka);
+      let totalPurchasesMoka = Intl.NumberFormat('en-US').format(data.mokaPurchases);
+      let totalRefundsMoka = Intl.NumberFormat('en-US').format(data.mokaRefunds);
       let totalPurchasesBcm = Intl.NumberFormat('en-US').format(data.bcm);
 
       totalPaymentFromMoka.innerHTML = totalPurchasesMoka;
+      totalRefundFromMoka.innerHTML = totalRefundsMoka;
       totalPaymentFromBcm.innerHTML = totalPurchasesBcm;
     } catch (error) {
       totalPaymentFromMoka.innerHTML = 'Not Available';
+      totalRefundFromMoka.innerHTML = 'Not Available';
       totalPaymentFromBcm.innerHTML = 'Not Available';
     }
   }
