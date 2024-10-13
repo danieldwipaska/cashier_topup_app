@@ -68,9 +68,9 @@ router.get('/total-payments', async (req, res) => {
       });
 
       const context = {
-        mokaPurchases: totalMokaPurchases.totalPurchases,
-        mokaRefunds: totalMokaPurchases.totalRefunds,
-        bcm: totalBcmPurchases,
+        mokaPurchases: 0,
+        mokaRefunds: 0,
+        bcm: 0,
       };
 
       return res.status(200).json(context);
