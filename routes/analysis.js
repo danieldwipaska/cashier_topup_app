@@ -73,6 +73,8 @@ router.get('/total-payments', async (req, res) => {
         bcm: totalBcmPurchases,
       };
 
+      console.log(context);
+
       return res.status(200).json(context);
     } catch (error) {
       return res.status(500).json('Server Error');
