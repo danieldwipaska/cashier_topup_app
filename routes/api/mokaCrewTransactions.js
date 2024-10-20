@@ -97,12 +97,12 @@ async function calculateTransactions(since, until) {
       const transactions = response.data.data.payments;
       let totalPurchases = 0;
       let totalRefunds = 0;
-      console.log(transactions);
 
       transactions.forEach((transaction) => {
-        for (let i = 0; i < transaction.checkouts.length; i++) {
-          totalPurchases += transaction.checkouts[i].total_price;
-          totalRefunds += transaction.checkouts[i].refunded_quantity * transaction.checkouts[i].item_price;
+        if (!transaction.is_refunded) {
+          totalPurchases += transaction.total_collected;
+        } else {
+          totalRefunds += transaction.refund_amount;
         }
       });
 
