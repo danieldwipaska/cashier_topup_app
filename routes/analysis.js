@@ -50,8 +50,8 @@ router.get('/total-payments', async (req, res) => {
     const dateFrom = OpenAndCloseTimeConverter.open();
     const dateTo = OpenAndCloseTimeConverter.close();
 
-    const dateFromTime = dateFrom.getTime() + 7 * 60 * 60 * 1000;
-    const dateToTime = dateTo.getTime() + 7 * 60 * 60 * 1000;
+    const dateFromTime = dateFrom.getTime();
+    const dateToTime = dateTo.getTime();
     console.log('total-payments hitted');
 
     const totalMokaPurchases = await calculateTransactions(dateFromTime, dateToTime);
