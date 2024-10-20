@@ -86,6 +86,7 @@ async function calculateTransactions(since, until) {
 
       tokens.rows[0].access_token = updatedToken.rows[0].access_token;
     }
+    console.log(since, until);
 
     try {
       const response = await axios.get(`https://api.mokapos.com/v3/outlets/${process.env.MOKA_OUTLET_ID}/reports/get_latest_transactions?since=${since}&until=${until}&per_page=500`, {
@@ -97,7 +98,7 @@ async function calculateTransactions(since, until) {
       const transactions = response.data.data.payments;
       let totalPurchases = 0;
       let totalRefunds = 0;
-      console.log(transactions);
+      console.log(response.data);
 
       transactions.forEach((transaction) => {
         for (let i = 0; i < transaction.checkouts.length; i++) {
