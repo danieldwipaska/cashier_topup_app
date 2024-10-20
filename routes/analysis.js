@@ -46,6 +46,7 @@ router.get('/payment', async (req, res) => {
 
 // TOTAL PAYMENT OF MOKA AND BCM
 router.get('/total-payments', async (req, res) => {
+  console.log('total-payments hitted');
   try {
     const dateFrom = OpenAndCloseTimeConverter.open();
     const dateTo = OpenAndCloseTimeConverter.close();
