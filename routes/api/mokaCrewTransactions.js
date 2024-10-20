@@ -86,7 +86,7 @@ async function calculateTransactions(since, until) {
 
       tokens.rows[0].access_token = updatedToken.rows[0].access_token;
     }
-    console.log(new Date(since), new Date(until));
+    console.log(since, until);
 
     try {
       const response = await axios.get(`https://api.mokapos.com/v3/outlets/${process.env.MOKA_OUTLET_ID}/reports/get_latest_transactions?since=${since}&until=${until}&per_page=500`, {
