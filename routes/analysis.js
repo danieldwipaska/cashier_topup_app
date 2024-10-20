@@ -57,6 +57,7 @@ router.get('/total-payments', async (req, res) => {
 
     try {
       const bcmPayments = await pool.query(paymentQueries.getPaymentWithDateRange, ['pay', dateFrom, dateTo]);
+      console.log(bcmPayments);
 
       let totalBcmPurchases = 0;
 
