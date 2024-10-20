@@ -15,7 +15,7 @@ const updatePaymentPaid = 'UPDATE payments SET paid_off = $1, invoice_number = $
 const updatePaymentStatusById = 'UPDATE payments SET invoice_status = $1, updated_at = NOW() WHERE id = $2';
 const getInvoice = 'SELECT * FROM payments WHERE invoice_number = $1';
 
-const getPaymentWithDateRange = 'SELECT payment, created_at FROM payments WHERE action = $1 AND created_at >= $2 AND created_at <= $3 ORDER BY created_at ASC';
+const getPaymentWithDateRange = 'SELECT invoice_number, payment, created_at FROM payments WHERE action = $1 AND created_at >= $2 AND created_at <= $3 ORDER BY created_at ASC';
 const getPaymentWithMethodDateRange = 'SELECT payment, created_at FROM payments WHERE action = $1 AND payment_method = $2 AND created_at >= $3 AND created_at <= $4 ORDER BY created_at ASC';
 
 const getPaymentInvoiceNumberMoka = 'SELECT invoice_number FROM payments WHERE action = $1 AND menu_names[1] = $2 AND created_at >= $3 AND created_at <= $4 ORDER BY created_at DESC LIMIT $5 OFFSET $6';
