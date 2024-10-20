@@ -106,6 +106,8 @@ async function calculateTransactions(since, until) {
         }
       });
 
+      console.log(totalPurchases, totalRefunds);
+
       return { totalPurchases, totalRefunds };
     } catch (error) {
       errorLog(mokaLogger, error, 'Error in function calculateTransactions() when calling api https://api.mokapos.com/v3/outlets/${process.env.MOKA_OUTLET_ID}/reports/get_latest_transactions?since=${since}&until=${until}&per_page=500');
