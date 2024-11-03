@@ -1,14 +1,3 @@
-const Sentry = require('@sentry/node');
-const { nodeProfilingIntegration } = require('@sentry/profiling-node');
-
-Sentry.init({
-  dsn: process.env.SENTRY_SECRET,
-  integrations: [nodeProfilingIntegration()],
-  tracesSampleRate: 1.0,
-  profilesSampleRate: 1.0,
-});
-
-const Sentry = require('@sentry/node');
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 const path = require('path');
@@ -38,11 +27,20 @@ const fnbRoute = require('./routes/fnbs');
 const adjustmentRoute = require('./routes/adjustment');
 const supportRoute = require('./routes/support');
 const crewRoute = require('./routes/crew');
+const Sentry = require('@sentry/node');
+const { nodeProfilingIntegration } = require('@sentry/profiling-node');
 
 const app = express();
-missingFunction();
+
+Sentry.init({
+  dsn: process.env.SENTRY_SECRET,
+  integrations: [nodeProfilingIntegration()],
+  tracesSampleRate: 1.0,
+  profilesSampleRate: 1.0,
+});
 
 //MIDDLEWARES
+app.use(Sentry.Handlers.requestHandler());
 app.use(expressLayouts);
 app.use(express.json({ limit: '10mb' }));
 app.set('view engine', 'ejs');
@@ -80,7 +78,7 @@ Sentry.setupExpressErrorHandler(app);
 
 app.use(function onError(err, req, res, next) {
   res.statusCode = 500;
-  res.end(res.sentry + '\n');
+  res.end('Oops! Something went wrong. Please contact support with the following ID: ' + res.sentry);
 });
 
 const port = process.env.PORT || 3000;
