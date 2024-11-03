@@ -1,3 +1,13 @@
+const Sentry = require('@sentry/node');
+const { nodeProfilingIntegration } = require('@sentry/profiling-node');
+
+Sentry.init({
+  dsn: process.env.SENTRY_SECRET,
+  integrations: [nodeProfilingIntegration()],
+  tracesSampleRate: 1.0,
+  profilesSampleRate: 1.0,
+});
+
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 const path = require('path');
@@ -27,17 +37,8 @@ const fnbRoute = require('./routes/fnbs');
 const adjustmentRoute = require('./routes/adjustment');
 const supportRoute = require('./routes/support');
 const crewRoute = require('./routes/crew');
-const Sentry = require('@sentry/node');
-const { nodeProfilingIntegration } = require('@sentry/profiling-node');
 
 const app = express();
-
-Sentry.init({
-  dsn: process.env.SENTRY_SECRET,
-  integrations: [nodeProfilingIntegration()],
-  tracesSampleRate: 1.0,
-  profilesSampleRate: 1.0,
-});
 
 //MIDDLEWARES
 app.use(expressLayouts);
