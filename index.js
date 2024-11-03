@@ -74,6 +74,11 @@ app.use('/adjustment', adjustmentRoute);
 app.use('/support', supportRoute);
 app.use('/crew', crewRoute);
 
+function errorTest() {
+  Sentry.captureException(new Error('test error'));
+}
+errorTest();
+
 Sentry.setupExpressErrorHandler(app);
 
 app.use(function onError(err, req, res, next) {
