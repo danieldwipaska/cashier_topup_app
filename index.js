@@ -27,8 +27,19 @@ const fnbRoute = require('./routes/fnbs');
 const adjustmentRoute = require('./routes/adjustment');
 const supportRoute = require('./routes/support');
 const crewRoute = require('./routes/crew');
+const Sentry = require('@sentry/node');
+const { nodeProfilingIntegration } = require('@sentry/profiling-node');
 
 const app = express();
+
+Sentry.init({
+  dsn: process.env.SENTRY_SECRET,
+  integrations: [nodeProfilingIntegration()],
+  tracesSampleRate: 1.0,
+  profilesSampleRate: 1.0,
+});
+
+Sentry.setupExpressErrorHandler(app);
 
 //MIDDLEWARES
 app.use(expressLayouts);
