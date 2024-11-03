@@ -1,12 +1,4 @@
-const Sentry = require('@sentry/node');
-const { nodeProfilingIntegration } = require('@sentry/profiling-node');
-
-Sentry.init({
-  dsn: process.env.SENTRY_SECRET,
-  integrations: [nodeProfilingIntegration()],
-  tracesSampleRate: 1.0,
-  profilesSampleRate: 1.0,
-});
+require('./instrument');
 
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
@@ -74,17 +66,11 @@ app.use('/adjustment', adjustmentRoute);
 app.use('/support', supportRoute);
 app.use('/crew', crewRoute);
 
-function errorTest() {
-  Sentry.captureException(new Error('test error'));
+try {
+  aFunctionThatMightFail();
+} catch (e) {
+  Sentry.captureException(e);
 }
-errorTest();
-
-Sentry.setupExpressErrorHandler(app);
-
-app.use(function onError(err, req, res, next) {
-  res.statusCode = 500;
-  res.end('Oops! Something went wrong. Please contact support with the following ID: ' + res.sentry);
-});
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
