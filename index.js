@@ -76,6 +76,7 @@ app.use(function onError(err, req, res, next) {
 });
 
 const port = process.env.PORT || 3000;
+throw new Error('ERRor nich');
 app.listen(port, () => {
   console.log(`listening at port ${port} !!!`);
 });

@@ -15,6 +15,7 @@ const fs = require('fs');
 const { convertTZ } = require('./functions/convertDateTimezone');
 const { OpenAndCloseTimeConverter } = require('./classes/openAndCloseTimeConverter');
 const { BALANCE_UPDATE_SUCCESS, PAYMENT_REPORT_FAILED, BALANCE_UPDATE_FAILED } = require('./var/reports');
+const Sentry = require('@sentry/node');
 
 // SEARCH
 router.get('/search', verifyToken, allRoles, async (req, res) => {
@@ -271,6 +272,7 @@ router.get('/invoice/:num', verifyToken, allRoles, (req, res) => {
 
 // PAYMENT LIST
 router.get('/list', verifyToken, allRoles, async (req, res) => {
+  Sentry.captureException(new Error('Payment list'));
   let { page, search } = req.query;
 
   if (!page) {
