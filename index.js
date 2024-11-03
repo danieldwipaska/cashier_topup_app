@@ -31,6 +31,7 @@ const supportRoute = require('./routes/support');
 const crewRoute = require('./routes/crew');
 
 const app = express();
+missingFunction();
 
 //MIDDLEWARES
 app.use(expressLayouts);
@@ -74,8 +75,6 @@ app.use(function onError(err, req, res, next) {
   res.statusCode = 500;
   res.end(res.sentry + '\n');
 });
-
-missingFunction();
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
