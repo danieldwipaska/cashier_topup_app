@@ -66,11 +66,14 @@ app.use('/adjustment', adjustmentRoute);
 app.use('/support', supportRoute);
 app.use('/crew', crewRoute);
 
-try {
-  aFunctionThatMightFail();
-} catch (e) {
-  Sentry.captureException(e);
-}
+Sentry.setupExpressErrorHandler(app);
+
+app.use(function onError(err, req, res, next) {
+  // The error id is attached to `res.sentry` to be returned
+  // and optionally displayed to the user for support.
+  res.statusCode = 500;
+  res.end(res.sentry + '\n');
+});
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
