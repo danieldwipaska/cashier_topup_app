@@ -1,5 +1,5 @@
 require('./instrument');
-
+const Sentry = require('@sentry/node');
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 const path = require('path');
