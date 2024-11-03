@@ -73,8 +73,6 @@ app.use('/adjustment', adjustmentRoute);
 app.use('/support', supportRoute);
 app.use('/crew', crewRoute);
 
-missingFunction();
-
 Sentry.setupExpressErrorHandler(app);
 
 app.use(function onError(err, req, res, next) {
