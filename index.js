@@ -40,7 +40,6 @@ Sentry.init({
 });
 
 //MIDDLEWARES
-app.use(Sentry.Handlers.requestHandler());
 app.use(expressLayouts);
 app.use(express.json({ limit: '10mb' }));
 app.set('view engine', 'ejs');
