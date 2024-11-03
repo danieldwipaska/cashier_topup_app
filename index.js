@@ -39,8 +39,6 @@ Sentry.init({
   profilesSampleRate: 1.0,
 });
 
-Sentry.setupExpressErrorHandler(app);
-
 //MIDDLEWARES
 app.use(Sentry.Handlers.requestHandler());
 app.use(expressLayouts);
