@@ -1,4 +1,13 @@
-require('./instrument');
+const Sentry = require('@sentry/node');
+const { nodeProfilingIntegration } = require('@sentry/profiling-node');
+
+Sentry.init({
+  dsn: process.env.SENTRY_SECRET,
+  integrations: [nodeProfilingIntegration()],
+  tracesSampleRate: 1.0,
+  profilesSampleRate: 1.0,
+});
+
 const Sentry = require('@sentry/node');
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
@@ -70,8 +79,6 @@ app.use('/crew', crewRoute);
 Sentry.setupExpressErrorHandler(app);
 
 app.use(function onError(err, req, res, next) {
-  // The error id is attached to `res.sentry` to be returned
-  // and optionally displayed to the user for support.
   res.statusCode = 500;
   res.end(res.sentry + '\n');
 });
