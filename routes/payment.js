@@ -272,8 +272,6 @@ router.get('/invoice/:num', verifyToken, allRoles, (req, res) => {
 
 // PAYMENT LIST
 router.get('/list', verifyToken, allRoles, async (req, res) => {
-  Sentry.captureException(new Error('Payment list'));
-  throw new Error('Error nich');
   let { page, search } = req.query;
 
   if (!page) {

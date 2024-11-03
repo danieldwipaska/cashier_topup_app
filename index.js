@@ -75,6 +75,8 @@ app.use(function onError(err, req, res, next) {
   res.end(res.sentry + '\n');
 });
 
+missingFunction();
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`listening at port ${port} !!!`);
