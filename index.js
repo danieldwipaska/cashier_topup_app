@@ -42,6 +42,7 @@ Sentry.init({
 Sentry.setupExpressErrorHandler(app);
 
 //MIDDLEWARES
+app.use(Sentry.Handlers.requestHandler());
 app.use(expressLayouts);
 app.use(express.json({ limit: '10mb' }));
 app.set('view engine', 'ejs');
@@ -74,6 +75,13 @@ app.use('/fnb', fnbRoute);
 app.use('/adjustment', adjustmentRoute);
 app.use('/support', supportRoute);
 app.use('/crew', crewRoute);
+
+Sentry.setupExpressErrorHandler(app);
+
+app.use(function onError(err, req, res, next) {
+  res.statusCode = 500;
+  res.end('Oops! Something went wrong. Please contact support with the following ID: ' + res.sentry);
+});
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
