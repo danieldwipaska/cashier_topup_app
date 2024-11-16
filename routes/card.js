@@ -5,7 +5,7 @@ const cardQueries = require('../database/cards/queries');
 const verifyToken = require('./middlewares/verifyToken');
 const { errorLog, infoLog } = require('../config/logger/functions');
 const { cardLogger } = require('../config/logger/childLogger');
-const { cashierAndDeveloper, allRoles } = require('./middlewares/userRole');
+const { allRoles, developerOnly } = require('./middlewares/userRole');
 const { convertTZ } = require('./functions/convertDateTimezone');
 const { convertTimeHour } = require('./functions/convertTimeString');
 const fastcsv = require('fast-csv');
@@ -87,7 +87,7 @@ router.get('/list', verifyToken, allRoles, async (req, res) => {
 });
 
 // DELETE CARD
-router.get('/:id/delete', verifyToken, cashierAndDeveloper, async (req, res) => {
+router.get('/:id/delete', verifyToken, developerOnly, async (req, res) => {
   const { id } = req.params;
 
   // GET CARD
