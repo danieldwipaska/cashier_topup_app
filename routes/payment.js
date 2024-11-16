@@ -9,13 +9,12 @@ const verifyToken = require('./middlewares/verifyToken');
 const { v4 } = require('uuid');
 const { errorLog, infoLog } = require('../config/logger/functions');
 const { paymentLogger } = require('../config/logger/childLogger');
-const { allRoles, cashierAndDeveloper, developerOnly } = require('./middlewares/userRole');
+const { allRoles, developerOnly } = require('./middlewares/userRole');
 const fastcsv = require('fast-csv');
 const fs = require('fs');
 const { convertTZ } = require('./functions/convertDateTimezone');
 const { OpenAndCloseTimeConverter } = require('./classes/openAndCloseTimeConverter');
 const { BALANCE_UPDATE_SUCCESS, PAYMENT_REPORT_FAILED, BALANCE_UPDATE_FAILED } = require('./var/reports');
-const Sentry = require('@sentry/node');
 
 // SEARCH
 router.get('/search', verifyToken, allRoles, async (req, res) => {
@@ -328,7 +327,7 @@ router.get('/list', verifyToken, allRoles, async (req, res) => {
 });
 
 // DELETE PAYMENT
-router.get('/:id/delete', verifyToken, cashierAndDeveloper, (req, res) => {
+router.get('/:id/delete', verifyToken, developerOnly, (req, res) => {
   const { id } = req.params;
 
   // CHECK WHETHER OR NOT THE PAYMENT EXISTS
