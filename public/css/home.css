@@ -176,6 +176,14 @@ a {
   animation-fill-mode: both;
 }
 
+.menu-button-bottle-payment-list {
+  position: relative;
+  animation-name: menu;
+  animation-duration: 1s;
+  animation-delay: 0.3s;
+  animation-fill-mode: both;
+}
+
 .menu-button-new-card {
   position: relative;
   animation-name: menu;
@@ -196,7 +204,7 @@ a {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
-  animation-delay: 0.3s;
+  animation-delay: 0.4s;
   animation-fill-mode: both;
 }
 
@@ -212,7 +220,7 @@ a {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
-  animation-delay: 0.3s;
+  animation-delay: 0.5s;
   animation-fill-mode: both;
 }
 
@@ -220,7 +228,7 @@ a {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
-  animation-delay: 0.4s;
+  animation-delay: 0.6s;
   animation-fill-mode: both;
 }
 
@@ -228,7 +236,7 @@ a {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
-  animation-delay: 0.5s;
+  animation-delay: 0.7s;
   animation-fill-mode: both;
 }
 
@@ -236,7 +244,7 @@ a {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
-  animation-delay: 0.5s;
+  animation-delay: 0.8s;
   animation-fill-mode: both;
 }
 
@@ -244,7 +252,7 @@ a {
   position: relative;
   animation-name: menu;
   animation-duration: 1s;
-  animation-delay: 0.6s;
+  animation-delay: 0.8s;
   animation-fill-mode: both;
 }
 
