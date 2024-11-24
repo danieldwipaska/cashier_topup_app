@@ -326,6 +326,39 @@ router.get('/list', verifyToken, allRoles, async (req, res) => {
   }
 });
 
+// BOTTLE PAYMENT LIST
+router.get('/bottle/list', verifyToken, allRoles, async (req, res) => {
+  let { page } = req.query;
+
+  if (!page) {
+    page = '1';
+  }
+
+  const pageInt = parseInt(page, 10);
+  const limit = 50;
+  const offset = (pageInt - 1) * limit;
+
+  try {
+    const payments = await pool.query(paymentQueries.getBottlePayments, ['PAY%', limit, offset]);
+
+    payments.rows.forEach((payment) => {
+      payment.created_at = convertTZ(payment.created_at, 'Asia/Jakarta');
+    });
+
+    return res.render('paymentListBottles', {
+      layout: 'layouts/main-layout',
+      title: 'Bottle Payment List',
+      data: payments.rows,
+      messages: '',
+      alert: '',
+      page,
+    });
+  } catch (error) {
+    errorLog(paymentLogger, error, 'Error in HTTP GET /list when calling paymentQueries.getPaymentByPaidOff');
+    return res.status(500).json('Server Error');
+  }
+});
+
 // DELETE PAYMENT
 router.get('/:id/delete', verifyToken, developerOnly, (req, res) => {
   const { id } = req.params;
@@ -358,6 +391,7 @@ router.get('/:id/delete', verifyToken, developerOnly, (req, res) => {
 
 router.post('/download', async (req, res) => {
   const { archiveFrom, archiveTo } = req.body;
+  let { bottle } = req.query;
 
   try {
     const dateArchiveFrom = new Date(archiveFrom);
@@ -369,8 +403,12 @@ router.post('/download', async (req, res) => {
     const dateFrom = new Date(archiveFromGMTTime);
     const dateTo = new Date(archiveToGMTTime);
 
-    const payments = await pool.query(`SELECT * FROM payments WHERE created_at >= $1 AND created_at <= $2`, [dateFrom, dateTo]);
-    // console.log(payments.rows);
+    let payments;
+    if (bottle) {
+      payments = await pool.query(`SELECT * FROM payments WHERE invoice_number LIKE $1 AND created_at >= $2 AND created_at <= $3`, ['PAY%', dateFrom, dateTo]);
+    } else {
+      payments = await pool.query(`SELECT * FROM payments WHERE created_at >= $1 AND created_at <= $2`, [dateFrom, dateTo]);
+    }
 
     payments.rows.forEach((payment) => {
       const createdDate = convertTZ(payment.created_at, 'Asia/Jakarta');
