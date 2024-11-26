@@ -74,14 +74,14 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <% element.menu_names.forEach((menu, j) => { %>
+                    <% element.menu_names.forEach((menu, i) => { %>
                       <tr>
                         <td><%= element.menu %></td>
-                        <td><%= element.menu_kinds[j] %></td>
-                        <td><%= element.menu_amount[j] %></td>
+                        <td><%= element.menu_kinds[i] %></td>
+                        <td><%= element.menu_amount[i] %></td>
                         <td>
-                          <% if (element.menu_discounts[j].length) { %>
-                            <%= element.menu_discount_percents[j] %>
+                          <% if (element.menu_discounts.length) { %>
+                            <%= element.menu_discount_percents[i] %>
                           <% } else { %>
                             No
                           <% } %>
@@ -112,14 +112,14 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <% element.menu_names.forEach((menu, j) => { %>
+                    <% element.menu_names.forEach((menu, i) => { %>
                       <tr>
                         <td><%= element.menu %></td>
-                        <td><%= element.menu_kinds[j] %></td>
-                        <td><%= element.menu_amount[j] %></td>
+                        <td><%= element.menu_kinds[i] %></td>
+                        <td><%= element.menu_amount[i] %></td>
                         <td>
-                          <% if (element.menu_discounts[j].length) { %>
-                            <%= element.menu_discount_percents[j] %>
+                          <% if (element.menu_discounts.length) { %>
+                            <%= element.menu_discount_percents[i] %>
                           <% } else { %>
                             No
                           <% } %>
@@ -150,14 +150,14 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <% element.menu_names.forEach((menu, j) => { %>
+                    <% element.menu_names.forEach((menu, i) => { %>
                       <tr>
                         <td><%= element.menu %></td>
-                        <td><%= element.menu_kinds[j] %></td>
-                        <td><%= element.menu_amount[j] %></td>
+                        <td><%= element.menu_kinds[i] %></td>
+                        <td><%= element.menu_amount[i] %></td>
                         <td>
-                          <% if (element.menu_discounts[j].length) { %>
-                            <%= element.menu_discount_percents[j] %>
+                          <% if (element.menu_discounts.length) { %>
+                            <%= element.menu_discount_percents[i] %>
                           <% } else { %>
                             No
                           <% } %>
@@ -188,14 +188,14 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <% element.menu_names.forEach((menu, j) => { %>
+                    <% element.menu_names.forEach((menu, i) => { %>
                       <tr>
                         <td><%= element.menu %></td>
-                        <td><%= element.menu_kinds[j] %></td>
-                        <td><%= element.menu_amount[j] %></td>
+                        <td><%= element.menu_kinds[i] %></td>
+                        <td><%= element.menu_amount[i] %></td>
                         <td>
-                          <% if (element.menu_discounts[j].length) { %>
-                            <%= element.menu_discount_percents[j] %>
+                          <% if (element.menu_discounts.length) { %>
+                            <%= element.menu_discount_percents[i] %>
                           <% } else { %>
                             No
                           <% } %>
