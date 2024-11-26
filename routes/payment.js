@@ -344,7 +344,7 @@ router.get('/bottle/list', verifyToken, allRoles, async (req, res) => {
     payments.rows.forEach((payment) => {
       payment.created_at = convertTZ(payment.created_at, 'Asia/Jakarta');
     });
-    console.log(payments.rows);
+
     return res.render('paymentListBottles', {
       layout: 'layouts/main-layout',
       title: 'Bottle Payment List',
