@@ -80,7 +80,7 @@
                         <td><%= element.menu_kinds[j] %></td>
                         <td><%= element.menu_amount[j] %></td>
                         <td>
-                          <% if (element.menu_discounts[j]) { %>
+                          <% if (element.menu_discounts[j].length) { %>
                             <%= element.menu_discount_percents[j] %>
                           <% } else { %>
                             No
@@ -118,7 +118,7 @@
                         <td><%= element.menu_kinds[j] %></td>
                         <td><%= element.menu_amount[j] %></td>
                         <td>
-                          <% if (element.menu_discounts[j]) { %>
+                          <% if (element.menu_discounts[j].length) { %>
                             <%= element.menu_discount_percents[j] %>
                           <% } else { %>
                             No
@@ -156,7 +156,7 @@
                         <td><%= element.menu_kinds[j] %></td>
                         <td><%= element.menu_amount[j] %></td>
                         <td>
-                          <% if (element.menu_discounts[j]) { %>
+                          <% if (element.menu_discounts[j].length) { %>
                             <%= element.menu_discount_percents[j] %>
                           <% } else { %>
                             No
@@ -194,7 +194,7 @@
                         <td><%= element.menu_kinds[j] %></td>
                         <td><%= element.menu_amount[j] %></td>
                         <td>
-                          <% if (element.menu_discounts[j]) { %>
+                          <% if (element.menu_discounts[j].length) { %>
                             <%= element.menu_discount_percents[j] %>
                           <% } else { %>
                             No
