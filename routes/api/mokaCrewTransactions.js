@@ -93,6 +93,7 @@ async function calculateTransactions(since, until) {
           Authorization: `Bearer ${tokens.rows[0].access_token}`,
         },
       });
+      console.log(response.data);
 
       const transactions = response.data.data.payments;
       let totalPurchases = 0;
