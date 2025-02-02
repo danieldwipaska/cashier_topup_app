@@ -30,6 +30,7 @@ async function getFirstAuth() {
     }
   } catch (error) {
     errorLog(mokaLogger, error, 'Error in function getFirstAuth() when calling axios');
+    console.log(error);
   }
 }
 
