@@ -34,6 +34,7 @@ async function getFirstAuth() {
 }
 
 async function getNewAccessToken(refreshToken) {
+  console.log('start get new access token');
   try {
     const response = await axios.post('https://api.mokapos.com/oauth/token', {
       client_id: process.env.MOKA_CLIENT_ID,
@@ -43,9 +44,9 @@ async function getNewAccessToken(refreshToken) {
       redirect_uri: 'https://www.google.com',
       refresh_token: refreshToken,
     });
+    console.log(response);
 
     try {
-      console.log(response);
       const accessTokenExpiresAt = Date.now() + response.data.expires_in * 1000;
 
       const updatedToken = await pool.query(tokenQueries.updateToken, [response.data.access_token, response.data.expires_in, accessTokenExpiresAt, response.data.refresh_token, 'bearer']);

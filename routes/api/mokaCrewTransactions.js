@@ -85,11 +85,9 @@ async function calculateTransactions(since, until) {
     if (tokens.rows[0].expires_at - now < 60 * 60 * 1000) {
       console.log('start update token');
       const updatedToken = await getNewAccessToken(tokens.rows[0].refresh_token);
-      console.log(updatedToken);
 
       tokens.rows[0].access_token = updatedToken.rows[0].access_token;
     }
-    console.log('finish');
 
     try {
       const response = await axios.get(`https://api.mokapos.com/v3/outlets/${process.env.MOKA_OUTLET_ID}/reports/get_latest_transactions?since=${since}&until=${until}&per_page=500`, {
