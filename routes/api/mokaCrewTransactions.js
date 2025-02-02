@@ -1,6 +1,6 @@
 const { default: axios } = require('axios');
 const { getCrews } = require('./mokaSalesType');
-const { getNewAccessToken } = require('./moka');
+const { getNewAccessToken, getFirstAuth } = require('./moka');
 const pool = require('../../db');
 const tokenQueries = require('../../database/tokens/queries');
 const { errorLog } = require('../../config/logger/functions');
