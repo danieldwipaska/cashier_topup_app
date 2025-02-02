@@ -101,4 +101,5 @@ async function getPaymentData() {
 module.exports = {
   getPaymentData,
   getNewAccessToken,
+  getFirstAuth,
 };
