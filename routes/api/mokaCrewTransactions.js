@@ -75,11 +75,11 @@ async function calculateTransactions(since, until) {
   try {
     console.log('start calculate transactions');
     const tokens = await pool.query(tokenQueries.getLatestToken, []);
-    console.log(tokens);
 
     const now = Date.now();
 
     if (!tokens.rows.length) {
+      console.log('start get first auth');
       await getFirstAuth();
     }
 
