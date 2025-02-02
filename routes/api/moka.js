@@ -10,6 +10,7 @@ async function getFirstAuth() {
   //GET FIRST ACCESS TOKEN AND REFRESH TOKEN
 
   try {
+    console.log('start first token');
     const response = await axios.post('https://api.mokapos.com/oauth/token', {
       client_id: process.env.MOKA_CLIENT_ID,
       client_secret: process.env.MOKA_CLIENT_SECRET_ID,
