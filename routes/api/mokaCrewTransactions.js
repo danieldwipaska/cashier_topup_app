@@ -78,12 +78,11 @@ async function calculateTransactions(since, until) {
 
     const now = Date.now();
 
-    // if (!tokens.rows.length) {
-    //   await getFirstAuth();
-    // }
+    if (!tokens.rows.length) {
+      await getFirstAuth();
+    }
 
     if (tokens.rows[0].expires_at - now < 60 * 60 * 1000) {
-      console.log('start update token');
       const updatedToken = await getNewAccessToken(tokens.rows[0].refresh_token);
 
       tokens.rows[0].access_token = updatedToken.rows[0].access_token;

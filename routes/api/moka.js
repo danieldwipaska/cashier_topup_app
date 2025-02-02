@@ -34,7 +34,6 @@ async function getFirstAuth() {
 }
 
 async function getNewAccessToken(refreshToken) {
-  console.log(refreshToken);
   try {
     const response = await axios.post('https://api.mokapos.com/oauth/token', {
       client_id: process.env.MOKA_CLIENT_ID,
