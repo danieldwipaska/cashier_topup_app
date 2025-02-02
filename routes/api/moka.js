@@ -34,7 +34,7 @@ async function getFirstAuth() {
 }
 
 async function getNewAccessToken(refreshToken) {
-  console.log('start get new access token');
+  console.log(refreshToken);
   try {
     const response = await axios.post('https://api.mokapos.com/oauth/token', {
       client_id: process.env.MOKA_CLIENT_ID,
@@ -44,7 +44,6 @@ async function getNewAccessToken(refreshToken) {
       redirect_uri: 'https://www.google.com',
       refresh_token: refreshToken,
     });
-    console.log(response);
 
     try {
       const accessTokenExpiresAt = Date.now() + response.data.expires_in * 1000;
@@ -57,6 +56,7 @@ async function getNewAccessToken(refreshToken) {
     }
   } catch (error) {
     errorLog(mokaLogger, error, 'Error in function getNewAccessToken() when calling axios');
+    console.log(error);
   }
 }
 
