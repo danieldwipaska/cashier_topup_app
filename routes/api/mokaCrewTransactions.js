@@ -52,10 +52,6 @@ async function getCrewTransactions(since, until) {
         crewCheckouts.forEach((checkout) => {
           totalPurchases += checkout.total_price - checkout.refunded_quantity * checkout.item_price;
         });
-        console.log({
-          name: crew,
-          total_purchases: totalPurchases,
-        });
 
         allCrewsPurchases.push({
           name: crew,
