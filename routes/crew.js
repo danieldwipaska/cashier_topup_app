@@ -56,7 +56,12 @@ router.post('/analytics', async (req, res) => {
           }, 0),
         };
 
-        console.log(crewPurchase);
+        console.log({
+          name: filteredCrews[i].name,
+          totalPayment: purchases.reduce((acc, payment) => {
+            return acc + payment.payment;
+          }, 0),
+        });
 
         crewPurchases.push(crewPurchase);
       } catch (error) {
