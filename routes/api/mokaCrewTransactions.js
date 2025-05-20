@@ -55,7 +55,6 @@ async function getCrewTransactions(since, until) {
         console.log({
           name: crew,
           total_purchases: totalPurchases,
-          purchases: crewCheckouts,
         });
 
         allCrewsPurchases.push({
