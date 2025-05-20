@@ -56,7 +56,7 @@ router.post('/analytics', async (req, res) => {
           }, 0),
         };
 
-        // console.log(crewPurchase);
+        console.log(crewPurchase);
 
         crewPurchases.push(crewPurchase);
       } catch (error) {
@@ -79,8 +79,6 @@ router.post('/analytics', async (req, res) => {
       const epochArchiveTo = archiveToGMTTime / 1000;
 
       const mokaCrewPurchases = await getCrewTransactions(epochArchiveFrom, epochArchiveTo);
-      console.log(crewPurchases);
-      console.log(mokaCrewPurchases);
 
       return res.render('crewAnalytics', {
         layout: 'layouts/main-layout',
